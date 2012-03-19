@@ -16,7 +16,10 @@ package org.openmrs.module.providermanagement.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
+
+import java.util.List;
 
 /**
  * It is a default implementation of  {@link ProviderManagementDAO}.
@@ -25,8 +28,8 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private SessionFactory sessionFactory;
-	
-	/**
+
+    /**
      * @param sessionFactory the sessionFactory to set
      */
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -38,5 +41,30 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
      */
     public SessionFactory getSessionFactory() {
 	    return sessionFactory;
+    }
+
+    @Override
+    public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ProviderRole getProviderRole(Integer id) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ProviderRole getProviderRoleByUuid(String uuid) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void saveProviderRole(ProviderRole role) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void deleteProviderRole(ProviderRole role) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

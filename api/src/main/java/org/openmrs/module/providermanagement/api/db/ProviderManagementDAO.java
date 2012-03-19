@@ -13,7 +13,10 @@
  */
 package org.openmrs.module.providermanagement.api.db;
 
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+
+import java.util.List;
 
 /**
  *  Database methods for {@link ProviderManagementService}.
@@ -21,6 +24,46 @@ import org.openmrs.module.providermanagement.api.ProviderManagementService;
 public interface ProviderManagementDAO {
 	
 	/*
-	 * Add DAO methods here
+	 * Base Methods for saving and loading provider roles
 	 */
+
+    /**
+     * Gets all Provider Roles in the database
+     *
+     * @param includeRetired whether or not to include retired providers
+     * @return list of al provider roles in the system
+     */
+    public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
+
+    /**
+     * Gets the provider role referenced by the specified id
+     *
+     * @param id
+     * @return providerRole
+     */
+    public ProviderRole getProviderRole(Integer id);
+
+    /**
+     * Gets the provider role referenced by the specified uui
+     *
+     * @param uuid
+     * @return providerRole
+     */
+    public ProviderRole getProviderRoleByUuid(String uuid);
+
+    /**
+     * Saves/updates a provider role
+     *
+     * @param role the provider role to save
+     */
+    public void saveProviderRole(ProviderRole role);
+
+    /**
+     * Deletes a provider role
+     *
+     * @param role the provider role to delete
+     */
+    public void deleteProviderRole(ProviderRole role);
+
+
 }

@@ -2,25 +2,50 @@
 <!DOCTYPE sqldiff PUBLIC "-//OpenMRS//DTD OpenMRS SQL Diff Config 1.0//EN" "http://resources.openmrs.org/doctype/sqldiff-1.0.dtd">
 
 <sqldiff version="1.0">
-	<help>
-		USE:
-			The diffs are ordered by data model version number.
-			The script can be run in a top down fashion and is
-			expected to not fail or overwrite old data
-		
-		EXPECT:
-			- "use business-database-name;" was called prior to
-			   calling this script
-	</help>
 
-<!-- 
-	<diff>
-		<version>1.0-SNAPSHOT</version>
-		<author>Mark Goodrich</author>
-		<date></date>
-		<description></description>
-		<sql></sql>
-	</diff>
- -->
+    <diff>
+    <version>1.0</version>
+        <author>Mark Goodrich</author>
+        <date>March 19 2012</date>
+        <description>
+            Add basic Provider Management tables
+        </description>
+        <sql>
+            CREATE TABLE providermanagement_provider_role (
+                provider_role_id int(11) NOT NULL auto_increment,
+                name varchar(255) NOT NULL,
+                description varchar(1000),
+                creator int(11) NOT NULL default '0',
+                date_created datetime NOT NULL default '0000-00-00 00:00:00',
+                changed_by int(11) default NULL,
+                date_changed datetime default NULL,
+                retired tinyint(1) NOT NULL default '0',
+                retired_by int(11) default NULL,
+                date_retired datetime default NULL,
+                retire_reason varchar(255) default NULL,
+                uuid char(38) NOT NULL;
+                PRIMARY KEY (flag_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+            CREATE TABLE providermanagement_provider_role_relationship_type (
+                provider_role_id int(11) NOT NULL,
+                relationship_type_id int(11) NOT NULL.
+                KEY provider_role_id (provider_role_id),
+                KEY relationship_type_id (relationship_type_id),
+                CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
+                CONSTRAINT FOREIGN KEY (relationship_type_id) REFERENCES relationship_type (relationship_type_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+            CREATE TABLE providermanagement_provider_role_supervisee_provider_role (
+                provider_role_id int(11) NOT NULL,
+                supervisee_provider_role_id int(11) NOT NULL.
+                KEY provider_role_id (provider_role_id),
+                KEY supervisee_provider_role_id (supervisee_provider_role_id),
+                CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
+                CONSTRAINT FOREIGN KEY (supervisee_provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        </sql>
+    </diff>
+
 	
 </sqldiff>

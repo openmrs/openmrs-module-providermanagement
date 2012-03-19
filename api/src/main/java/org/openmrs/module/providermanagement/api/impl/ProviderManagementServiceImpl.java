@@ -16,8 +16,11 @@ package org.openmrs.module.providermanagement.api.impl;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
+
+import java.util.List;
 
 /**
  * It is a default implementation of {@link ProviderManagementService}.
@@ -34,11 +37,51 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public void setDao(ProviderManagementDAO dao) {
 	    this.dao = dao;
     }
-    
+
     /**
      * @return the dao
      */
     public ProviderManagementDAO getDao() {
 	    return dao;
+    }
+
+    @Override
+    public List<ProviderRole> getAllProviderRoles() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ProviderRole getProviderRole(Integer id) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ProviderRole getProviderRoleByUuid(String uuid) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void saveProviderRole(ProviderRole role) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void retireProviderRole(ProviderRole role, String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void unretireProviderRole(ProviderRole role) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void purgeProviderRole(ProviderRole role) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
