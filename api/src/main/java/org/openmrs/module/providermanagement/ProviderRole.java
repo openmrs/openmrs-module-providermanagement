@@ -31,6 +31,8 @@ import org.openmrs.Relationship;
  */
 public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
+    // TODO: add the OpenMRS license everywhere
+
 	private static final long serialVersionUID = 1L;
 
     private Integer providerRoleId;
@@ -40,13 +42,13 @@ public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
     // the provider roles this provider role can supervisor
     private Set<ProviderRole> superviseeProviderRoles;
-    
-	
+
+
 	@Override
 	public Integer getId() {
 		return providerRoleId;
 	}
-	
+
 	@Override
 	public void setId(Integer id) {
 		this.providerRoleId = id;

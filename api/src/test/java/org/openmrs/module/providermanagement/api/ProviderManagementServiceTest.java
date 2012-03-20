@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -129,4 +130,26 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
        providerManagementService.unretireProviderRole(role);
        Assert.assertFalse(role.isRetired());
     }
+
+    @Test
+    public void getProviderProviderRole_shouldGetProviderProviderRole() {
+        Provider provider = Context.getProviderService().getProvider(1);  // provider from the standard test dataset
+        ProviderRole role = providerManagementService.getProviderRole(provider);
+        Assert.assertEquals(new Integer(2), role.getId());
+    }
+
+    @Test
+    public void setProviderProviderRole_shouldSetProviderProviderRole() {
+        // change the provider role for the existing provider
+        Provider provider = Context.getProviderService().getProvider(1);  // provider from the standard test dataset
+        ProviderRole role = providerManagementService.getProviderRole(3);
+        providerManagementService.setProviderRole(provider,role);
+
+        // now make sure we can fetch that role
+        ProviderRole role2 = providerManagementService.getProviderRole(provider);
+        Assert.assertEquals(new Integer(3), role2.getId());
+    }
+
+    // TODO: tests for nullifying a provider role, and for getting provider role when there isn't oen for a provider
+
 }

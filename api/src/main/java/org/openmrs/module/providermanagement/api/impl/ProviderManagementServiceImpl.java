@@ -13,9 +13,15 @@
  */
 package org.openmrs.module.providermanagement.api.impl;
 
+import org.openmrs.Provider;
+import org.openmrs.ProviderAttribute;
+import org.openmrs.ProviderAttributeType;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.api.APIException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
@@ -30,6 +36,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private ProviderManagementDAO dao;
+    
+    private ProviderAttributeType providerRoleAttributeType = null;
 	
 	/**
      * @param dao the dao to set
@@ -85,5 +93,63 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     public void purgeProviderRole(ProviderRole role) {
         dao.deleteProviderRole(role);
+    }
+
+    @Override
+    public void setProviderRole(Provider provider, ProviderRole role) {
+        // TODO: make sure this syncs properly!
+
+        // initialize the providerRoleAttributeType if need be
+        if (providerRoleAttributeType == null) {
+            initializeProviderRoleAttributeType();
+        }
+
+        if (provider == null) {
+            throw new APIException("Cannot set provider role: provider is null");
+        }
+        else {
+            // first, void the existing provider role for this provider (if it existing)
+            List<ProviderAttribute> attrs = provider.getActiveAttributes(providerRoleAttributeType);
+            if (attrs.size() > 1) {
+                throw new APIException("Provider should never have more than one Provider Role");
+            }
+            else if (attrs.size() == 1) {
+                ProviderAttribute roleAttributeToVoid = attrs.get(0);
+                roleAttributeToVoid.setVoided(true);
+                roleAttributeToVoid.setVoidedBy(Context.getAuthenticatedUser());
+                roleAttributeToVoid.setVoidReason("voided while setting a new provider role");
+            }
+
+            // now create the new attribute
+            ProviderAttribute providerRoleAttribute = new ProviderAttribute();
+            providerRoleAttribute.setAttributeType(providerRoleAttributeType);
+            providerRoleAttribute.setValue(role);
+            provider.setAttribute(providerRoleAttribute);
+
+            // save the provider
+            Context.getProviderService().saveProvider(provider);
+        }
+    }
+    
+    @Override
+    public ProviderRole getProviderRole(Provider provider) {
+        // initialize the providerRoleAttributeType if need be
+        if (providerRoleAttributeType == null) {
+            initializeProviderRoleAttributeType();
+        }
+
+        List<ProviderAttribute> attrs = provider.getActiveAttributes(providerRoleAttributeType);
+
+        if (attrs.size() > 1) {
+            throw new APIException("Provider should never have more than one Provider Role");
+        }
+        else {
+            return (ProviderRole) attrs.get(0).getValue();
+        }
+    }
+
+    private void initializeProviderRoleAttributeType() {
+        // TODO: error handling?
+        providerRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(ProviderManagementConstants.PROVIDER_ROLE_ATTRIBUTE_TYPE_UUID);
     }
 }

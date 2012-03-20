@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.providermanagement.api;
 
+import org.openmrs.Provider;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,5 +96,25 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Transactional
     public void purgeProviderRole(ProviderRole role);
+
+    /**
+     * Assigns a provider role to a provider
+     * Overwrites any existing role for that provider
+     *
+     * @param provider the provider whose role we wish to set
+     * @param role the role to set
+     */
+    @Transactional
+    public void setProviderRole(Provider provider, ProviderRole role);
+
+    /**
+     * Gets the provider role associated with this provider
+     *
+     * @param provider the provider we are looking for the provider role for
+     * @return the role associated with this provider
+     */
+    @Transactional(readOnly = true)
+    public ProviderRole getProviderRole(Provider provider);
+
 
 }
