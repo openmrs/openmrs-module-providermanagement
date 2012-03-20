@@ -47,41 +47,43 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     public List<ProviderRole> getAllProviderRoles() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return dao.getAllProviderRoles(false);
     }
 
     @Override
     public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return dao.getAllProviderRoles(includeRetired);
     }
 
     @Override
     public ProviderRole getProviderRole(Integer id) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return dao.getProviderRole(id);
     }
 
     @Override
     public ProviderRole getProviderRoleByUuid(String uuid) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return dao.getProviderRoleByUuid(uuid);
     }
 
     @Override
     public void saveProviderRole(ProviderRole role) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        dao.saveProviderRole(role);
     }
 
     @Override
     public void retireProviderRole(ProviderRole role, String reason) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // BaseRetireHandler handles retiring the object
+        dao.saveProviderRole(role);
     }
 
     @Override
     public void unretireProviderRole(ProviderRole role) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // BaseUnretireHandler handles unretiring the object
+        dao.saveProviderRole(role);
     }
 
     @Override
     public void purgeProviderRole(ProviderRole role) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        dao.deleteProviderRole(role);
     }
 }

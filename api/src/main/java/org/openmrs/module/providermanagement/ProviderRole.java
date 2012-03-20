@@ -32,8 +32,8 @@ import org.openmrs.Relationship;
 public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	private Integer id;
+
+    private Integer providerRoleId;
 
     // the provider/patient relationships this role can support
     private Set<Relationship> relationshipTypes;
@@ -44,13 +44,21 @@ public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 	
 	@Override
 	public Integer getId() {
-		return id;
+		return providerRoleId;
 	}
 	
 	@Override
 	public void setId(Integer id) {
-		this.id = id;
+		this.providerRoleId = id;
 	}
+
+    public Integer getProviderRoleId() {
+        return providerRoleId;
+    }
+
+    public void setProviderRoleId(Integer id) {
+        this.providerRoleId = id;
+    }
 
     public Set<Relationship> getRelationshipTypes() {
         return relationshipTypes;

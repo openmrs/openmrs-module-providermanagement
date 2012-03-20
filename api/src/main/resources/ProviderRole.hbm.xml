@@ -8,10 +8,10 @@
 
 	<class name="ProviderRole" table="providermanagement_provider_role">
 
-        <id name="id" type="int" column="id" unsaved-value="0">
+        <id name="providerRoleId" type="int" column="provider_role_id" unsaved-value="0">
 			<generator class="native" />
 		</id>
-		<discriminator column="id" insert="false" />
+		<discriminator column="provider_role_id" insert="false" />
 		<property name="uuid" type="java.lang.String" column="uuid"
 			length="38" unique="true" />
 

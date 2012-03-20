@@ -15,7 +15,9 @@ package org.openmrs.module.providermanagement.api.db.hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 
@@ -45,26 +47,32 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
     @Override
     public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
+        }
+        return (List<ProviderRole>) criteria.list();
     }
 
     @Override
     public ProviderRole getProviderRole(Integer id) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return (ProviderRole) sessionFactory.getCurrentSession().get(ProviderRole.class, id);
     }
 
     @Override
     public ProviderRole getProviderRoleByUuid(String uuid) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
+        criteria.add(Restrictions.eq("uuid", uuid));
+        return (ProviderRole) criteria.uniqueResult();
     }
 
     @Override
     public void saveProviderRole(ProviderRole role) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        sessionFactory.getCurrentSession().saveOrUpdate(role);
     }
 
     @Override
     public void deleteProviderRole(ProviderRole role) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        sessionFactory.getCurrentSession().delete(role);
     }
 }

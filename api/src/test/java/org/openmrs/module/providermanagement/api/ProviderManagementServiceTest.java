@@ -14,17 +14,119 @@
 package org.openmrs.module.providermanagement.api;
 
 import static org.junit.Assert.*;
+
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
+import java.util.List;
+
 /**
- * Tests {@link ${ProviderManagementService}}.
+ * Tests for ProviderManagementService.
  */
 public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTest {
-	
+
+    protected static final String XML_DATASET_PATH = "org/openmrs/module/providermanagement/include/";
+
+    protected static final String XML_DATASET = "providerManagement-dataset.xml";
+
+    private ProviderManagementService providerManagementService;
+
+    @Before
+    public void init() throws Exception {
+        // execute the provider management test dataset
+        executeDataSet(XML_DATASET_PATH + XML_DATASET);
+
+        // initialize the service
+        providerManagementService = Context.getService(ProviderManagementService.class);
+    }
+
 	@Test
 	public void shouldSetupContext() {
 		assertNotNull(Context.getService(ProviderManagementService.class));
 	}
+
+    @Test
+    public void getAllProviderRoles_shouldGetAllProviderUnretiredRoles() {
+        List<ProviderRole> roles = providerManagementService.getAllProviderRoles();
+        int roleCount = roles.size();
+        Assert.assertEquals(9, roleCount);
+
+        roles = providerManagementService.getAllProviderRoles(false);
+        roleCount = roles.size();
+        Assert.assertEquals(9, roleCount);
+    }
+
+    @Test
+    public void getAllProviderRoles_shouldGetAllProviderRolesIncludingRetired() {
+        List<ProviderRole> roles = providerManagementService.getAllProviderRoles(true);
+        int roleCount = roles.size();
+        Assert.assertEquals(10, roleCount);
+    }
+
+    @Test
+    public void getProviderRole_shouldGetProviderRole() {
+        ProviderRole role = providerManagementService.getProviderRole(2);
+        Assert.assertEquals(new Integer(2), role.getId());
+        Assert.assertEquals("Binome supervisor", role.getName());
+    }
+
+    @Test
+    public void getProviderRole_shouldReturnNullIfNoProviderForId() {
+        Assert.assertNull(providerManagementService.getProviderRole(200));
+    }
+
+    @Test
+    public void getProviderRoleByUuid_shoulldGetProviderRoleByUuid() {
+        ProviderRole role = providerManagementService.getProviderRoleByUuid("db7f523f-27ce-4bb2-86d6-6d1d05312bd5");
+        Assert.assertEquals(new Integer(3), role.getId());
+        Assert.assertEquals("Cell supervisor", role.getName());
+    }
+
+    @Test
+    public void getProviderRoleByUuid_shouldReturnNUllIfNoProviderForUuid() {
+        ProviderRole role = providerManagementService.getProviderRoleByUuid("zzz");
+    }
+
+    @Test
+    public void saveProviderRole_shouldSaveBasicProviderRole() {
+        ProviderRole role = new ProviderRole();
+        role.setName("Some provider role");
+        Context.getService(ProviderManagementService.class).saveProviderRole(role);
+        Assert.assertEquals(10, providerManagementService.getAllProviderRoles().size());
+    }
+
+    @Test
+    public void deleteProviderRole_shouldDeleteProviderRole() {
+        ProviderRole role = providerManagementService.getProviderRole(2);
+        providerManagementService.purgeProviderRole(role);
+        Assert.assertEquals(8, providerManagementService.getAllProviderRoles().size());
+        Assert.assertNull(providerManagementService.getProviderRole(2));
+    }
+    
+    @Test
+    public void retireProviderRole_shouldRetireProviderRole() {
+        ProviderRole role = providerManagementService.getProviderRole(2);
+        providerManagementService.retireProviderRole(role, "test");
+        Assert.assertEquals(8, providerManagementService.getAllProviderRoles().size());
+        
+        role = providerManagementService.getProviderRole(2);
+        Assert.assertTrue(role.isRetired());
+        Assert.assertEquals("test", role.getRetireReason());
+        
+    }
+
+    @Test
+    public void unretireProviderRole_shouldUnretireProviderRole() {
+        ProviderRole role = providerManagementService.getProviderRole(2);
+        providerManagementService.retireProviderRole(role, "test");
+        Assert.assertEquals(8, providerManagementService.getAllProviderRoles().size());
+
+       role = providerManagementService.getProviderRole(2);
+       providerManagementService.unretireProviderRole(role);
+       Assert.assertFalse(role.isRetired());
+    }
 }
