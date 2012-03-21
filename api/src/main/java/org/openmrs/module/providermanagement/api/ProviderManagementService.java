@@ -14,6 +14,7 @@
 package org.openmrs.module.providermanagement.api;
 
 import org.openmrs.Provider;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +66,28 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Transactional(readOnly = true)
     public ProviderRole getProviderRoleByUuid(String uuid);
+
+    /**
+     * Returns all the provider roles that support the specified relationship type
+     * (Excludes retired provider roles)
+     *
+     * @param relationshipType
+     * @return the provider roles that support that relationship type
+     * @should throw exception if relationshipType is null
+     */
+    @Transactional(readOnly = true)
+    public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
+
+    /**
+     * Returns all provider roles that are able to supervise the specified provider role
+     * (Excluded retired provider roles)
+     *
+     * @param providerRole
+     * @return the provider roles that can supervise the specified provider role
+     * @should throw exception if providerRole is null
+     */
+    @Transactional(readOnly = true)
+    public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole);
 
     /**
      * Saves/updates a provider role
@@ -129,7 +152,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw APIException if role is null
      */
     @Transactional(readOnly = true)
-    public List<Provider> getProviders(ProviderRole role, boolean includeRetired);
+    public List<Provider> getProvidersByRole(ProviderRole role, boolean includeRetired);
 
     /**
      * Gets all providers with the specified role
@@ -139,6 +162,6 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw APIException if role is null
      */
     @Transactional(readOnly = true)
-    public List<Provider> getProviders(ProviderRole role);
+    public List<Provider> getProvidersByRole(ProviderRole role);
 
 }

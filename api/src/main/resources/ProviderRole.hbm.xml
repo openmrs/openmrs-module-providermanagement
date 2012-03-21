@@ -36,7 +36,7 @@
         <!-- link to relationships -->
         <set name="relationshipTypes" table="providermanagement_provider_role_relationship_type">
             <key column="provider_role_id" />
-            <many-to-many column="relationship_type_id" class="org.openmrs.Relationship" />
+            <many-to-many column="relationship_type_id" class="org.openmrs.RelationshipType" />
         </set>
 
         <!-- link to supervisee roles -->

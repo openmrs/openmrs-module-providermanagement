@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.providermanagement.api.db;
 
+import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 
@@ -50,6 +51,24 @@ public interface ProviderManagementDAO {
      * @return providerRole
      */
     public ProviderRole getProviderRoleByUuid(String uuid);
+
+    /**
+     * Gets the list of provider roles that support the specified relationship type
+     * (Excludes retired provider roles)
+     *
+     * @param relationshipType
+     * @return list of provider roles that support that relationship type
+     */
+    public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
+
+    /**
+     * Returns all provider roles that are able to supervise the specified provider role
+     * (Excluded retired provider roles)
+     *
+     * @param providerRole
+     * @return the provider roles that can supervise the specified provider role
+     */
+    public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole);
 
     /**
      * Saves/updates a provider role

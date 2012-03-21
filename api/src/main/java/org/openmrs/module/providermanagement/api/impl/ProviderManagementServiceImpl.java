@@ -16,6 +16,7 @@ package org.openmrs.module.providermanagement.api.impl;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.api.APIException;
@@ -73,6 +74,26 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     public ProviderRole getProviderRoleByUuid(String uuid) {
         return dao.getProviderRoleByUuid(uuid);
+    }
+
+    @Override
+    public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType) {
+        if (relationshipType == null) {
+            throw new APIException("relationshipType cannot be null");
+        }
+        else {
+            return dao.getProviderRolesByRelationshipType(relationshipType);
+        }
+    }
+
+    @Override
+    public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole) {
+        if (providerRole == null) {
+            throw new APIException("providerRole cannot be null");
+        }
+        else {
+            return dao.getProviderRolesBySuperviseeProviderRole(providerRole);
+        }
     }
 
     @Override
@@ -156,7 +177,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Provider> getProviders(ProviderRole role, boolean includeRetired) {
+    public List<Provider> getProvidersByRole(ProviderRole role, boolean includeRetired) {
 
         // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
 
@@ -167,7 +188,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         // not allowed to pass null here
         if (role == null) {
-            throw new APIException("role based to getProviders(role,includeRetired) cannot be null");
+            throw new APIException("Role cannot be null");
         }
 
         // create the attribute type to add to the query
@@ -178,8 +199,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Provider> getProviders(ProviderRole role) {
-        return getProviders(role, false);
+    public List<Provider> getProvidersByRole(ProviderRole role) {
+        return getProvidersByRole(role, false);
     }
 
     /**

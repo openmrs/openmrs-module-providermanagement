@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 
@@ -64,6 +65,22 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
         criteria.add(Restrictions.eq("uuid", uuid));
         return (ProviderRole) criteria.uniqueResult();
+    }
+
+    @Override
+    public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
+        criteria.add(Restrictions.eq("retired", false));
+        criteria.createCriteria("relationshipTypes").add(Restrictions.eq("relationshipTypeId", relationshipType.getId()));
+        return (List<ProviderRole>) criteria.list();
+    }
+
+    @Override
+    public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
+        criteria.add(Restrictions.eq("retired", false));
+        criteria.createCriteria("superviseeProviderRoles").add(Restrictions.eq("providerRoleId", providerRole.getId()));
+        return (List<ProviderRole>) criteria.list();
     }
 
     @Override
