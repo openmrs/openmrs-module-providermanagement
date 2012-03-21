@@ -143,19 +143,19 @@ public interface ProviderManagementService extends OpenmrsService {
     @Transactional(readOnly = true)
     public ProviderRole getProviderRole(Provider provider);
 
-    /**
-     * Gets all providers with the specified role
-     *
-     * @param role
-     * @param includeRetired whether or not to include retired providers
-     * @return list of providers with the specified role
-     * @should throw APIException if role is null
-     */
-    @Transactional(readOnly = true)
-    public List<Provider> getProvidersByRole(ProviderRole role, boolean includeRetired);
 
     /**
+     * Gets all providers whose role is in the list of specified roles
+     *
+     * @param roles
+     * @return all providers with one of the specified roles
+     * @should throw APIException if roles are empty or null
+     */
+    public List<Provider> getProvidersByRoles(List<ProviderRole> roles);
+    
+    /**
      * Gets all providers with the specified role
+     * (Excludes retired providers)
      *
      * @param role
      * @return list of providers with the specified role
@@ -163,5 +163,15 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Transactional(readOnly = true)
     public List<Provider> getProvidersByRole(ProviderRole role);
+
+    /**
+     * Gets all providers that support the specified relationship type
+     *
+     * @param relationshipType
+     * @return the list of providers that support the specified relationship type
+     * @should throw API Exception if relationship type is null
+     */
+    @Transactional(readOnly = true)
+    public List<Provider> getProvidersByRelationshipType(RelationshipType relationshipType);
 
 }

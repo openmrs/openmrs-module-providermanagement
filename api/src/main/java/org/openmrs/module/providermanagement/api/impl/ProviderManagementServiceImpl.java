@@ -27,6 +27,7 @@ import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,7 +178,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Provider> getProvidersByRole(ProviderRole role, boolean includeRetired) {
+    public List<Provider> getProvidersByRoles(List<ProviderRole> roles) {
 
         // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
 
@@ -186,21 +187,62 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             initializeProviderRoleAttributeType();
         }
 
+        // not allowed to pass null or empty set here
+        if (roles == null || roles.isEmpty()) {
+            throw new APIException("Roles cannot be null or empty");
+        }
+
+        // TODO: figure out if we want to sort results here
+
+        List<Provider> providers = new ArrayList<Provider>();
+
+        // iterate through each role and fetch the matching providers for each role
+        // note that since a provider can only have one role, we don't
+        // have to worry about duplicates, ie. fetching the same provider twice
+
+        // TODO: but duplicate Persons could be a possibility...?
+
+        for (ProviderRole role : roles) {
+            // create the attribute type to add to the query
+            Map<ProviderAttributeType, Object> attributeValueMap = new HashMap<ProviderAttributeType, Object>();
+            attributeValueMap.put(providerRoleAttributeType, role);
+            // find all providers with that role
+            providers.addAll(Context.getProviderService().getProviders(null, null, null, attributeValueMap));
+        }
+
+        return providers;
+    }
+
+    @Override
+    public List<Provider> getProvidersByRole(ProviderRole role) {
+
+        // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
+
         // not allowed to pass null here
         if (role == null) {
             throw new APIException("Role cannot be null");
         }
 
-        // create the attribute type to add to the query
-        Map<ProviderAttributeType, Object> attributeValueMap = new HashMap<ProviderAttributeType, Object>();
-        attributeValueMap.put(providerRoleAttributeType, role);
-
-        return Context.getProviderService().getProviders(null, null, null, attributeValueMap);
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(role);
+        return getProvidersByRoles(roles);
     }
 
     @Override
-    public List<Provider> getProvidersByRole(ProviderRole role) {
-        return getProvidersByRole(role, false);
+    public List<Provider> getProvidersByRelationshipType(RelationshipType relationshipType) {
+
+        if (relationshipType == null) {
+            throw new  APIException("Relationship type cannot be null");
+        }
+
+        // first fetch the roles that support this relationship type, then fetch all the providers with those roles
+        List<ProviderRole> providerRoles = getProviderRolesByRelationshipType(relationshipType);
+        if (providerRoles == null || providerRoles.size() == 0) {
+            return new ArrayList<Provider>();  // just return an empty list
+        }
+        else {
+            return getProvidersByRoles(providerRoles);
+        }
     }
 
     /**

@@ -17,17 +17,22 @@
     <providermanagement_provider_role provider_role_id="1009" name="Palliative care worker" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-5bb2-86d6-6d1d05312bd5"/>
     <providermanagement_provider_role provider_role_id="1010" name="Retired accompagnateur type" creator="1" date_created="2005-09-22 00:00:00.0" retired="true" uuid="da7f623f-27ce-5bb2-86d6-6d1d05312bd5"/>
     <providermanagement_provider_role provider_role_id="1011" name="Accompagnateur" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-5bb2-86d6-6d1d05312bd5"/>
+    <providermanagement_provider_role provider_role_id="1012" name="Some other role" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623e-37ce-5bb2-86d6-6d1d05312bd5"/>
 
     <relationship_type relationship_type_id="1001" a_is_to_b="Binome" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from binome to patient" creator="1" date_created="2007-05-04 09:59:22.0" retired="false" uuid="6d0002ea-a96b-4889-af78-82d48c57a110"/>
     <relationship_type relationship_type_id="1002" a_is_to_b="Accompagnateur" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from accompagnateur to patient" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956eadc"/>
+    <relationship_type relationship_type_id="1003" a_is_to_b="A" b_is_to_a="B" preferred="0" weight="0" description="Some other relationship type" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a6f4ff4-a179-4b8a-aa4c-40f71956eadc"/>
 
 
     <!-- set up some sample providers -->
     <provider provider_id="1002" person_id="1" identifier="2a3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f523f-cca9-11e0-9572-0800200c9a66" />
+    <!-- three binomes-->
     <provider provider_id="1003" person_id="2" identifier="2a5" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f533f-cca9-11e0-9572-0800200c9a66" />
     <provider provider_id="1004" person_id="6" identifier="2a6" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f573f-cca9-11e0-9572-0800200c9a66" />
     <provider provider_id="1005" person_id="7" identifier="2a7" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f513f-cca9-11e0-9572-0800200c9a66" />
+    <!-- a binome supervisor -->
     <provider provider_id="1006" person_id="8" identifier="2a8" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cca9-11e0-9572-0800200c9a66" />
+    <!-- an accompagnateur-->
     <provider provider_id="1007" person_id="9" identifier="2a9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-11e0-9572-0800200c9a66" />
 
     <provider_attribute provider_attribute_id="1001" provider_id="1003" attribute_type_id="1001" value_reference="da7f523f-27ce-4bb2-86d6-6d1d05312bd5" uuid="da7f623f-27ce-5bb2-86d6-7d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
@@ -35,6 +40,7 @@
     <provider_attribute provider_attribute_id="1003" provider_id="1005" attribute_type_id="1001" value_reference="da7f523f-27ce-4bb2-86d6-6d1d05312bd5" uuid="da7f523e-27ce-5bb2-86d6-7d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
     <provider_attribute provider_attribute_id="1004" provider_id="1006" attribute_type_id="1001" value_reference="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5" uuid="da7f524f-27ce-5bb2-86d6-7d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
     <provider_attribute provider_attribute_id="1005" provider_id="1007" attribute_type_id="1001" value_reference="da7f623f-37ce-5bb2-86d6-6d1d05312bd5" uuid="da7f524f-27ce-5bb2-86d6-8d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
+
 
     <providermanagement_provider_role_relationship_type provider_role_id="1001" relationship_type_id="1001" />
     <providermanagement_provider_role_relationship_type provider_role_id="1001" relationship_type_id="1002" />
@@ -44,6 +50,7 @@
     <providermanagement_provider_role_relationship_type provider_role_id="1009" relationship_type_id="1002" />
     <providermanagement_provider_role_relationship_type provider_role_id="1010" relationship_type_id="1002" />
     <providermanagement_provider_role_relationship_type provider_role_id="1011" relationship_type_id="1002" />
+    <providermanagement_provider_role_relationship_type provider_role_id="1012" relationship_type_id="1003" />
 
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1002" supervisee_provider_role_id="1001"/>
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1003" supervisee_provider_role_id="1001"/>
