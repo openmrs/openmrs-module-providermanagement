@@ -26,7 +26,9 @@ import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It is a default implementation of {@link ProviderManagementService}.
@@ -120,11 +122,13 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 roleAttributeToVoid.setVoidReason("voided while setting a new provider role");
             }
 
-            // now create the new attribute
-            ProviderAttribute providerRoleAttribute = new ProviderAttribute();
-            providerRoleAttribute.setAttributeType(providerRoleAttributeType);
-            providerRoleAttribute.setValue(role);
-            provider.setAttribute(providerRoleAttribute);
+            if (role != null) {
+                // now create the new attribute (if one has been specified)
+                ProviderAttribute providerRoleAttribute = new ProviderAttribute();
+                providerRoleAttribute.setAttributeType(providerRoleAttributeType);
+                providerRoleAttribute.setValue(role);
+                provider.setAttribute(providerRoleAttribute);
+            }
 
             // save the provider
             Context.getProviderService().saveProvider(provider);
@@ -140,13 +144,47 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         List<ProviderAttribute> attrs = provider.getActiveAttributes(providerRoleAttributeType);
 
-        if (attrs.size() > 1) {
-            throw new APIException("Provider should never have more than one Provider Role");
+        if (attrs == null || attrs.size() == 0) {
+            return null;
         }
-        else {
+        else if (attrs.size() == 1){
             return (ProviderRole) attrs.get(0).getValue();
         }
+        else {
+            throw new APIException("Provider should never have more than one Provider Role");
+        }
     }
+
+    @Override
+    public List<Provider> getProviders(ProviderRole role, boolean includeRetired) {
+
+        // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
+
+        // initialize the providerRoleAttributeType if need be
+        if (providerRoleAttributeType == null) {
+            initializeProviderRoleAttributeType();
+        }
+
+        // not allowed to pass null here
+        if (role == null) {
+            throw new APIException("role based to getProviders(role,includeRetired) cannot be null");
+        }
+
+        // create the attribute type to add to the query
+        Map<ProviderAttributeType, Object> attributeValueMap = new HashMap<ProviderAttributeType, Object>();
+        attributeValueMap.put(providerRoleAttributeType, role);
+
+        return Context.getProviderService().getProviders(null, null, null, attributeValueMap);
+    }
+
+    @Override
+    public List<Provider> getProviders(ProviderRole role) {
+        return getProviders(role, false);
+    }
+
+    /**
+     * Utility methods
+     */
 
     private void initializeProviderRoleAttributeType() {
         // TODO: error handling?

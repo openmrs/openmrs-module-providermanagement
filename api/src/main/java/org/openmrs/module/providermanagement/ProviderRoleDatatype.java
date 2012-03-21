@@ -1,5 +1,6 @@
 package org.openmrs.module.providermanagement;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
@@ -29,18 +30,27 @@ public class ProviderRoleDatatype implements CustomDatatype<ProviderRole> {
 
     @Override
     public String getReferenceStringForValue(ProviderRole providerRole) throws UnsupportedOperationException {
-        return providerRole.getUuid();
+        if (providerRole == null) {
+            return null;
+        }
+        else {
+            return providerRole.getUuid();
+        }
     }
 
     @Override
     public ProviderRole fromReferenceString(String s) throws InvalidCustomValueException {
-        // TODO: handle if there is no matching provider for the uuid?
-        return Context.getService(ProviderManagementService.class).getProviderRoleByUuid(s);
+        if (StringUtils.isBlank(s)) {
+            return null;
+        }
+        else {
+            return Context.getService(ProviderManagementService.class).getProviderRoleByUuid(s);
+        }
     }
 
     @Override
     public Summary getTextSummary(String s) {
-        // TODO: implement this
+        // TODO: implement this?
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

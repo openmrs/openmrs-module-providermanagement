@@ -98,6 +98,10 @@ public interface ProviderManagementService extends OpenmrsService {
     public void purgeProviderRole(ProviderRole role);
 
     /**
+     * Basic methods for operating on providers using the new provider roles
+     */
+
+    /**
      * Assigns a provider role to a provider
      * Overwrites any existing role for that provider
      *
@@ -116,5 +120,25 @@ public interface ProviderManagementService extends OpenmrsService {
     @Transactional(readOnly = true)
     public ProviderRole getProviderRole(Provider provider);
 
+    /**
+     * Gets all providers with the specified role
+     *
+     * @param role
+     * @param includeRetired whether or not to include retired providers
+     * @return list of providers with the specified role
+     * @should throw APIException if role is null
+     */
+    @Transactional(readOnly = true)
+    public List<Provider> getProviders(ProviderRole role, boolean includeRetired);
+
+    /**
+     * Gets all providers with the specified role
+     *
+     * @param role
+     * @return list of providers with the specified role
+     * @should throw APIException if role is null
+     */
+    @Transactional(readOnly = true)
+    public List<Provider> getProviders(ProviderRole role);
 
 }
