@@ -84,5 +84,4 @@ public interface ProviderManagementDAO {
      */
     public void deleteProviderRole(ProviderRole role);
 
-
 }

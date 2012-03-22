@@ -136,6 +136,23 @@ public interface ProviderManagementService extends OpenmrsService {
     public void purgeProviderRole(ProviderRole role);
 
     /**
+     * Get all the relationship types associated with provider roles
+     *
+     * @param includeRetired whether or not to include retired relationship types
+     * @return all the relationship types associated with provider roles
+     */
+    @Transactional(readOnly = true)
+    public List<RelationshipType> getAllProviderRoleRelationshipTypes(boolean includeRetired);
+
+    /**
+     * Get all the unretired relationship types associated with provider roles
+     *
+     * @return all the relationship types associated with provider roles
+     */
+    @Transactional(readOnly = true)
+    public List<RelationshipType> getAllProviderRoleRelationshipTypes();
+
+    /**
      * Basic methods for operating on providers using the new provider roles
      */
 
@@ -192,6 +209,8 @@ public interface ProviderManagementService extends OpenmrsService {
     /**
      * Methods for assigning patient to providers
      */
+
+    // TODO: for assignment and unassignments, should we not allow dates in the future?  this is probably a good idea...?
 
     /**
      * Assigns the patient to the provider using the specified relationship type
@@ -266,4 +285,32 @@ public interface ProviderManagementService extends OpenmrsService {
     public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType)
             throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
             PatientNotAssignedToProviderException;
+
+    /**
+     * Unassigned all patients currently assigned to this provider with the selected relationship type
+     * by ending any provider-patient relationships on the current date
+     * Note that this method does NOT check to make sure that the provider supports the specified relationship type
+     * to allow for edge cases where a provider is somehow linked by a relationship his/her role doesn't technically support
+     *
+     * @param provider
+     * @should fail if provider is null
+     * @should fail if relationshipType is null
+     * @should fail if provider is not associated with a person
+     */
+    @Transactional
+    public void unassignAllPatientsFromProvider(Provider provider, RelationshipType relationshipType)
+            throws ProviderNotAssociatedWithPersonException;
+
+    /**
+     * Unassigned all patients currently assigned to this patient by ending all active provider role relationships on
+     * the current date
+     *
+     * @param provider
+     * @should fail if provider is null
+     * @should fail if provider is not associated with a person
+     * @throws ProviderNotAssociatedWithPersonException
+     */
+    @Transactional
+    public void unassignAllPatientsFromProvider(Provider provider)
+            throws ProviderNotAssociatedWithPersonException;
 }

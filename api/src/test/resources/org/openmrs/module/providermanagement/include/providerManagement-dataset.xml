@@ -23,7 +23,6 @@
     <relationship_type relationship_type_id="1002" a_is_to_b="Accompagnateur" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from accompagnateur to patient" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956eadc"/>
     <relationship_type relationship_type_id="1003" a_is_to_b="A" b_is_to_a="B" preferred="0" weight="0" description="Some other relationship type" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a6f4ff4-a179-4b8a-aa4c-40f71956eadc"/>
 
-
     <!-- set up some sample providers -->
     <provider provider_id="1002" identifier="2a3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f523f-cca9-11e0-9572-0800200c9a66" />
     <!-- three binomes-->

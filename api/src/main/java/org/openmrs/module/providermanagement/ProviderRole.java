@@ -40,7 +40,7 @@ public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
     private Integer providerRoleId;
 
     // the provider/patient relationships this role can support
-    private Set<Relationship> relationshipTypes;
+    private Set<RelationshipType> relationshipTypes;
 
     // the provider roles this provider role can supervisor
     private Set<ProviderRole> superviseeProviderRoles;
@@ -79,11 +79,11 @@ public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
         this.providerRoleId = id;
     }
 
-    public Set<Relationship> getRelationshipTypes() {
+    public Set<RelationshipType> getRelationshipTypes() {
         return relationshipTypes;
     }
 
-    public void setRelationshipTypes(Set<Relationship> relationshipTypes) {
+    public void setRelationshipTypes(Set<RelationshipType> relationshipTypes) {
         this.relationshipTypes = relationshipTypes;
     }
 

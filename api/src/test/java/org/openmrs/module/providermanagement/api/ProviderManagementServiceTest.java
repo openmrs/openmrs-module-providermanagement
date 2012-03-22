@@ -32,6 +32,7 @@ import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProvi
 import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.ProviderNotAssociatedWithPersonException;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.springframework.test.AssertThrows;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -226,7 +227,56 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void setProviderProviderRole_shouldSetProviderProviderRole() {
+    public void getAllProviderRoleRelationshipTypes_shouldGetAllProviderRelationshipTypes() {
+        List<RelationshipType> relationshipTypes = providerManagementService.getAllProviderRoleRelationshipTypes(true);
+        Assert.assertEquals(new Integer(3), (Integer) relationshipTypes.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the three that SHOULD be there
+        Iterator<RelationshipType> i = relationshipTypes.iterator();
+
+        while (i.hasNext()) {
+            RelationshipType relationshipType = i.next();
+            int id = relationshipType.getId();
+
+            if (id == 1001 || id == 1002  || id == 1003) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, relationshipTypes.size());
+    }
+
+    @Test
+    public void getAllProviderRoleRelationshipTypes_shouldGetAllNonRetiredProviderRelationshipTypes() {
+        // retire one of the relationship types
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1003);
+        Context.getPersonService().retireRelationshipType(relationshipType, "test");
+
+        // verify that there are now only 2
+        List<RelationshipType> relationshipTypes = providerManagementService.getAllProviderRoleRelationshipTypes();
+        Assert.assertEquals(new Integer(2), (Integer) relationshipTypes.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the three that SHOULD be there
+        Iterator<RelationshipType> i = relationshipTypes.iterator();
+
+        while (i.hasNext()) {
+            relationshipType = i.next();
+            int id = relationshipType.getId();
+
+            if (id == 1001 || id == 1002) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, relationshipTypes.size());
+    }
+
+    @Test
+    public void setProviderRole_shouldSetProviderProviderRole() {
         // change the provider role for the existing provider
         Provider provider = Context.getProviderService().getProvider(1006);
         ProviderRole role = providerManagementService.getProviderRole(1003);
@@ -388,7 +438,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test(expected = APIException.class)
-    public void getProvidersBySuperviseeProividerRole_shouldFailIfCalledWithNull() {
+    public void getProvidersBySuperviseeProviderRole_shouldFailIfCalledWithNull() {
         List<Provider> providers = providerManagementService.getProvidersBySuperviseeProviderRole(null);
     }
 
@@ -489,4 +539,84 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Relationship relationship = relationships.get(0);
         Assert.assertEquals(relationship.getEndDate(), ProviderManagementUtils.clearTimeComponent(new Date()));
     }
+
+    @Test(expected = APIException.class)
+    public void unassignAllPatientsFromProvider_shouldFailIfProviderNull() throws Exception {
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
+        providerManagementService.unassignAllPatientsFromProvider(null, relationshipType);
+    }
+
+    @Test(expected = APIException.class)
+    public void unassignAllPatientsFromProvider_shouldFailIfRelationshipTypeNull() throws Exception {
+        Provider provider = Context.getProviderService().getProvider(1001);
+        providerManagementService.unassignAllPatientsFromProvider(provider, null);
+    }
+
+    @Test(expected = ProviderNotAssociatedWithPersonException.class)
+    public void unassignAllPatientsFromProvider_shouldFailIfProviderNotAssociatedWithPerson() throws Exception {
+        Provider provider = Context.getProviderService().getProvider(1002); // provider with no underlying person
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
+        providerManagementService.unassignAllPatientsFromProvider(provider, relationshipType);
+    }
+    
+    @Test
+    public void unassignAllPatientsFromProvider_shouldUnassignAllPatientsFromProvider() throws Exception {
+        // first, assign a couple patients to a provider
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, new Date(new Date().getTime() - 31536000000L));
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, new Date(new Date().getTime() - 31536000000L));
+
+        // sanity check
+        Assert.assertEquals(new Integer(2), (Integer) Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType).size());
+
+        // now end all the relationships
+        providerManagementService.unassignAllPatientsFromProvider(provider, relationshipType);
+
+        // there still should be 2 relationships, but they both should have a end date of the current date
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType);
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+        for (Relationship relationship : relationships) {
+            Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(new Date()), relationship.getEndDate());
+        }
+        
+    }
+
+    @Test
+    public void unnassignAllPatientsFromProvider_shouldUnassignAllPatientsOfMultipleRelationshipTypesFromProvider() throws Exception {
+        
+        // first, assign a couple patients to a provider
+        Provider provider = Context.getProviderService().getProvider(1004);
+        
+        RelationshipType binome = Context.getPersonService().getRelationshipType(1001);
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, binome, new Date(new Date().getTime() - 31536000000L));
+        
+        RelationshipType accompagneteur = Context.getPersonService().getRelationshipType(1002);
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, accompagneteur, new Date(new Date().getTime() - 31536000000L));
+
+        // now end all the relationships
+        providerManagementService.unassignAllPatientsFromProvider(provider);
+
+        // assert that both the relationships exist, with an end date of the current date
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), null, binome);
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(new Date()), relationships.get(0).getEndDate());
+
+        relationships = Context.getPersonService().getRelationships(provider.getPerson(), null, accompagneteur);
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(new Date()), relationships.get(0).getEndDate());
+    }
+
+    @Test
+    public void unassignAllPatientsFromProvider_shouldNotFailIfProviderHasNoPatients() throws Exception {
+        Provider provider = Context.getProviderService().getProvider(1004);
+        // just confirm that this doesn't throw an exception
+        providerManagementService.unassignAllPatientsFromProvider(provider);
+    }
+
+    // TODO: other unit test for unassigning patients--thing about null cases
 }

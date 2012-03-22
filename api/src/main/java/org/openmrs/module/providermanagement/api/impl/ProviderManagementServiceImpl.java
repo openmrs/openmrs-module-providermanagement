@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.providermanagement.api.impl;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -127,6 +129,35 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     public void purgeProviderRole(ProviderRole role) {
         dao.deleteProviderRole(role);
+    }
+
+    @Override
+    public List<RelationshipType> getAllProviderRoleRelationshipTypes(boolean includeRetired) {
+
+        Set<RelationshipType> relationshipTypes = new HashSet<RelationshipType>();
+
+        for (ProviderRole providerRole : getAllProviderRoles(includeRetired)) {
+            
+            if (includeRetired == true) {
+                relationshipTypes.addAll(providerRole.getRelationshipTypes());
+            }
+            // filter out any retired relationships
+            else {
+                relationshipTypes.addAll(CollectionUtils.select(providerRole.getRelationshipTypes(), new Predicate() {
+                    @Override
+                    public boolean evaluate(Object relationshipType) {
+                        return ((RelationshipType) relationshipType).getRetired() == true ? false : true;
+                    }
+                }));
+            }
+        }
+
+        return new ArrayList<RelationshipType>(relationshipTypes);
+    }
+
+    @Override
+    public List<RelationshipType> getAllProviderRoleRelationshipTypes() {
+        return getAllProviderRoleRelationshipTypes(false);
     }
 
     @Override
@@ -353,5 +384,48 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType) throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException, PatientNotAssignedToProviderException {
         unassignPatientFromProvider(patient, provider, relationshipType, new Date());
+    }
+
+    @Override
+    public void unassignAllPatientsFromProvider(Provider provider, RelationshipType relationshipType)
+            throws ProviderNotAssociatedWithPersonException {
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (relationshipType == null) {
+            throw new APIException("Relationship type cannot be null");
+        }
+
+        if (provider.getPerson() == null) {
+            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        }
+
+        // go ahead and end each relationship on the current date
+        List<Relationship> relationships =
+                Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType, ProviderManagementUtils.clearTimeComponent(new Date()));
+        if (relationships != null || relationships.size() > 0) {
+            for (Relationship relationship : relationships) {
+                relationship.setEndDate(ProviderManagementUtils.clearTimeComponent(new Date()));
+                Context.getPersonService().saveRelationship(relationship);
+            }
+        }
+    }
+
+    @Override
+    public void unassignAllPatientsFromProvider(Provider provider) 
+            throws ProviderNotAssociatedWithPersonException {
+        
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+      
+        if (provider.getPerson() == null) {
+            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        }
+        
+        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
+            unassignAllPatientsFromProvider(provider, relationshipType);
+        }
     }
 }
