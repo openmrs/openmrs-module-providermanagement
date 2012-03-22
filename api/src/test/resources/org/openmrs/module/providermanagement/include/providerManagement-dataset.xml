@@ -25,7 +25,7 @@
 
 
     <!-- set up some sample providers -->
-    <provider provider_id="1002" person_id="1" identifier="2a3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f523f-cca9-11e0-9572-0800200c9a66" />
+    <provider provider_id="1002" identifier="2a3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f523f-cca9-11e0-9572-0800200c9a66" />
     <!-- three binomes-->
     <provider provider_id="1003" person_id="2" identifier="2a5" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f533f-cca9-11e0-9572-0800200c9a66" />
     <provider provider_id="1004" person_id="6" identifier="2a6" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7f573f-cca9-11e0-9572-0800200c9a66" />

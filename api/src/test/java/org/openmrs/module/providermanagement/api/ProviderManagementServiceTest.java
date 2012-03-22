@@ -19,14 +19,22 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.Patient;
 import org.openmrs.Provider;
+import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.ProviderNotAssociatedWithPersonException;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -218,30 +226,15 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void getProviderProviderRole_shouldGetProviderProviderRole() {
-        Provider provider = Context.getProviderService().getProvider(1006);
-        ProviderRole role = providerManagementService.getProviderRole(provider);
-        Assert.assertEquals(new Integer(1002), role.getId());
-    }
-
-    @Test
     public void setProviderProviderRole_shouldSetProviderProviderRole() {
         // change the provider role for the existing provider
         Provider provider = Context.getProviderService().getProvider(1006);
         ProviderRole role = providerManagementService.getProviderRole(1003);
         providerManagementService.setProviderRole(provider,role);
 
-        // now make sure we can fetch that role
-        ProviderRole role2 = providerManagementService.getProviderRole(provider);
+        // now make sure the role is correct
+        ProviderRole role2 = ProviderManagementUtils.getProviderRole(provider);
         Assert.assertEquals(new Integer(1003), role2.getId());
-    }
-
-    @Test
-    public void getProviderRole_shouldReturnNullForProviderWithNoRole()  {
-        // change the provider role for the existing provider
-        Provider provider = Context.getProviderService().getProvider(1002);
-        ProviderRole role = providerManagementService.getProviderRole(provider);
-        Assert.assertNull(role);
     }
 
     @Test
@@ -250,8 +243,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Provider provider = Context.getProviderService().getProvider(1006);
         providerManagementService.setProviderRole(provider,null);
 
-        // now make sure we can fetch that role
-        ProviderRole role = providerManagementService.getProviderRole(provider);
+        // now make sure the role is correct
+        ProviderRole role = ProviderManagementUtils.getProviderRole(provider);
         Assert.assertNull(role);
     }
 
@@ -399,4 +392,101 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<Provider> providers = providerManagementService.getProvidersBySuperviseeProviderRole(null);
     }
 
+    @Test(expected = APIException.class)
+    public void assignPatientToProvider_shouldFailIfPatientNull() throws Exception {
+        Provider provider = Context.getProviderService().getProvider(1);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
+        providerManagementService.assignPatientToProvider(null, provider, relationshipType, null);
+    }
+
+    @Test(expected = APIException.class)
+    public void assignPatientToProvider_shouldFailIfProviderNull() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(2);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
+        providerManagementService.assignPatientToProvider(patient, null, relationshipType, null);
+    }
+
+    @Test(expected = APIException.class)
+    public void assignPatientToProvider_shouldFailIfRelationshipTypeNull() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(2);
+        Provider provider = Context.getProviderService().getProvider(1001);
+        providerManagementService.assignPatientToProvider(patient, provider, null, null);
+    }
+
+    @Test(expected = APIException.class)
+    public void assignPatientToProvider_shouldFailIfPatientVoided() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(999);  // voided patient from the standard test dataset
+        Provider provider = Context.getProviderService().getProvider(1001);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, null);
+    }
+
+    @Test(expected = ProviderNotAssociatedWithPersonException.class)
+    public void assignPatientToProvider_shouldFailIfProviderNotAssociatedWithPerson() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(2);
+        Provider provider = Context.getProviderService().getProvider(1002); // provider with no underlying person
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, null);
+    }
+
+    @Test(expected = ProviderDoesNotSupportRelationshipTypeException.class)
+    public void assignPatientToProvider_shouldFailIfProviderDoesNotSupportRelationshipType() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(2);
+        Provider provider = Context.getProviderService().getProvider(1007);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, null);
+    }
+
+    @Test
+    public void assignPatientToProvider_shouldAssignPatientToProvider() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(8);
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, null);
+
+        // confirm that the relationship has been created with the appropriate start date
+        List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Relationship relationship = relationships.get(0);
+        Assert.assertEquals(patient, relationship.getPersonB());
+        Assert.assertEquals(provider.getPerson(), relationship.getPersonA());
+        Assert.assertEquals(relationship.getStartDate(), ProviderManagementUtils.clearTimeComponent(new Date()));
+    }
+
+    @Test(expected = PatientAlreadyAssignedToProviderException.class)
+    public void assignPatientToProvider_shouldFailIfRelationshipAlreadyExists() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(8);
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType);
+
+       // if we try to do the same thing again, it should fail
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType);
+    }
+    
+    @Test(expected = PatientNotAssignedToProviderException.class)
+    public void unassignPatientFromProvider_shouldFailIfRelationshipDoesNotExist() throws Exception {
+        Patient patient = Context.getPatientService().getPatient(8);
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.unassignPatientFromProvider(patient, provider, relationshipType, null);
+    }
+
+    @Test
+    public void unassignPatientFromProvider_shouldUnassignPatientFromProvider() throws Exception {
+        // first, assign a patient to a provider
+        Patient patient = Context.getPatientService().getPatient(8);
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, new Date(new Date().getTime() - 31536000000L));
+
+        // now, end that relationship on today's date
+        providerManagementService.unassignPatientFromProvider(patient, provider, relationshipType);
+
+        // confirm that the relationship has been ended
+        List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());   // sanity check
+        Relationship relationship = relationships.get(0);
+        Assert.assertEquals(relationship.getEndDate(), ProviderManagementUtils.clearTimeComponent(new Date()));
+    }
 }

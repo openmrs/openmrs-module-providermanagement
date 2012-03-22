@@ -16,6 +16,7 @@ package org.openmrs.module.providermanagement;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -64,6 +65,16 @@ public class ProviderRoleTest extends BaseModuleContextSensitiveTest {
 
         role = providerManagementService.getProviderRole(1003);
         Assert.assertFalse(role.isDirectPatientCareRole());
+    }
+
+    @Test
+    public void shouldTestWhetherRoleSupportsRelationshipType() {
+        ProviderRole role =  providerManagementService.getProviderRole(1011);
+        RelationshipType binome = Context.getPersonService().getRelationshipType(1001);
+        RelationshipType accompagneteur =  Context.getPersonService().getRelationshipType(1002);
+        
+        Assert.assertFalse(role.supportsRelationshipType(binome));
+        Assert.assertTrue(role.supportsRelationshipType(accompagneteur));
     }
 
     @Test

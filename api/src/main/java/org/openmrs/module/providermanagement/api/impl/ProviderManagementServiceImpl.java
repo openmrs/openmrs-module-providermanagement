@@ -13,24 +13,23 @@
  */
 package org.openmrs.module.providermanagement.api.impl;
 
-import org.openmrs.Provider;
-import org.openmrs.ProviderAttribute;
-import org.openmrs.ProviderAttributeType;
-import org.openmrs.RelationshipType;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.api.APIException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
+import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
+import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.ProviderNotAssociatedWithPersonException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * It is a default implementation of {@link ProviderManagementService}.
@@ -41,7 +40,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 	
 	private ProviderManagementDAO dao;
     
-    private ProviderAttributeType providerRoleAttributeType = null;
+    private static ProviderAttributeType providerRoleAttributeType = null;
 	
 	/**
      * @param dao the dao to set
@@ -55,6 +54,17 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
      */
     public ProviderManagementDAO getDao() {
 	    return dao;
+    }
+
+    @Override
+    public ProviderAttributeType getProviderRoleAttributeType() {
+        // TODO: error handling?
+
+        if (providerRoleAttributeType == null) {
+            providerRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(ProviderManagementConstants.PROVIDER_ROLE_ATTRIBUTE_TYPE_UUID);
+        }
+
+        return providerRoleAttributeType;
     }
 
     @Override
@@ -123,17 +133,12 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public void setProviderRole(Provider provider, ProviderRole role) {
         // TODO: make sure this syncs properly!
 
-        // initialize the providerRoleAttributeType if need be
-        if (providerRoleAttributeType == null) {
-            initializeProviderRoleAttributeType();
-        }
-
         if (provider == null) {
             throw new APIException("Cannot set provider role: provider is null");
         }
         else {
             // first, void the existing provider role for this provider (if it existing)
-            List<ProviderAttribute> attrs = provider.getActiveAttributes(providerRoleAttributeType);
+            List<ProviderAttribute> attrs = provider.getActiveAttributes(getProviderRoleAttributeType());
             if (attrs.size() > 1) {
                 throw new APIException("Provider should never have more than one Provider Role");
             }
@@ -147,7 +152,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             if (role != null) {
                 // now create the new attribute (if one has been specified)
                 ProviderAttribute providerRoleAttribute = new ProviderAttribute();
-                providerRoleAttribute.setAttributeType(providerRoleAttributeType);
+                providerRoleAttribute.setAttributeType(getProviderRoleAttributeType());
                 providerRoleAttribute.setValue(role);
                 provider.setAttribute(providerRoleAttribute);
             }
@@ -156,36 +161,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             Context.getProviderService().saveProvider(provider);
         }
     }
-    
-    @Override
-    public ProviderRole getProviderRole(Provider provider) {
-        // initialize the providerRoleAttributeType if need be
-        if (providerRoleAttributeType == null) {
-            initializeProviderRoleAttributeType();
-        }
-
-        List<ProviderAttribute> attrs = provider.getActiveAttributes(providerRoleAttributeType);
-
-        if (attrs == null || attrs.size() == 0) {
-            return null;
-        }
-        else if (attrs.size() == 1){
-            return (ProviderRole) attrs.get(0).getValue();
-        }
-        else {
-            throw new APIException("Provider should never have more than one Provider Role");
-        }
-    }
 
     @Override
     public List<Provider> getProvidersByRoles(List<ProviderRole> roles) {
 
         // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
-
-        // initialize the providerRoleAttributeType if need be
-        if (providerRoleAttributeType == null) {
-            initializeProviderRoleAttributeType();
-        }
 
         // not allowed to pass null or empty set here
         if (roles == null || roles.isEmpty()) {
@@ -205,7 +185,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         for (ProviderRole role : roles) {
             // create the attribute type to add to the query
             Map<ProviderAttributeType, Object> attributeValueMap = new HashMap<ProviderAttributeType, Object>();
-            attributeValueMap.put(providerRoleAttributeType, role);
+            attributeValueMap.put(getProviderRoleAttributeType(), role);
             // find all providers with that role
             providers.addAll(Context.getProviderService().getProviders(null, null, null, attributeValueMap));
         }
@@ -255,19 +235,123 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // first fetch the roles that can supervise this relationship type, then fetch all providers with those roles
         List<ProviderRole> providerRoles = getProviderRolesBySuperviseeProviderRole(role);
         if (providerRoles == null || providerRoles.size() == 0) {
-            return new ArrayList<Provider>();  // just return an emtpy list
+            return new ArrayList<Provider>();  // just return an empty list
         }
         else {
             return getProvidersByRoles(providerRoles);
         }
     }
 
-    /**
-     * Utility methods
-     */
+    @Override
+    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
+            PatientAlreadyAssignedToProviderException {
 
-    private void initializeProviderRoleAttributeType() {
-        // TODO: error handling?
-        providerRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(ProviderManagementConstants.PROVIDER_ROLE_ATTRIBUTE_TYPE_UUID);
+        if (patient == null) {
+            throw new APIException("Patient cannot be null");
+        }
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (relationshipType == null) {
+            throw new APIException("Relationship type cannot be null");
+        }
+
+        if (patient.isVoided()) {
+            throw new APIException("Patient cannot be voided");
+        }
+
+        if (provider.getPerson() == null) {
+           throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        }
+
+       if (!ProviderManagementUtils.supportsRelationshipType(provider, relationshipType)) {
+           throw new ProviderDoesNotSupportRelationshipTypeException(provider + " cannot support " + relationshipType);
+       }
+
+        // use current date if no date specified
+        if (date == null) {
+            date = new Date();
+        }
+
+        // TODO: what about voided relationships?  does the get relationships method ignore voided?
+
+        // test to mark sure the relationship doesn't already exist
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), patient, relationshipType, date);
+        if (relationships != null && relationships.size() > 0) {
+            throw new PatientAlreadyAssignedToProviderException("Provider " + provider + " is already assigned to " + patient + " with a " + relationshipType + "relationship");
+        }
+        
+        // go ahead and create the relationship
+        Relationship relationship = new Relationship();
+        relationship.setPersonA(provider.getPerson());
+        relationship.setPersonB(patient);
+        relationship.setRelationshipType(relationshipType);
+        relationship.setStartDate(ProviderManagementUtils.clearTimeComponent(date));
+        Context.getPersonService().saveRelationship(relationship);
+    }
+
+    @Override
+    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
+            PatientAlreadyAssignedToProviderException {
+        assignPatientToProvider(patient, provider, relationshipType, new Date());
+    }
+
+    @Override
+    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
+        throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+        PatientNotAssignedToProviderException {
+
+        if (patient == null) {
+            throw new APIException("Patient cannot be null");
+        }
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (relationshipType == null) {
+            throw new APIException("Relationship type cannot be null");
+        }
+
+        if (patient.isVoided()) {
+            throw new APIException("Patient cannot be voided");
+        }
+
+        if (provider.getPerson() == null) {
+            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        }
+
+        if (!ProviderManagementUtils.supportsRelationshipType(provider, relationshipType)) {
+            throw new ProviderDoesNotSupportRelationshipTypeException(provider + " cannot support " + relationshipType);
+        }
+
+        // use current date if no date specified
+        if (date == null) {
+            date = new Date();
+        }
+
+        // find the existing relationship
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), patient, relationshipType, date);
+        if (relationships == null || relationships.size() == 0) {
+            throw new PatientNotAssignedToProviderException("Provider " + provider + " is not assigned to " + patient + " with a " + relationshipType + " relationship");
+        }
+        if (relationships.size() > 1) {
+            // TODO: handle this better? maybe void all but one automatically?
+            throw new APIException("Duplicate " + relationshipType + " between " + provider + " and " + patient);
+        }
+
+        // go ahead and set the end date of the relationship
+        Relationship relationship = relationships.get(0);
+        relationship.setEndDate(ProviderManagementUtils.clearTimeComponent(date));
+        Context.getPersonService().saveRelationship(relationship);
+    }
+
+    @Override
+    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType) throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException, PatientNotAssignedToProviderException {
+        unassignPatientFromProvider(patient, provider, relationshipType, new Date());
     }
 }

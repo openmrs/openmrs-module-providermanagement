@@ -13,12 +13,19 @@
  */
 package org.openmrs.module.providermanagement.api;
 
+import org.openmrs.Patient;
 import org.openmrs.Provider;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.ProviderNotAssociatedWithPersonException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +40,14 @@ public interface ProviderManagementService extends OpenmrsService {
 	 * Basic methods for operating on provider roles
 	 */
 
+    /**
+     * Returns the provider attribute type that represents a provider role
+     *
+     * @return the provider attribute type that represents a provider role
+     */
+    @Transactional(readOnly = true)
+    public ProviderAttributeType getProviderRoleAttributeType();
+    
     /**
      * Gets all unretired provider roles
      * @return list of all unretired provider roles
@@ -134,19 +149,6 @@ public interface ProviderManagementService extends OpenmrsService {
     @Transactional
     public void setProviderRole(Provider provider, ProviderRole role);
 
-
-    // TODO: would this method be better in a util class?
-
-    /**
-     * Gets the provider role associated with this provider
-     *
-     * @param provider the provider we are looking for the provider role for
-     * @return the role associated with this provider
-     */
-    @Transactional(readOnly = true)
-    public ProviderRole getProviderRole(Provider provider);
-
-
     /**
      * Gets all providers whose role is in the list of specified roles
      *
@@ -187,4 +189,81 @@ public interface ProviderManagementService extends OpenmrsService {
     @Transactional(readOnly = true)
     public List<Provider> getProvidersBySuperviseeProviderRole(ProviderRole role);
 
+    /**
+     * Methods for assigning patient to providers
+     */
+
+    /**
+     * Assigns the patient to the provider using the specified relationship type
+     *
+     * @param patient
+     * @param provider
+     * @param relationshipType
+     * @param date the date this relationship should start
+     * @should fail if provider does not support the specified relationship type
+     * @should fail if patient is null
+     * @should fail if patient is voided
+     * @should fail if provider is null
+     * @should fail if provider is not associated with a person
+     * @should fail if provider is already assigned to patient
+     */
+    @Transactional
+    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
+            PatientAlreadyAssignedToProviderException;
+
+    /**
+     * Assigns the patient to the provider using the specified relationship type using current date
+     *
+     * @param patient
+     * @param provider
+     * @param relationshipType
+     * @should fail if provider does not support the specified relationship type
+     * @should fail if patient is null
+     * @should fail if patient is voided
+     * @should fail if provider is null
+     * @should fail if provider is not associated with a person
+     * @should fail if provider is already assigned to patient
+     */
+    @Transactional
+    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
+            PatientAlreadyAssignedToProviderException;
+
+    /**
+     * Unassigns the patient from the provider on the specified date
+     *
+     * @param patient
+     * @param provider
+     * @param relationshipType
+     * @param date
+     * @should fail if provider does not support the specified relationship type
+     * @should fail if patient is null
+     * @should fail if patient is voided
+     * @should fail if provider is null
+     * @should fail if provider is not associated with a person
+     * @should fail if provider is already assigned to patient
+     */
+    @Transactional
+    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
+            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+            PatientNotAssignedToProviderException;
+
+    /**
+     * Unassigns the patient from the provider on the current date
+     *
+     * @param patient
+     * @param provider
+     * @param relationshipType
+     * @should fail if provider does not support the specified relationship type
+     * @should fail if patient is null
+     * @should fail if patient is voided
+     * @should fail if provider is null
+     * @should fail if provider is not associated with a person
+     * @should fail if provider is already assigned to patient
+     */
+    @Transactional
+    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType)
+            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+            PatientNotAssignedToProviderException;
 }

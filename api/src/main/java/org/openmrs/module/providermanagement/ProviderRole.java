@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 
 /**
  * Used to store the possible provider roles.  A Provide can only have a single role (though a single person
@@ -32,6 +33,7 @@ import org.openmrs.Relationship;
 public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
     // TODO: add the OpenMRS license everywhere
+    // TODO: toString method?
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,6 +54,11 @@ public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
     // whether or not this role can provide direct patient care
     public boolean isDirectPatientCareRole() {
         return (relationshipTypes == null || relationshipTypes.size() == 0) ? false : true;
+    }
+    
+    // whether or not this role supports the specified relationship type
+    public boolean supportsRelationshipType(RelationshipType relationshipType) {
+        return (relationshipTypes != null && relationshipType != null && relationshipTypes.contains(relationshipType) ? true : false);
     }
 
 	@Override
