@@ -44,6 +44,16 @@ public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
     private Set<ProviderRole> superviseeProviderRoles;
 
 
+    // whether or not this role can serve as a supervisor
+    public boolean isSupervisorRole() {
+        return (superviseeProviderRoles == null || superviseeProviderRoles.size() == 0) ? false : true;
+    }
+
+    // whether or not this role can provide direct patient care
+    public boolean isDirectPatientCareRole() {
+        return (relationshipTypes == null || relationshipTypes.size() == 0) ? false : true;
+    }
+
 	@Override
 	public Integer getId() {
 		return providerRoleId;

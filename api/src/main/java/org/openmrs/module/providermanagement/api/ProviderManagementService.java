@@ -134,6 +134,9 @@ public interface ProviderManagementService extends OpenmrsService {
     @Transactional
     public void setProviderRole(Provider provider, ProviderRole role);
 
+
+    // TODO: would this method be better in a util class?
+
     /**
      * Gets the provider role associated with this provider
      *
@@ -173,5 +176,15 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Transactional(readOnly = true)
     public List<Provider> getProvidersByRelationshipType(RelationshipType relationshipType);
+
+    /**
+     * Gets all providers that can supervise the specified provider role
+     * 
+     * @param role
+     * @return the list of providers that can supervise the specific provider role
+     * @should throw API Exception if the provider role is null
+     */
+    @Transactional(readOnly = true)
+    public List<Provider> getProvidersBySuperviseeProviderRole(ProviderRole role);
 
 }

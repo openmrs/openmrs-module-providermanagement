@@ -34,12 +34,15 @@
     <provider provider_id="1006" person_id="8" identifier="2a8" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cca9-11e0-9572-0800200c9a66" />
     <!-- an accompagnateur-->
     <provider provider_id="1007" person_id="9" identifier="2a9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-11e0-9572-0800200c9a66" />
+    <!-- a community health nurse-->
+    <provider provider_id="1008" person_id="501" identifier="2b9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-12e0-9572-0800200c9a66" />
 
     <provider_attribute provider_attribute_id="1001" provider_id="1003" attribute_type_id="1001" value_reference="da7f523f-27ce-4bb2-86d6-6d1d05312bd5" uuid="da7f623f-27ce-5bb2-86d6-7d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
     <provider_attribute provider_attribute_id="1002" provider_id="1004" attribute_type_id="1001" value_reference="da7f523f-27ce-4bb2-86d6-6d1d05312bd5" uuid="da7e523f-27ce-5bb2-86d6-7d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
     <provider_attribute provider_attribute_id="1003" provider_id="1005" attribute_type_id="1001" value_reference="da7f523f-27ce-4bb2-86d6-6d1d05312bd5" uuid="da7f523e-27ce-5bb2-86d6-7d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
     <provider_attribute provider_attribute_id="1004" provider_id="1006" attribute_type_id="1001" value_reference="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5" uuid="da7f524f-27ce-5bb2-86d6-7d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
     <provider_attribute provider_attribute_id="1005" provider_id="1007" attribute_type_id="1001" value_reference="da7f623f-37ce-5bb2-86d6-6d1d05312bd5" uuid="da7f524f-27ce-5bb2-86d6-8d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
+    <provider_attribute provider_attribute_id="1006" provider_id="1008" attribute_type_id="1001" value_reference="da7f623f-37ce-4bb2-86d6-6d1d05312bd5" uuid="da7f524f-27ce-5bc2-86d6-8d1d05312bd5" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" />
 
 
     <providermanagement_provider_role_relationship_type provider_role_id="1001" relationship_type_id="1001" />

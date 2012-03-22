@@ -245,6 +245,23 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
     }
 
+    @Override
+    public List<Provider> getProvidersBySuperviseeProviderRole(ProviderRole role) {
+       
+        if (role == null) {
+            throw new APIException("Provider role cannot be null");
+        }
+        
+        // first fetch the roles that can supervise this relationship type, then fetch all providers with those roles
+        List<ProviderRole> providerRoles = getProviderRolesBySuperviseeProviderRole(role);
+        if (providerRoles == null || providerRoles.size() == 0) {
+            return new ArrayList<Provider>();  // just return an emtpy list
+        }
+        else {
+            return getProvidersByRoles(providerRoles);
+        }
+    }
+
     /**
      * Utility methods
      */

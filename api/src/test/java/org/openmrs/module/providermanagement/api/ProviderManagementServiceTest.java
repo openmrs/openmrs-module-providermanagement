@@ -190,8 +190,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertNull(providerManagementService.getProviderRole(1002));
     }
 
-
-    // TODO: remove the ignore from these two tests once the retiring of child collections issue is figured out
+    // TODO: remove the ignore from these two tests once the retiring of child collections issue is figured out (TRUNK-3174)
 
     @Ignore
     @Test
@@ -349,7 +348,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void getProvidersByRelationshipType_shouldEmptyListIfNoMatchingProvidersFound() {
+    public void getProvidersByRelationshipType_shouldReturnEmptyListIfNoMatchingProvidersFound() {
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);   // a relationship type from the standard test data
         List<Provider> providers = providerManagementService.getProvidersByRelationshipType(relationshipType);
         Assert.assertEquals(new Integer(0), (Integer) providers.size());
@@ -363,6 +362,41 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test(expected = APIException.class)
     public void getProvidersByRelationshipType_shouldFailIfCalledWithNull() {
         List<Provider> providers = providerManagementService.getProvidersByRelationshipType(null);
+    }
+
+    @Test
+    public void getProvidersBySuperviseeRole_shouldReturnProvidersThatCanSuperviseProviderRole() {
+        ProviderRole providerRole = providerManagementService.getProviderRole(1001);
+        List<Provider> providers = providerManagementService.getProvidersBySuperviseeProviderRole(providerRole);
+        Assert.assertEquals(new Integer(2), (Integer) providers.size());
+
+        // double-check to make sure the are the correct providers
+        // be iterating through and removing the three that SHOULD be there
+        Iterator<Provider> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Provider provider = i.next();
+            int id = provider.getId();
+
+            if (id == 1006 || id == 1008) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProvidersBySuperviseeProviderRole_shouldReturnEmptyListIfNoMatchingProvidersFound() {
+        ProviderRole providerRole = providerManagementService.getProviderRole(1008);
+        List<Provider> providers = providerManagementService.getProvidersBySuperviseeProviderRole(providerRole);
+        Assert.assertEquals(new Integer(0), (Integer) providers.size());
+    }
+
+    @Test(expected = APIException.class)
+    public void getProvidersBySuperviseeProividerRole_shouldFailIfCalledWithNull() {
+        List<Provider> providers = providerManagementService.getProvidersBySuperviseeProviderRole(null);
     }
 
 }
