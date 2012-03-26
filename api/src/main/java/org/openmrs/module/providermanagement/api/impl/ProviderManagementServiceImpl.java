@@ -26,10 +26,7 @@ import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
-import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
-import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
-import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
-import org.openmrs.module.providermanagement.exception.ProviderNotAssociatedWithPersonException;
+import org.openmrs.module.providermanagement.exception.*;
 
 import java.util.*;
 
@@ -37,7 +34,10 @@ import java.util.*;
  * It is a default implementation of {@link ProviderManagementService}.
  */
 public class ProviderManagementServiceImpl extends BaseOpenmrsService implements ProviderManagementService {
-	
+
+    // TODO: create a retire handler that ended provider/patient relationships and supervisor/supervisee relationships when a provider is retired?
+    // TODO: what about a "purge" handler when a provider is purged?
+
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private ProviderManagementDAO dao;
@@ -389,6 +389,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     public void unassignAllPatientsFromProvider(Provider provider, RelationshipType relationshipType)
             throws ProviderNotAssociatedWithPersonException {
+
         if (provider == null) {
             throw new APIException("Provider cannot be null");
         }
@@ -426,6 +427,145 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         
         for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
             unassignAllPatientsFromProvider(provider, relationshipType);
+        }
+    }
+
+    @Override
+    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType, Date date)
+            throws ProviderNotAssociatedWithPersonException {
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (relationshipType == null) {
+            throw new APIException("Relationship type cannot be null");
+        }
+
+        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+            throw new APIException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
+        }
+
+        if (provider.getPerson() == null) {
+            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        }
+
+        // use current date if no date specified
+        if (date == null) {
+            date = new Date();
+        }
+
+        // get the specified relationships for the provider
+        List<Relationship> relationships =
+                Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType, ProviderManagementUtils.clearTimeComponent(date));
+
+
+        // now iterate through the relationships and fetch the patients
+        Set<Patient> patients = new HashSet<Patient>();
+        for (Relationship relationship : relationships) {
+
+            if (!relationship.getPersonB().isPatient()) {
+                throw new APIException("Invalid relationship " + relationship + ": person b must be a patient");
+            }
+
+            Patient p = Context.getPatientService().getPatient(relationship.getPersonB().getId());
+            if (!p.isVoided()) {
+                patients.add(Context.getPatientService().getPatient(relationship.getPersonB().getId()));
+            }
+        }
+
+        return new ArrayList<Patient>(patients);
+    }
+
+    @Override
+    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType)
+            throws ProviderNotAssociatedWithPersonException {
+        return getPatients(provider, relationshipType, new Date());
+    }
+
+    @Override
+    public List<Patient> getPatients(Provider provider, Date date)
+            throws ProviderNotAssociatedWithPersonException {
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (provider.getPerson() == null) {
+            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        }
+
+        Set<Patient> patients = new HashSet<Patient>();
+        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
+            patients.addAll(getPatients(provider, relationshipType, date));
+        }
+        
+        return new ArrayList<Patient>(patients);
+    }
+
+    @Override
+    public List<Patient> getPatients(Provider provider)
+            throws ProviderNotAssociatedWithPersonException {
+        return getPatients(provider, new Date());
+    }
+
+    @Override
+    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider, RelationshipType relationshipType)
+        throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+        SourceProviderSameAsDestinationProviderException {
+
+        if (sourceProvider == null) {
+            throw new APIException("Source provider cannot be null");
+        }
+
+        if (destinationProvider == null) {
+            throw new APIException("Destination provider cannot be null");
+        }
+
+        if (sourceProvider.getPerson() == null) {
+            throw new ProviderNotAssociatedWithPersonException("Provider " + sourceProvider + " is not associated with a person");
+        }
+
+        if (destinationProvider.getPerson() == null) {
+            throw new ProviderNotAssociatedWithPersonException("Provider " + destinationProvider + " is not associated with a person");
+        }
+
+        if (sourceProvider.equals(destinationProvider)) {
+            throw new SourceProviderSameAsDestinationProviderException("Provider " + sourceProvider + " is the same as provider " + destinationProvider);
+        }
+
+        if (relationshipType == null) {
+            throw new APIException("Relationship type cannot be null");
+        }
+        
+       // first get all the patients of the source provider
+       List<Patient> patients = getPatients(sourceProvider, relationshipType);
+
+       // assign these patients to the new provider, unassign them from the old provider
+        for (Patient patient : patients) {
+            try {
+                assignPatientToProvider(patient, destinationProvider, relationshipType);
+            }
+            catch (PatientAlreadyAssignedToProviderException e) {
+                // we can ignore this exception; no need to assign patient if already assigned
+            }
+            try {
+                unassignPatientFromProvider(patient, sourceProvider, relationshipType);
+            }
+            catch (PatientNotAssignedToProviderException e) {
+                // we should fail hard here, because getPatients should only return patients of the provider,
+                // so if this exception has been thrown, something has gone really wrong
+                throw new APIException("All patients here should be assigned to provider,", e);
+            }
+        }
+    }
+    
+    @Override
+    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider)
+            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+            SourceProviderSameAsDestinationProviderException {
+        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
+            transferAllPatients(sourceProvider, destinationProvider, relationshipType);
         }
     }
 }

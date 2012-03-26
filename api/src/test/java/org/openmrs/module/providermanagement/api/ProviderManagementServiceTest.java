@@ -19,18 +19,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
-import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
-import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
-import org.openmrs.module.providermanagement.exception.ProviderNotAssociatedWithPersonException;
+import org.openmrs.module.providermanagement.exception.*;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.test.AssertThrows;
 
@@ -49,6 +44,14 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     protected static final String XML_DATASET = "providerManagement-dataset.xml";
 
     private ProviderManagementService providerManagementService;
+
+    public static final Date DATE = ProviderManagementUtils.clearTimeComponent(new Date());
+
+    public static final Date PAST_DATE = ProviderManagementUtils.clearTimeComponent(new Date(DATE.getTime() - 31536000000L));
+
+    public static final Date FURTHER_PAST_DATE = ProviderManagementUtils.clearTimeComponent(new Date(PAST_DATE.getTime() - 31536000000L));
+
+    public static final Date FUTURE_DATE = ProviderManagementUtils.clearTimeComponent(new Date(DATE.getTime() + 31536000000L));
 
     @Before
     public void init() throws Exception {
@@ -500,7 +503,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Relationship relationship = relationships.get(0);
         Assert.assertEquals(patient, relationship.getPersonB());
         Assert.assertEquals(provider.getPerson(), relationship.getPersonA());
-        Assert.assertEquals(relationship.getStartDate(), ProviderManagementUtils.clearTimeComponent(new Date()));
+        Assert.assertEquals(relationship.getStartDate(), ProviderManagementUtils.clearTimeComponent(DATE));
     }
 
     @Test(expected = PatientAlreadyAssignedToProviderException.class)
@@ -528,7 +531,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Patient patient = Context.getPatientService().getPatient(8);
         Provider provider = Context.getProviderService().getProvider(1004);
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
-        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, new Date(new Date().getTime() - 31536000000L));
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
 
         // now, end that relationship on today's date
         providerManagementService.unassignPatientFromProvider(patient, provider, relationshipType);
@@ -537,7 +540,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());   // sanity check
         Relationship relationship = relationships.get(0);
-        Assert.assertEquals(relationship.getEndDate(), ProviderManagementUtils.clearTimeComponent(new Date()));
+        Assert.assertEquals(relationship.getEndDate(), ProviderManagementUtils.clearTimeComponent(DATE));
     }
 
     @Test(expected = APIException.class)
@@ -565,9 +568,9 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Provider provider = Context.getProviderService().getProvider(1004);
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
         Patient patient = Context.getPatientService().getPatient(2);
-        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, new Date(new Date().getTime() - 31536000000L));
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
         patient = Context.getPatientService().getPatient(8);
-        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, new Date(new Date().getTime() - 31536000000L));
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
 
         // sanity check
         Assert.assertEquals(new Integer(2), (Integer) Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType).size());
@@ -579,24 +582,23 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType);
         Assert.assertEquals(new Integer(2), (Integer) relationships.size());
         for (Relationship relationship : relationships) {
-            Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(new Date()), relationship.getEndDate());
+            Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(DATE), relationship.getEndDate());
         }
         
     }
 
     @Test
     public void unnassignAllPatientsFromProvider_shouldUnassignAllPatientsOfMultipleRelationshipTypesFromProvider() throws Exception {
-        
         // first, assign a couple patients to a provider
         Provider provider = Context.getProviderService().getProvider(1004);
         
         RelationshipType binome = Context.getPersonService().getRelationshipType(1001);
         Patient patient = Context.getPatientService().getPatient(2);
-        providerManagementService.assignPatientToProvider(patient, provider, binome, new Date(new Date().getTime() - 31536000000L));
+        providerManagementService.assignPatientToProvider(patient, provider, binome, PAST_DATE);
         
         RelationshipType accompagneteur = Context.getPersonService().getRelationshipType(1002);
         patient = Context.getPatientService().getPatient(8);
-        providerManagementService.assignPatientToProvider(patient, provider, accompagneteur, new Date(new Date().getTime() - 31536000000L));
+        providerManagementService.assignPatientToProvider(patient, provider, accompagneteur, PAST_DATE);
 
         // now end all the relationships
         providerManagementService.unassignAllPatientsFromProvider(provider);
@@ -604,11 +606,11 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // assert that both the relationships exist, with an end date of the current date
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), null, binome);
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
-        Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(new Date()), relationships.get(0).getEndDate());
+        Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(DATE), relationships.get(0).getEndDate());
 
         relationships = Context.getPersonService().getRelationships(provider.getPerson(), null, accompagneteur);
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
-        Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(new Date()), relationships.get(0).getEndDate());
+        Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(DATE), relationships.get(0).getEndDate());
     }
 
     @Test
@@ -618,5 +620,417 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.unassignAllPatientsFromProvider(provider);
     }
 
-    // TODO: other unit test for unassigning patients--thing about null cases
+    // TODO: should there be other unit test for unassigning patients--think about null cases, and also when happens when voiding/etc
+    
+    @Test
+    public void getPatients_shouldGetAllPatientsOfAProviderOnCurrentDate() throws Exception{
+        
+        // first, assign a couple patients to a provider
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign this patient in the past
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
+
+        // assign this patient on today's date
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+
+        // confirm that the two patients are reported as patients of the provider
+        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType);
+        Assert.assertEquals(new Integer(2), (Integer) patients.size());
+
+        // double-check to make sure the are the correct patients
+        // be iterating through and removing the three that SHOULD be there
+        Iterator<Patient> i = patients.iterator();
+
+        while (i.hasNext()) {
+            Patient p = i.next();
+            int id = p.getId();
+
+            if (id == 2 || id == 8) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, patients.size());
+    }
+
+    @Test
+    public void getPatients_shouldGetPatientsOfAProviderOnSpecifiedDate() throws Exception{
+
+        // first, assign a couple patients to a provider (but on different dates)
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign this patient in the past
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
+
+        // assign this patient on today's date
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // confirm that only the patient added in the past is reported if we query on the past date
+        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType, PAST_DATE);
+        Assert.assertEquals(new Integer(1), (Integer) patients.size());
+        Assert.assertEquals(new Integer(2), patients.get(0).getId());
+
+    }
+
+    @Test
+    public void getPatients_shouldIgnorePatientsOfADifferentRelationshipType() throws Exception{
+
+        // first, assign a couple patients to a provider (but via different relationships)
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // assign this patient using a different relationship type
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // confirm that only the patient of the specified relationship type is returned
+        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType, DATE);
+        Assert.assertEquals(new Integer(1), (Integer) patients.size());
+        Assert.assertEquals(new Integer(8), patients.get(0).getId());
+
+    }
+
+    @Test
+    public void getPatients_shouldIgnoreVoidedPatients() throws Exception {
+
+        //  assign a couple patients to a provider (but on different dates)
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // now void one of the patients
+        Patient p = Context.getPatientService().getPatient(2);
+        Context.getPatientService().voidPatient(p, "test");
+        
+        // confirm that only the non-voided patient is returned
+        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType, DATE);
+        Assert.assertEquals(new Integer(1), (Integer) patients.size());
+        Assert.assertEquals(new Integer(8), patients.get(0).getId());
+    }
+
+    @Test(expected = APIException.class)
+    public void getPatients_shouldFailIfRelationshipTypeIsNotProviderToPatientType() throws Exception {
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
+        providerManagementService.getPatients(provider, relationshipType);
+    }
+
+    @Test(expected = APIException.class)
+    public void getPatients_shouldFailIfProviderNull() throws Exception {
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.getPatients(null, relationshipType);
+    }
+
+    @Test(expected = ProviderNotAssociatedWithPersonException.class)
+    public void getPatients_shouldFailIfProviderNotAssociatedWithPerson() throws Exception {
+        Provider provider = Context.getProviderService().getProvider(1002); // provider with no underlying person
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.getPatients(provider, relationshipType);
+    }
+
+    @Test(expected = APIException.class)
+    public void getPatients_shouldFailIfInvalidRelationshipFound() throws Exception {
+        Person person = Context.getPersonService().getPerson(502);  // person from standard test dataset who is not a patient
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // sanity check
+        Assert.assertFalse(person.isPatient());
+        
+        // create this "illegal" relationship (illegal because person b is not a patient)
+        Relationship relationship = new Relationship();
+        relationship.setStartDate(ProviderManagementUtils.clearTimeComponent(DATE));
+        relationship.setPersonA(provider.getPerson());
+        relationship.setPersonB(person);
+        relationship.setRelationshipType(relationshipType);
+        Context.getPersonService().saveRelationship(relationship);
+
+        // this should fail when it finds a relationship to someone who isn't a patient
+        providerManagementService.getPatients(provider, relationshipType).size();
+    }
+
+    @Test
+    public void getPatients_shouldGetAllPatientsOfProvider() throws Exception {
+        // first, assign a couple patients to a provider
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign this patient in the past
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
+
+        // assign this patient on today's date, but using a different relationship type
+        patient = Context.getPatientService().getPatient(8);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+
+        // confirm that the two patients are reported as patients of the provider
+        List<Patient> patients = providerManagementService.getPatients(provider);
+        Assert.assertEquals(new Integer(2), (Integer) patients.size());
+
+        // double-check to make sure the are the correct patients
+        // be iterating through and removing the three that SHOULD be there
+        Iterator<Patient> i = patients.iterator();
+
+        while (i.hasNext()) {
+            Patient p = i.next();
+            int id = p.getId();
+
+            if (id == 2 || id == 8) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, patients.size());
+    }
+
+    @Test
+    public void getPatients_shouldGetAllPatientsOfProviderOnSpecifiedDate() throws Exception {
+        // first, assign a couple patients to a provider
+        Provider provider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign this patient in the past
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
+
+        // assign this patient on today's date, but using a different relationship type
+        patient = Context.getPatientService().getPatient(8);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // fetch the patients on the past date
+        List<Patient> patients = providerManagementService.getPatients(provider, PAST_DATE);
+
+        // confirm that only the patient from the past is present
+        Assert.assertEquals(new Integer(1), (Integer) patients.size());
+        Assert.assertEquals(new Integer(2), patients.get(0).getId());
+    }
+   
+    @Test
+    public void transferAllPatients_shouldTransferAllPatientsFromOneProviderToAnother() throws Exception {
+        // first, assign a couple patients to a provider
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // first patient
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // for the second patient, use a different relationship type
+        patient = Context.getPatientService().getPatient(8);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // now move these patients to the new provider
+        Provider newProvider = Context.getProviderService().getProvider(1005);
+        providerManagementService.transferAllPatients(oldProvider, newProvider);
+
+        // now fetch the patients of each provider and verify that they are accurate
+        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider);
+        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider);
+
+        // on the current date, both patients should be assigned to both patients
+        Assert.assertEquals(new Integer(2), (Integer) oldProviderPatients.size());
+        Assert.assertEquals(new Integer(2), (Integer) newProviderPatients.size());
+
+        // but, on some future date, the patients should no longer be associated with the old provider
+        oldProviderPatients = providerManagementService.getPatients(oldProvider, FUTURE_DATE);
+        newProviderPatients = providerManagementService.getPatients(newProvider, FUTURE_DATE);
+        Assert.assertEquals(new Integer(0), (Integer) oldProviderPatients.size());
+        Assert.assertEquals(new Integer(2), (Integer) newProviderPatients.size());
+
+        // double check that the patients assigned to the new provider are correct
+        Iterator<Patient> i = newProviderPatients.iterator();
+
+        while (i.hasNext()) {
+            Patient p = i.next();
+            int id = p.getId();
+
+            if (id == 2 || id == 8) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, newProviderPatients.size());
+    }
+
+    @Test
+    public void transferAllPatients_shouldTransferAllPatientsOfSpecifiedRelationshipTypeFromOneProviderToAnother() throws Exception {
+        // first, assign a couple patients to a provider
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // first patient
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // for the second patient, use a different relationship type
+        patient = Context.getPatientService().getPatient(8);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // now move the patient from the second relationship type to the new provider
+        Provider newProvider = Context.getProviderService().getProvider(1005);
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
+
+        // on some future date, one patient should still be associated to the old provider
+        // and the other patient should be associated with the new provider
+        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider, FUTURE_DATE);
+        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider, FUTURE_DATE);
+        Assert.assertEquals(new Integer(1), (Integer) oldProviderPatients.size());
+        Assert.assertEquals(new Integer(2), oldProviderPatients.get(0).getId());
+        Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
+        Assert.assertEquals(new Integer(8), newProviderPatients.get(0).getId());
+    }
+
+    @Test(expected = APIException.class)
+    public void transferAllPatients_shouldFailIfSourceProviderNull() throws Exception {
+        Provider newProvider = Context.getProviderService().getProvider(1005);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.transferAllPatients(null, newProvider, relationshipType);
+    }
+
+    @Test(expected = APIException.class)
+    public void transferAllPatients_shouldFailIfDestinationProviderNull() throws Exception {
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.transferAllPatients(oldProvider, null, relationshipType);
+    }
+
+    @Test(expected = APIException.class)
+    public void transferAllPatients_shouldFailIfRelationshipTypeNull() throws Exception {
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        Provider newProvider = Context.getProviderService().getProvider(1005);
+        providerManagementService.transferAllPatients(oldProvider, newProvider, null);
+    }
+
+    @Test(expected = ProviderNotAssociatedWithPersonException.class)
+    public void transferAllPatients_shouldFailIfSourceProviderNotAssociatedWithPerson() throws Exception {
+        Provider oldProvider = Context.getProviderService().getProvider(1002);
+        Provider newProvider = Context.getProviderService().getProvider(1005);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
+    }
+
+    @Test(expected = ProviderNotAssociatedWithPersonException.class)
+    public void transferAllPatients_shouldFailIfDestinationProviderNotAssociatedWithPerson() throws Exception {
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        Provider newProvider = Context.getProviderService().getProvider(1002);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
+    }
+
+    @Test(expected = SourceProviderSameAsDestinationProviderException.class)
+    public void transferAllPatients_shouldFailIfSourceProviderEqualsDestinationProvider() throws Exception {
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        Provider newProvider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
+    }
+
+    @Test(expected = ProviderDoesNotSupportRelationshipTypeException.class)
+    public void transferAllPatients_shouldFailIfDestinationProviderDoesNotSupportRequiredRelationshipType() throws Exception {
+        // first, assign a patients to a binome via a binome relatinship
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // now attempt to move the patient to a provider that does not support the binome relationshp
+        Provider newProvider = Context.getProviderService().getProvider(1007);
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
+    }
+
+    @Test
+    public void transferAllPatients_shouldNotFailIfPatientAlreadyAssociatedWithDestinationPatient() throws Exception {
+        // first, assign a couple patients to a provider
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // first patient
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // for the second patient, use a different relationship type
+        patient = Context.getPatientService().getPatient(8);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // now, assign the patient to the destinaton provider as well
+        Provider newProvider = Context.getProviderService().getProvider(1005);
+        providerManagementService.assignPatientToProvider(patient, newProvider, relationshipType, DATE);
+
+        // sanity check
+        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider);
+        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider);
+        Assert.assertEquals(new Integer(2), (Integer) oldProviderPatients.size());
+        // the second patient should already be assigned to the destination provider
+        Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
+        Assert.assertEquals(new Integer(8), newProviderPatients.get(0).getId());
+
+        // now do the transfer; everything should work, although the patient has already been assigned to new provider
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
+
+        oldProviderPatients = providerManagementService.getPatients(oldProvider, FUTURE_DATE);
+        newProviderPatients = providerManagementService.getPatients(newProvider, FUTURE_DATE);
+        Assert.assertEquals(new Integer(1), (Integer) oldProviderPatients.size());
+        Assert.assertEquals(new Integer(2), oldProviderPatients.get(0).getId());
+        Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
+        Assert.assertEquals(new Integer(8), newProviderPatients.get(0).getId());
+    }
+
+    @Test
+    public void transferAllPatients_shouldTransferPatientWithMultipleRelationshipTypes() throws Exception {
+        // first, assign the same patient to a provider via two different relationship types
+        Provider oldProvider = Context.getProviderService().getProvider(1004);
+        Patient patient = Context.getPatientService().getPatient(2);
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // now move the patient to the new provider
+        Provider newProvider = Context.getProviderService().getProvider(1005);
+        providerManagementService.transferAllPatients(oldProvider, newProvider);
+
+        // on some future date, the patient should be associated with new provider, but not the old
+        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider, FUTURE_DATE);
+        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider, FUTURE_DATE);
+        Assert.assertEquals(new Integer(0), (Integer) oldProviderPatients.size());
+        Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
+        Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
+
+        // double check that we can fetch the patient from the destination provider via either relationship type
+        relationshipType = Context.getPersonService().getRelationshipType(1001);
+        newProviderPatients = providerManagementService.getPatients(newProvider, relationshipType, FUTURE_DATE);
+        Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
+        Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
+
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        newProviderPatients = providerManagementService.getPatients(newProvider, relationshipType, FUTURE_DATE);
+        Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
+        Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
+    }
 }
+

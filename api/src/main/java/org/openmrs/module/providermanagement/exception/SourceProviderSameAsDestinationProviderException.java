@@ -14,15 +14,16 @@
 
 package org.openmrs.module.providermanagement.exception;
 
-public class ProviderNotAssociatedWithPersonException extends Exception {
+public class SourceProviderSameAsDestinationProviderException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public ProviderNotAssociatedWithPersonException() {
+    public SourceProviderSameAsDestinationProviderException() {
         super();
     }
 
-    public ProviderNotAssociatedWithPersonException(String message) {
+    public SourceProviderSameAsDestinationProviderException(String message) {
         super(message);
     }
+
 }

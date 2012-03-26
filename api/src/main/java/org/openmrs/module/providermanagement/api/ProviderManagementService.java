@@ -19,10 +19,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
-import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
-import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
-import org.openmrs.module.providermanagement.exception.ProviderNotAssociatedWithPersonException;
+import org.openmrs.module.providermanagement.exception.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -279,7 +276,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if patient is voided
      * @should fail if provider is null
      * @should fail if provider is not associated with a person
-     * @should fail if provider is already assigned to patient
+     * @should fail if provider is not assigned to patient
      */
     @Transactional
     public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType)
@@ -313,4 +310,115 @@ public interface ProviderManagementService extends OpenmrsService {
     @Transactional
     public void unassignAllPatientsFromProvider(Provider provider)
             throws ProviderNotAssociatedWithPersonException;
+
+
+    // TODO: we will probably need a "purge" option for purging relationships created by accident, but we should probably spec this out a bit better
+
+    /**
+     * Gets all patients that are patients of the specified provider with the specified relationship type on the specified date
+     *
+     * @param provider
+     * @param relationshipType
+     * @param date
+     * @return list of patients associated with the specified provider via the specified relationship type, on the specified date
+     * @should ignore voided patients
+     * @should fail if provider is null
+     * @should fail if relationship type is null
+     * @should fail if provider not associated with person
+     * @should fail if relationship type is not a provider/patient relationship type
+     * @throws ProviderNotAssociatedWithPersonException
+     */
+    @Transactional(readOnly = true)
+    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType, Date date)
+            throws ProviderNotAssociatedWithPersonException;
+
+    /**
+     * Gets all patients that are patients of the specified provider with the specified relationship type on the current date
+     *
+     * @param provider
+     * @param relationshipType
+     * @return list of patients associated with the specified provider via the specified relationship type, on the specified date
+     * @should ignore voided patients
+     * @should fail if provider is null
+     * @should fail if relationship type is null
+     * @should fail if provider not associated with person
+     * @should fail if relationship type is not a provider/patient relationship type
+     * @should fail if invalid relationship found
+     * @throws ProviderNotAssociatedWithPersonException
+     */
+    @Transactional(readOnly = true)
+    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType)
+            throws ProviderNotAssociatedWithPersonException;
+
+    /**
+     * Gets all patients (of any relationship type) that are patients of the specified
+     * provider on the specified date
+     *
+     * @param provider
+     * @param date
+     * @return All patients (of any relationship type) that are patients of the specified provider on the specified date
+     * @should ignore voided patients
+     * @should fail if provider is null
+     * @should fail if provider not associated with person
+     * @should fail if invalid relationship found
+     * @throws ProviderNotAssociatedWithPersonException
+     */
+    @Transactional(readOnly = true)
+    public List<Patient> getPatients(Provider provider, Date date)
+            throws ProviderNotAssociatedWithPersonException;
+
+    /**
+     * Gets all patients (of any relationship type) that are a patients of the specified
+     * provider on the current date
+     *
+     * @param provider
+     * @return All patients (of any relationship type) that are patients of the specified provider on the current date
+     * @should ignore voided patients
+     * @should fail if provider is null
+     * @should fail if provider not associated with person
+     * @should fail if invalid relationship found
+     * @throws ProviderNotAssociatedWithPersonException
+     */
+    @Transactional(readOnly = true)
+    public List<Patient> getPatients(Provider provider)
+            throws ProviderNotAssociatedWithPersonException;
+    
+    
+    /**
+     * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider
+     * (ie., unassigns all patients with the specified relationship type from the source provider and assigns them to the destination provider)
+     *
+     * @param sourceProvider
+     * @param destinationProvider
+     * @param relationshipType
+     * @should fail if sourceProvider is null
+     * @should fail if destinationProvider is null
+     * @should fail if sourceProvider is not associated with a person
+     * @should fail if destinationProvider is not associated with a person
+     * @should fail if relationshipType is null
+     */
+    @Transactional
+    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider, RelationshipType relationshipType)
+            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+            SourceProviderSameAsDestinationProviderException;
+
+    /**
+     * Transfers all patients (of any relationship type) currently assigned to the source provider to the destination provider
+     * (ie., unassigns all patients from the source provider and assigns them to the destination provider)
+     *
+     * @param sourceProvider
+     * @param destinationProvider
+     * @should fail if sourceProvider is null
+     * @should fail if destinationProvider is null
+     * @should fail if sourceProvider is not associated with a person
+     * @should fail if destinationProvider is not associated with a person
+     * @should fail if relationshipType is null
+     * @should fail if source provider equals destination provider
+     * @should fail if destination provider dose not support a relationship type that exists between source provider and patient
+     * @should not fail if destination provider is already associated with patient
+     */
+    @Transactional
+    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider)
+            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+            SourceProviderSameAsDestinationProviderException;
 }
