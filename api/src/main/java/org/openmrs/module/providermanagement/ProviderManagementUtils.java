@@ -14,73 +14,124 @@
 
 package org.openmrs.module.providermanagement;
 
-import org.openmrs.Provider;
-import org.openmrs.ProviderAttribute;
-import org.openmrs.ProviderAttributeType;
-import org.openmrs.RelationshipType;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ProviderManagementUtils {
 
     private static ProviderAttributeType providerRoleAttributeType = null;
 
     /**
-     * Returns the provider role associated with the specified provider
+     * Returns the provider roles associated with the specified provider
      *
      * @param provider
      * @return the provider role associated with the specified provider
      */
-    public static ProviderRole getProviderRole(Provider provider) {
+    public static List<ProviderRole> getProviderRoles(Person provider) {
 
-        List<ProviderAttribute> attrs = provider.getActiveAttributes(getProviderRoleAttributeType());
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
 
-        if (attrs == null || attrs.size() == 0) {
-            return null;
+        if (!isProvider(provider)) {
+            // return empty list if this person is not a provider
+            return new ArrayList<ProviderRole>();
         }
-        else if (attrs.size() == 1){
-            return (ProviderRole) attrs.get(0).getValue();
+        
+        // otherwise, collect all the roles associated with this provider
+        // (we use a set to avoid duplicates at this point)
+        Set<ProviderRole> providerRoles = new HashSet<ProviderRole>();
+        
+        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(provider);
+
+        // TODO: no need to manually exclude retired providers after TRUNK-3219 has been implemented
+        filterRetired(providers);
+        
+        for (Provider p : providers) {
+            ProviderRole providerRole = getProviderRole(p);
+            if (providerRole != null) {
+                providerRoles.add(providerRole);
+            }
         }
-        else {
-            throw new APIException("Provider should never have more than one Provider Role");
+
+        return new ArrayList<ProviderRole>(providerRoles);
+    }
+
+    /**
+     * Returns whether or not the passed person has one or more associated providers
+     * 
+     * @param person
+     * @return whether or not the passed person has one or more associated providers
+     */
+    public static boolean isProvider(Person person) {
+
+        if (person == null) {
+            throw new APIException("Person cannot be null");
         }
+        
+        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
+
+        // TODO: no need to manually exclude retired providers after TRUNK-3219 has been implemented
+        filterRetired(providers);
+        
+        return providers == null || providers.size() == 0 ? false : true;
     }
 
 
     /**
+     * Returns whether or not the passed provider has the specified provider role
+     *
+     * @param provider
+     * @param role
+     * @return whether or not the passed provider has the specified provider role
+     */
+    public static boolean hasRole(Person provider, ProviderRole role) {
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (role == null) {
+            throw new APIException("Role cannot be null");
+        }
+
+        return getProviderRoles(provider).contains(role);
+    }
+
+    /**
+     * 
      * Returns true if the specified provider can support the specified relationship type, false otherwise
      *
      * @param provider
      * @param relationshipType
      * @return true if the specified provider can support the specified relationship type, false otherwise
      */
-    public static boolean supportsRelationshipType(Provider provider, RelationshipType relationshipType) {
-        
-        if (provider == null) {
-            throw new APIException("Provider should not be null");
-        }
+    public static boolean supportsRelationshipType(Person provider, RelationshipType relationshipType) {
 
-        if (relationshipType == null) {
-            throw new APIException("Relationship type should not be null");
-        }
-        
-        ProviderRole role = getProviderRole(provider);
+        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(provider);
 
-        // if this provider has no role, return false
-        if (role == null) {
+        // TODO: no need to manually exclude retired providers after TRUNK-3219 has been implemented
+        filterRetired(providers);
+
+        if (providers == null || providers.size() == 0) {
             return false;
         }
-        // otherwise, test if the provider's role supports the specified relationship type
-        else {
-            return role.supportsRelationshipType(relationshipType);
+        
+        for (Provider p : providers) {
+            if (supportsRelationshipType(p, relationshipType)) {
+                return true;
+            }
         }
-    }
 
+        return false;
+    }
+    
     /**
      * Given a Date object, returns a Date object for the same date but with the time component (hours, minutes, seconds & milliseconds) removed
      */
@@ -99,6 +150,26 @@ public class ProviderManagementUtils {
     }
 
     /**
+     * Returns the role associated with the passed provider object
+     *
+     * @param provider
+     * @return the role associated with the passed provider object
+     */
+    public static ProviderRole getProviderRole(Provider provider) {
+        List<ProviderAttribute> attrs = provider.getActiveAttributes(getProviderRoleAttributeType());
+
+        if (attrs == null || attrs.size() == 0) {
+            return null;
+        }
+        else if (attrs.size() == 1){
+            return (ProviderRole) attrs.get(0).getValue();
+        }
+        else {
+            throw new APIException("Provider should never have more than one Provider Role");
+        }
+    }
+
+    /**
      * Utility methods
      */
     private static ProviderAttributeType getProviderRoleAttributeType() {
@@ -109,7 +180,36 @@ public class ProviderManagementUtils {
         return providerRoleAttributeType;
     }
 
+    private static boolean supportsRelationshipType(Provider provider, RelationshipType relationshipType) {
 
+        if (provider == null) {
+            throw new APIException("Provider should not be null");
+        }
+
+        if (relationshipType == null) {
+            throw new APIException("Relationship type should not be null");
+        }
+
+        ProviderRole role = getProviderRole(provider);
+
+        // if this provider has no role, return false
+        if (role == null) {
+            return false;
+        }
+        // otherwise, test if the provider's role supports the specified relationship type
+        else {
+            return role.supportsRelationshipType(relationshipType);
+        }
+    }
+    
+    private static void filterRetired(Collection<Provider> providers) {
+        CollectionUtils.filter(providers, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return !((Provider) o).isRetired();
+            }
+        });
+    }
 
 }
 

@@ -13,10 +13,7 @@
  */
 package org.openmrs.module.providermanagement.api;
 
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.ProviderAttributeType;
-import org.openmrs.RelationshipType;
+import org.openmrs.*;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.*;
@@ -32,6 +29,7 @@ import java.util.List;
 public interface ProviderManagementService extends OpenmrsService {
 
     // TODO: add permissions
+
 
 	/*
 	 * Basic methods for operating on provider roles
@@ -153,15 +151,28 @@ public interface ProviderManagementService extends OpenmrsService {
      * Basic methods for operating on providers using the new provider roles
      */
 
+
     /**
      * Assigns a provider role to a provider
-     * Overwrites any existing role for that provider
      *
      * @param provider the provider whose role we wish to set
      * @param role the role to set
+     * @param identifier the identifier to associate with this provider/role combination (mandatory)
      */
     @Transactional
-    public void setProviderRole(Provider provider, ProviderRole role);
+    public void assignProviderRoleToProvider(Person provider, ProviderRole role, String identifier);
+
+    /**
+     * Unassigns a provider role from a provider
+     *
+     * @param provider
+     * @param role
+     */
+    @Transactional
+    public void unassignProviderRoleFromProvider(Person provider, ProviderRole role);
+
+
+    // TODO: probably need a purge option as well
 
     /**
      * Gets all providers whose role is in the list of specified roles
@@ -170,7 +181,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return all providers with one of the specified roles
      * @should throw APIException if roles are empty or null
      */
-    public List<Provider> getProvidersByRoles(List<ProviderRole> roles);
+    public List<Person> getProvidersByRoles(List<ProviderRole> roles);
     
     /**
      * Gets all providers with the specified role
@@ -181,7 +192,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw APIException if role is null
      */
     @Transactional(readOnly = true)
-    public List<Provider> getProvidersByRole(ProviderRole role);
+    public List<Person> getProvidersByRole(ProviderRole role);
 
     /**
      * Gets all providers that support the specified relationship type
@@ -191,7 +202,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw API Exception if relationship type is null
      */
     @Transactional(readOnly = true)
-    public List<Provider> getProvidersByRelationshipType(RelationshipType relationshipType);
+    public List<Person> getProvidersByRelationshipType(RelationshipType relationshipType);
 
     /**
      * Gets all providers that can supervise the specified provider role
@@ -201,7 +212,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw API Exception if the provider role is null
      */
     @Transactional(readOnly = true)
-    public List<Provider> getProvidersBySuperviseeProviderRole(ProviderRole role);
+    public List<Person> getProvidersBySuperviseeProviderRole(ProviderRole role);
 
     /**
      * Methods for assigning patient to providers
@@ -211,6 +222,7 @@ public interface ProviderManagementService extends OpenmrsService {
 
     /**
      * Assigns the patient to the provider using the specified relationship type
+     *
      *
      * @param patient
      * @param provider
@@ -224,12 +236,13 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to patient
      */
     @Transactional
-    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
-            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
-            PatientAlreadyAssignedToProviderException;
+    public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
+            PersonIsNotProviderException;
 
     /**
      * Assigns the patient to the provider using the specified relationship type using current date
+     *
      *
      * @param patient
      * @param provider
@@ -242,9 +255,9 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to patient
      */
     @Transactional
-    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType)
-            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
-            PatientAlreadyAssignedToProviderException;
+    public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
+            PersonIsNotProviderException;
 
     /**
      * Unassigns the patient from the provider on the specified date
@@ -261,9 +274,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to patient
      */
     @Transactional
-    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
-            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
-            PatientNotAssignedToProviderException;
+    public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+            throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Unassigns the patient from the provider on the current date
@@ -279,9 +291,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not assigned to patient
      */
     @Transactional
-    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType)
-            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
-            PatientNotAssignedToProviderException;
+    public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType)
+            throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Unassigned all patients currently assigned to this provider with the selected relationship type
@@ -295,8 +306,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not associated with a person
      */
     @Transactional
-    public void unassignAllPatientsFromProvider(Provider provider, RelationshipType relationshipType)
-            throws ProviderNotAssociatedWithPersonException;
+    public void unassignAllPatientsFromProvider(Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Unassigned all patients currently assigned to this patient by ending all active provider role relationships on
@@ -305,12 +316,10 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param provider
      * @should fail if provider is null
      * @should fail if provider is not associated with a person
-     * @throws ProviderNotAssociatedWithPersonException
      */
     @Transactional
-    public void unassignAllPatientsFromProvider(Provider provider)
-            throws ProviderNotAssociatedWithPersonException;
-
+    public void unassignAllPatientsFromProvider(Person provider)
+            throws PersonIsNotProviderException;
 
     // TODO: we will probably need a "purge" option for purging relationships created by accident, but we should probably spec this out a bit better
 
@@ -326,11 +335,10 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationship type is null
      * @should fail if provider not associated with person
      * @should fail if relationship type is not a provider/patient relationship type
-     * @throws ProviderNotAssociatedWithPersonException
      */
     @Transactional(readOnly = true)
-    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType, Date date)
-            throws ProviderNotAssociatedWithPersonException;
+    public List<Patient> getPatients(Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Gets all patients that are patients of the specified provider with the specified relationship type on the current date
@@ -344,11 +352,10 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider not associated with person
      * @should fail if relationship type is not a provider/patient relationship type
      * @should fail if invalid relationship found
-     * @throws ProviderNotAssociatedWithPersonException
      */
     @Transactional(readOnly = true)
-    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType)
-            throws ProviderNotAssociatedWithPersonException;
+    public List<Patient> getPatients(Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Gets all patients (of any relationship type) that are patients of the specified
@@ -361,12 +368,10 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider not associated with person
      * @should fail if invalid relationship found
-     * @throws ProviderNotAssociatedWithPersonException
      */
     @Transactional(readOnly = true)
-    public List<Patient> getPatients(Provider provider, Date date)
-            throws ProviderNotAssociatedWithPersonException;
-
+    public List<Patient> getPatients(Person provider, Date date)
+            throws PersonIsNotProviderException;
     /**
      * Gets all patients (of any relationship type) that are a patients of the specified
      * provider on the current date
@@ -377,13 +382,11 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider not associated with person
      * @should fail if invalid relationship found
-     * @throws ProviderNotAssociatedWithPersonException
      */
     @Transactional(readOnly = true)
-    public List<Patient> getPatients(Provider provider)
-            throws ProviderNotAssociatedWithPersonException;
-    
-    
+    public List<Patient> getPatients(Person provider)
+            throws PersonIsNotProviderException;
+
     /**
      * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider
      * (ie., unassigns all patients with the specified relationship type from the source provider and assigns them to the destination provider)
@@ -398,9 +401,9 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationshipType is null
      */
     @Transactional
-    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider, RelationshipType relationshipType)
-            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
-            SourceProviderSameAsDestinationProviderException;
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Transfers all patients (of any relationship type) currently assigned to the source provider to the destination provider
@@ -418,7 +421,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should not fail if destination provider is already associated with patient
      */
     @Transactional
-    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider)
-            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
-            SourceProviderSameAsDestinationProviderException;
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException;
 }

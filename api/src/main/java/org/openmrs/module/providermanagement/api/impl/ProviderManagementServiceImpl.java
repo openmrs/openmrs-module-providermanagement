@@ -38,6 +38,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     // TODO: create a retire handler that ended provider/patient relationships and supervisor/supervisee relationships when a provider is retired?
     // TODO: what about a "purge" handler when a provider is purged?
 
+    // TODO: change exception for person is not a provider to use the new exception class?
+
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private ProviderManagementDAO dao;
@@ -161,40 +163,74 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public void setProviderRole(Provider provider, ProviderRole role) {
+    public void assignProviderRoleToProvider(Person provider, ProviderRole role, String identifier) {
         // TODO: make sure this syncs properly!
 
         if (provider == null) {
             throw new APIException("Cannot set provider role: provider is null");
         }
-        else {
-            // first, void the existing provider role for this provider (if it existing)
-            List<ProviderAttribute> attrs = provider.getActiveAttributes(getProviderRoleAttributeType());
-            if (attrs.size() > 1) {
-                throw new APIException("Provider should never have more than one Provider Role");
-            }
-            else if (attrs.size() == 1) {
-                ProviderAttribute roleAttributeToVoid = attrs.get(0);
-                roleAttributeToVoid.setVoided(true);
-                roleAttributeToVoid.setVoidedBy(Context.getAuthenticatedUser());
-                roleAttributeToVoid.setVoidReason("voided while setting a new provider role");
-            }
+        
+        if (role == null) {
+            throw new APIException("Cannot set provider role: role is null");
+        }
+        
+        if (identifier == null) {
+            throw new APIException("Cannot set provider role: identifier is null");
+        }
 
-            if (role != null) {
-                // now create the new attribute (if one has been specified)
-                ProviderAttribute providerRoleAttribute = new ProviderAttribute();
-                providerRoleAttribute.setAttributeType(getProviderRoleAttributeType());
-                providerRoleAttribute.setValue(role);
-                provider.setAttribute(providerRoleAttribute);
-            }
+        if (provider.isVoided()) {
+            throw new APIException("Cannot set provider role: underlying person has been voided");
+        }
 
-            // save the provider
-            Context.getProviderService().saveProvider(provider);
+        if (ProviderManagementUtils.hasRole(provider,role)) {
+            // if the provider already has this role, do nothing
+            return;
+        }
+        
+        // create a new provider object and associate it with this person
+        Provider p = new Provider();
+        p.setPerson(provider);
+        p.setIdentifier(identifier);
+        
+        // create a new provider role attribute 
+        ProviderAttribute providerRoleAttribute = new ProviderAttribute();
+        providerRoleAttribute.setAttributeType(getProviderRoleAttributeType());
+        providerRoleAttribute.setValue(role);
+        p.setAttribute(providerRoleAttribute);
+        
+        // save this new provider
+        Context.getProviderService().saveProvider(p);
+    }
+
+    @Override
+    public void unassignProviderRoleFromProvider(Person provider, ProviderRole role) {
+        // TODO: make sure this syncs properly!
+
+        if (provider == null) {
+            throw new APIException("Cannot set provider role: provider is null");
+        }
+
+        if (role == null) {
+            throw new APIException("Cannot set provider role: role is null");
+        }
+
+        if (!ProviderManagementUtils.hasRole(provider,role)) {
+            // if the provider doesn't have this role, do nothing
+            return;
+        }
+
+        // note that we don't check to make sure this provider is a person
+
+        // iterate through all the providers and retire any with the specified role
+        for (Provider p : Context.getProviderService().getProvidersByPerson(provider)) {
+            if (ProviderManagementUtils.getProviderRole(p).equals(role)) {
+                Context.getProviderService().retireProvider(p, "removing provider role " + role + " from " + provider);
+            }
         }
     }
 
     @Override
-    public List<Provider> getProvidersByRoles(List<ProviderRole> roles) {
+    public List<Person> getProvidersByRoles(List<ProviderRole> roles) {
 
         // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
 
@@ -221,11 +257,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             providers.addAll(Context.getProviderService().getProviders(null, null, null, attributeValueMap));
         }
 
-        return providers;
+        return providersToPersons(providers);
     }
 
     @Override
-    public List<Provider> getProvidersByRole(ProviderRole role) {
+    public List<Person> getProvidersByRole(ProviderRole role) {
 
         // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
 
@@ -240,7 +276,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Provider> getProvidersByRelationshipType(RelationshipType relationshipType) {
+    public List<Person> getProvidersByRelationshipType(RelationshipType relationshipType) {
 
         if (relationshipType == null) {
             throw new  APIException("Relationship type cannot be null");
@@ -249,7 +285,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // first fetch the roles that support this relationship type, then fetch all the providers with those roles
         List<ProviderRole> providerRoles = getProviderRolesByRelationshipType(relationshipType);
         if (providerRoles == null || providerRoles.size() == 0) {
-            return new ArrayList<Provider>();  // just return an empty list
+            return new ArrayList<Person>();  // just return an empty list
         }
         else {
             return getProvidersByRoles(providerRoles);
@@ -257,7 +293,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Provider> getProvidersBySuperviseeProviderRole(ProviderRole role) {
+    public List<Person> getProvidersBySuperviseeProviderRole(ProviderRole role) {
        
         if (role == null) {
             throw new APIException("Provider role cannot be null");
@@ -266,7 +302,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // first fetch the roles that can supervise this relationship type, then fetch all providers with those roles
         List<ProviderRole> providerRoles = getProviderRolesBySuperviseeProviderRole(role);
         if (providerRoles == null || providerRoles.size() == 0) {
-            return new ArrayList<Provider>();  // just return an empty list
+            return new ArrayList<Person>();  // just return an empty list
         }
         else {
             return getProvidersByRoles(providerRoles);
@@ -274,9 +310,9 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
-            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
-            PatientAlreadyAssignedToProviderException {
+    public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
+            PersonIsNotProviderException {
 
         if (patient == null) {
             throw new APIException("Patient cannot be null");
@@ -294,68 +330,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Patient cannot be voided");
         }
 
-        if (provider.getPerson() == null) {
-           throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
-        }
-
-       if (!ProviderManagementUtils.supportsRelationshipType(provider, relationshipType)) {
-           throw new ProviderDoesNotSupportRelationshipTypeException(provider + " cannot support " + relationshipType);
-       }
-
-        // use current date if no date specified
-        if (date == null) {
-            date = new Date();
-        }
-
-        // TODO: what about voided relationships?  does the get relationships method ignore voided?
-
-        // test to mark sure the relationship doesn't already exist
-        List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), patient, relationshipType, date);
-        if (relationships != null && relationships.size() > 0) {
-            throw new PatientAlreadyAssignedToProviderException("Provider " + provider + " is already assigned to " + patient + " with a " + relationshipType + "relationship");
+        if (!ProviderManagementUtils.isProvider(provider)) {
+             throw new PersonIsNotProviderException(provider + " is not a provider");
         }
         
-        // go ahead and create the relationship
-        Relationship relationship = new Relationship();
-        relationship.setPersonA(provider.getPerson());
-        relationship.setPersonB(patient);
-        relationship.setRelationshipType(relationshipType);
-        relationship.setStartDate(ProviderManagementUtils.clearTimeComponent(date));
-        Context.getPersonService().saveRelationship(relationship);
-    }
-
-    @Override
-    public void assignPatientToProvider(Patient patient, Provider provider, RelationshipType relationshipType)
-            throws ProviderDoesNotSupportRelationshipTypeException, ProviderNotAssociatedWithPersonException,
-            PatientAlreadyAssignedToProviderException {
-        assignPatientToProvider(patient, provider, relationshipType, new Date());
-    }
-
-    @Override
-    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType, Date date)
-        throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
-        PatientNotAssignedToProviderException {
-
-        if (patient == null) {
-            throw new APIException("Patient cannot be null");
-        }
-
-        if (provider == null) {
-            throw new APIException("Provider cannot be null");
-        }
-
-        if (relationshipType == null) {
-            throw new APIException("Relationship type cannot be null");
-        }
-
-        if (patient.isVoided()) {
-            throw new APIException("Patient cannot be voided");
-        }
-
-        if (provider.getPerson() == null) {
-            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
-        }
-
         if (!ProviderManagementUtils.supportsRelationshipType(provider, relationshipType)) {
             throw new ProviderDoesNotSupportRelationshipTypeException(provider + " cannot support " + relationshipType);
         }
@@ -365,8 +343,66 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             date = new Date();
         }
 
+        // TODO: what about voided relationships?  does the get relationships method ignore voided?
+
+        // test to mark sure the relationship doesn't already exist
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
+        if (relationships != null && relationships.size() > 0) {
+            throw new PatientAlreadyAssignedToProviderException("Provider " + provider + " is already assigned to " + patient + " with a " + relationshipType + "relationship");
+        }
+        
+        // go ahead and create the relationship
+        Relationship relationship = new Relationship();
+        relationship.setPersonA(provider);
+        relationship.setPersonB(patient);
+        relationship.setRelationshipType(relationshipType);
+        relationship.setStartDate(ProviderManagementUtils.clearTimeComponent(date));
+        Context.getPersonService().saveRelationship(relationship);
+    }
+
+    @Override
+    public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
+            PersonIsNotProviderException {
+        assignPatientToProvider(patient, provider, relationshipType, new Date());
+    }
+
+    @Override
+    public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+        throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException {
+
+        if (patient == null) {
+            throw new APIException("Patient cannot be null");
+        }
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (relationshipType == null) {
+            throw new APIException("Relationship type cannot be null");
+        }
+
+        if (patient.isVoided()) {
+            throw new APIException("Patient cannot be voided");
+        }
+
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+
+        // we don't need to assure that the person supports the relationship type, but we need to make sure this a provider/patient relationship type
+        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+            throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
+        }
+
+        // use current date if no date specified
+        if (date == null) {
+            date = new Date();
+        }
+
         // find the existing relationship
-        List<Relationship> relationships = Context.getPersonService().getRelationships(provider.getPerson(), patient, relationshipType, date);
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships == null || relationships.size() == 0) {
             throw new PatientNotAssignedToProviderException("Provider " + provider + " is not assigned to " + patient + " with a " + relationshipType + " relationship");
         }
@@ -382,13 +418,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public void unassignPatientFromProvider(Patient patient, Provider provider, RelationshipType relationshipType) throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException, PatientNotAssignedToProviderException {
+    public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType)
+            throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException {
         unassignPatientFromProvider(patient, provider, relationshipType, new Date());
     }
 
     @Override
-    public void unassignAllPatientsFromProvider(Provider provider, RelationshipType relationshipType)
-            throws ProviderNotAssociatedWithPersonException {
+    public void unassignAllPatientsFromProvider(Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         if (provider == null) {
             throw new APIException("Provider cannot be null");
@@ -398,13 +435,18 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Relationship type cannot be null");
         }
 
-        if (provider.getPerson() == null) {
-            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+
+        // we don't need to assure that the person supports the relationship type, but we need to make sure this a provider/patient relationship type
+        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+            throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
         // go ahead and end each relationship on the current date
         List<Relationship> relationships =
-                Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType, ProviderManagementUtils.clearTimeComponent(new Date()));
+                Context.getPersonService().getRelationships(provider, null, relationshipType, ProviderManagementUtils.clearTimeComponent(new Date()));
         if (relationships != null || relationships.size() > 0) {
             for (Relationship relationship : relationships) {
                 relationship.setEndDate(ProviderManagementUtils.clearTimeComponent(new Date()));
@@ -414,25 +456,29 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public void unassignAllPatientsFromProvider(Provider provider) 
-            throws ProviderNotAssociatedWithPersonException {
+    public void unassignAllPatientsFromProvider(Person provider)
+            throws PersonIsNotProviderException {
         
         if (provider == null) {
             throw new APIException("Provider cannot be null");
         }
-      
-        if (provider.getPerson() == null) {
-            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
-        }
-        
+
         for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
-            unassignAllPatientsFromProvider(provider, relationshipType);
+            try {
+                unassignAllPatientsFromProvider(provider, relationshipType);
+            }
+            catch (InvalidRelationshipTypeException e) {
+                // we should never get this exception, since getAlProviderRoleRelationshipTypes
+                // should only return valid relationship types; so if we do get this exception, throw a runtime exception
+                // instead of forcing calling methods to catch it
+                throw new APIException(e);
+            }
         }
     }
 
     @Override
-    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType, Date date)
-            throws ProviderNotAssociatedWithPersonException {
+    public List<Patient> getPatients(Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         if (provider == null) {
             throw new APIException("Provider cannot be null");
@@ -442,12 +488,12 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Relationship type cannot be null");
         }
 
-        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
-            throw new APIException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
         }
 
-        if (provider.getPerson() == null) {
-            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
+        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+            throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
         // use current date if no date specified
@@ -457,7 +503,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         // get the specified relationships for the provider
         List<Relationship> relationships =
-                Context.getPersonService().getRelationships(provider.getPerson(), null, relationshipType, ProviderManagementUtils.clearTimeComponent(date));
+                Context.getPersonService().getRelationships(provider, null, relationshipType, ProviderManagementUtils.clearTimeComponent(date));
 
 
         // now iterate through the relationships and fetch the patients
@@ -478,41 +524,46 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Patient> getPatients(Provider provider, RelationshipType relationshipType)
-            throws ProviderNotAssociatedWithPersonException {
+    public List<Patient> getPatients(Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
         return getPatients(provider, relationshipType, new Date());
     }
 
     @Override
-    public List<Patient> getPatients(Provider provider, Date date)
-            throws ProviderNotAssociatedWithPersonException {
+    public List<Patient> getPatients(Person provider, Date date)
+            throws PersonIsNotProviderException {
 
         if (provider == null) {
             throw new APIException("Provider cannot be null");
         }
 
-        if (provider.getPerson() == null) {
-            throw new ProviderNotAssociatedWithPersonException("Provider " + provider + " is not associated with a person");
-        }
-
         Set<Patient> patients = new HashSet<Patient>();
         for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
-            patients.addAll(getPatients(provider, relationshipType, date));
+            try {
+                patients.addAll(getPatients(provider, relationshipType, date));
+            }
+            catch (InvalidRelationshipTypeException e) {
+                // we should never get this exception, since getAlProviderRoleRelationshipTypes
+                // should only return valid relationship types; so if we do get this exception, throw a runtime exception
+                // instead of forcing calling methods to catch it
+                throw new APIException(e);
+            }
         }
-        
+
         return new ArrayList<Patient>(patients);
     }
 
     @Override
-    public List<Patient> getPatients(Provider provider)
-            throws ProviderNotAssociatedWithPersonException {
+    public List<Patient> getPatients(Person provider)
+            throws PersonIsNotProviderException {
         return getPatients(provider, new Date());
     }
 
+
     @Override
-    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider, RelationshipType relationshipType)
-        throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
-        SourceProviderSameAsDestinationProviderException {
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+        throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+        PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         if (sourceProvider == null) {
             throw new APIException("Source provider cannot be null");
@@ -522,12 +573,12 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Destination provider cannot be null");
         }
 
-        if (sourceProvider.getPerson() == null) {
-            throw new ProviderNotAssociatedWithPersonException("Provider " + sourceProvider + " is not associated with a person");
+        if (!ProviderManagementUtils.isProvider(sourceProvider)) {
+            throw new PersonIsNotProviderException(sourceProvider + " is not a provider");
         }
 
-        if (destinationProvider.getPerson() == null) {
-            throw new ProviderNotAssociatedWithPersonException("Provider " + destinationProvider + " is not associated with a person");
+        if (!ProviderManagementUtils.isProvider(destinationProvider)) {
+            throw new PersonIsNotProviderException(destinationProvider + " is not a provider");
         }
 
         if (sourceProvider.equals(destinationProvider)) {
@@ -561,11 +612,37 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
     
     @Override
-    public void transferAllPatients(Provider sourceProvider, Provider destinationProvider)
-            throws ProviderNotAssociatedWithPersonException, ProviderDoesNotSupportRelationshipTypeException,
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider)
+            throws ProviderDoesNotSupportRelationshipTypeException, PersonIsNotProviderException,
             SourceProviderSameAsDestinationProviderException {
         for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
-            transferAllPatients(sourceProvider, destinationProvider, relationshipType);
+            try {
+                transferAllPatients(sourceProvider, destinationProvider, relationshipType);
+            }
+            catch (InvalidRelationshipTypeException e) {
+                // we should never get this exception, since getAlProviderRoleRelationshipTypes
+                // should only return valid relationship types; so if we do get this exception, throw a runtime exception
+                // instead of forcing calling methods to catch it
+                throw new APIException(e);
+            }
         }
+    }
+
+    /**
+     * Utility methods
+     */
+    private List<Person> providersToPersons(List<Provider> providers) {
+        
+        if (providers == null) {
+            return null;
+        }
+        
+        Set<Person> persons = new HashSet<Person>();
+        
+        for (Provider provider : providers) {
+            persons.add(provider.getPerson());
+        }
+
+        return new ArrayList<Person>(persons);
     }
 }

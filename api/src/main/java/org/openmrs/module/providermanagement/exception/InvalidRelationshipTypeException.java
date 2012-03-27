@@ -14,15 +14,16 @@
 
 package org.openmrs.module.providermanagement.exception;
 
-public class ProviderNotAssociatedWithPersonException extends Exception {
+public class InvalidRelationshipTypeException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public ProviderNotAssociatedWithPersonException() {
+    public InvalidRelationshipTypeException() {
         super();
     }
 
-    public ProviderNotAssociatedWithPersonException(String message) {
+    public InvalidRelationshipTypeException(String message) {
         super(message);
     }
+
 }
