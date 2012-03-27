@@ -64,7 +64,8 @@ public class ProviderManagementUtils {
     }
 
     /**
-     * Returns whether or not the passed person has one or more associated providers
+     * Returns whether or not the passed person has one or more associated providers (unretired or retired)
+     * (So note that a person that only is associated with retired Provider objects is still consider a "provider")
      * 
      * @param person
      * @return whether or not the passed person has one or more associated providers
@@ -74,12 +75,9 @@ public class ProviderManagementUtils {
         if (person == null) {
             throw new APIException("Person cannot be null");
         }
-        
-        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
 
-        // TODO: no need to manually exclude retired providers after TRUNK-3219 has been implemented
-        filterRetired(providers);
-        
+        // TODO: change this to explicitly include retired providers after TRUNK-3219 has been implemented
+        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
         return providers == null || providers.size() == 0 ? false : true;
     }
 
@@ -130,6 +128,37 @@ public class ProviderManagementUtils {
         }
 
         return false;
+    }
+
+    /**
+     * Filters retired providers out of the list of passed providers
+     * 
+     * @param providers
+     */
+    public static void filterRetired(Collection<Provider> providers) {
+        CollectionUtils.filter(providers, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return !((Provider) o).isRetired();
+            }
+        });
+    }
+
+    /**
+     * Filters out all relationship types that are not associated with a provider role
+     * (Does not filter out retired relationship types associated with a provider role)
+     *
+     * @param relationships
+     */
+    public static void filterNonProviderRelationships(Collection<Relationship> relationships) {
+        final List<RelationshipType> providerRelationshipTypes = Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(true);
+        CollectionUtils.filter(relationships, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return providerRelationshipTypes.contains(((Relationship) o).getRelationshipType());
+            }
+        });
+
     }
     
     /**
@@ -201,16 +230,7 @@ public class ProviderManagementUtils {
             return role.supportsRelationshipType(relationshipType);
         }
     }
-    
-    private static void filterRetired(Collection<Provider> providers) {
-        CollectionUtils.filter(providers, new Predicate() {
-            @Override
-            public boolean evaluate(Object o) {
-                return !((Provider) o).isRetired();
-            }
-        });
-    }
-
+   
 }
 
 

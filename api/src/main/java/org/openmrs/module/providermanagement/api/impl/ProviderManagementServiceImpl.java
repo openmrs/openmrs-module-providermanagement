@@ -484,15 +484,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Provider cannot be null");
         }
 
-        if (relationshipType == null) {
-            throw new APIException("Relationship type cannot be null");
-        }
-
         if (!ProviderManagementUtils.isProvider(provider)) {
             throw new PersonIsNotProviderException(provider + " is not a provider");
         }
 
-        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -505,6 +501,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         List<Relationship> relationships =
                 Context.getPersonService().getRelationships(provider, null, relationshipType, ProviderManagementUtils.clearTimeComponent(date));
 
+        // if a relationship type was not specified, we need to filter this list to only contain provider relationships
+        if (relationshipType == null) {
+            ProviderManagementUtils.filterNonProviderRelationships(relationships);
+        }
 
         // now iterate through the relationships and fetch the patients
         Set<Patient> patients = new HashSet<Patient>();
@@ -530,35 +530,68 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Patient> getPatients(Person provider, Date date)
-            throws PersonIsNotProviderException {
+    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+        
+        if (patient == null) {
+            throw new APIException("Patient cannot be null");
+        }
+        
+        if (provider != null && !ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+        
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+            throw new InvalidRelationshipTypeException(relationshipType + " is not a patient/provider relationship");
+        }
+        
+        // default to today's date if no date specified
+        if (date == null) {
+            date = new Date();
+        }
+        
+        // fetch the relationships
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, ProviderManagementUtils.clearTimeComponent(date));
 
-        if (provider == null) {
-            throw new APIException("Provider cannot be null");
+        // if a relationship type was not specified, we need to filter this list to only contain provider relationships
+        if (relationshipType == null) {
+            ProviderManagementUtils.filterNonProviderRelationships(relationships);
         }
 
-        Set<Patient> patients = new HashSet<Patient>();
-        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
-            try {
-                patients.addAll(getPatients(provider, relationshipType, date));
-            }
-            catch (InvalidRelationshipTypeException e) {
-                // we should never get this exception, since getAlProviderRoleRelationshipTypes
-                // should only return valid relationship types; so if we do get this exception, throw a runtime exception
-                // instead of forcing calling methods to catch it
-                throw new APIException(e);
-            }
-        }
-
-        return new ArrayList<Patient>(patients);
+        return relationships;
     }
 
     @Override
-    public List<Patient> getPatients(Person provider)
-            throws PersonIsNotProviderException {
-        return getPatients(provider, new Date());
+    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+        return getProviderRelationships(patient, provider, relationshipType, new Date());
     }
 
+    @Override
+    public List<Person> getProviders(Patient patient, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+        
+        List<Relationship> relationships = getProviderRelationships(patient, null, relationshipType, date);
+        
+        Set<Person> providers = new HashSet<Person>();
+        
+        for (Relationship relationship : relationships) {
+            if (!ProviderManagementUtils.isProvider(relationship.getPersonA()))   {
+                // something has gone really wrong here
+                throw new APIException(relationship.getPersonA() + " is not a provider");
+            }
+            else {
+                providers.add(relationship.getPersonA());
+            }
+        }
+        
+        return new ArrayList<Person>(providers);
+    }
+
+    @Override
+    public List<Person> getProviders(Patient patient, RelationshipType relationshipType) throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+        return getProviders(patient, relationshipType, new Date());
+    }
 
     @Override
     public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)

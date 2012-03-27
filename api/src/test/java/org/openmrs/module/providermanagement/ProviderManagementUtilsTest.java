@@ -98,11 +98,11 @@ public class ProviderManagementUtilsTest extends BaseModuleContextSensitiveTest 
     }
 
     @Test
-    public void isProvider_shouldReturnFalseIfAllAssociatedProvidersRetired() {
+    public void isProvider_shouldReturnTrueEvenIfAllAssociatedProvidersRetired() {
         Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
         Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1009), "test");
 
-        Assert.assertFalse(ProviderManagementUtils.isProvider(Context.getPersonService().getPerson(2)));
+        Assert.assertTrue(ProviderManagementUtils.isProvider(Context.getPersonService().getPerson(2)));
     }
 
     @Test(expected = APIException.class)

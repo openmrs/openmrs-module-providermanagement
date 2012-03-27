@@ -18,6 +18,7 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.*;
 import org.springframework.transaction.annotation.Transactional;
+import sun.plugin.javascript.navig.LinkArray;
 
 import java.util.Date;
 import java.util.List;
@@ -323,11 +324,13 @@ public interface ProviderManagementService extends OpenmrsService {
 
     // TODO: we will probably need a "purge" option for purging relationships created by accident, but we should probably spec this out a bit better
 
+    // TODO: refactor methods below into a single method?
+
     /**
      * Gets all patients that are patients of the specified provider with the specified relationship type on the specified date
      *
      * @param provider
-     * @param relationshipType
+     * @param relationshipType limits returned patients to those related to the provider by a specific relationship type (if null, returns all patients linked by any provider relationships)
      * @param date
      * @return list of patients associated with the specified provider via the specified relationship type, on the specified date
      * @should ignore voided patients
@@ -344,7 +347,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * Gets all patients that are patients of the specified provider with the specified relationship type on the current date
      *
      * @param provider
-     * @param relationshipType
+     * @param relationshipType limits returned patients to those related to the provider by a specific relationship type (if null, returns all patients linked by any provider relationships)
      * @return list of patients associated with the specified provider via the specified relationship type, on the specified date
      * @should ignore voided patients
      * @should fail if provider is null
@@ -358,34 +361,57 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
-     * Gets all patients (of any relationship type) that are patients of the specified
-     * provider on the specified date
+     * Returns all the provider relationships associated with the given patient
      *
-     * @param provider
-     * @param date
-     * @return All patients (of any relationship type) that are patients of the specified provider on the specified date
-     * @should ignore voided patients
-     * @should fail if provider is null
-     * @should fail if provider not associated with person
-     * @should fail if invalid relationship found
+     * @param patient
+     * @param provider limits returned relationships to those with the specified provider (if null, returns relationships with all providers)
+     * @param relationshipType limits returned relationships to those of a specified type (if null, returns all provider relationships)
+     * @param date returns only those relationships on the specified date
+     * @return all the provider relationships associated with the given patient
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
      */
-    @Transactional(readOnly = true)
-    public List<Patient> getPatients(Person provider, Date date)
-            throws PersonIsNotProviderException;
+    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+
     /**
-     * Gets all patients (of any relationship type) that are a patients of the specified
-     * provider on the current date
+     * Returns all the provider relationships associated with the given patient on the current date
      *
-     * @param provider
-     * @return All patients (of any relationship type) that are patients of the specified provider on the current date
-     * @should ignore voided patients
-     * @should fail if provider is null
-     * @should fail if provider not associated with person
-     * @should fail if invalid relationship found
+     * @param patient
+     * @param provider limits returned relationships to those with the specified provider (if null, returns relationships with all providers)
+     * @param relationshipType limits returned relationships to those of a specified type (if null, returns all provider relationships)
+     * @return all the provider relationships associated with the given patient
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
      */
-    @Transactional(readOnly = true)
-    public List<Patient> getPatients(Person provider)
-            throws PersonIsNotProviderException;
+    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+
+
+    /**
+     * Returns all providers associated with the given patient on the specified date
+     *
+     * @param patient
+     * @param relationshipType limits returned providers to those linked by a specific type (if null, returns all providers)
+     * @param date returns only those relationships on the specified date
+     * @return all providers associated with the given patient on the specified date
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     */
+    public List<Person> getProviders(Patient patient, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+
+    /**
+     * Returns all providers associated with the given patient on the specified date
+     *
+     * @param patient
+     * @param relationshipType limits returned providers to those linked by a specific type (if null, returns all providers)
+     * @return all providers associated with the given patient on the specified date
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     */
+    public List<Person> getProviders(Patient patient, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider
