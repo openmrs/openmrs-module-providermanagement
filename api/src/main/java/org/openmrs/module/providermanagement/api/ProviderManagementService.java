@@ -153,14 +153,14 @@ public interface ProviderManagementService extends OpenmrsService {
 
 
     /**
-     * Assigns a provider role to a provider
+     * Assigns a provider role to a person
      *
      * @param provider the provider whose role we wish to set
      * @param role the role to set
      * @param identifier the identifier to associate with this provider/role combination (mandatory)
      */
     @Transactional
-    public void assignProviderRoleToProvider(Person provider, ProviderRole role, String identifier);
+    public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier);
 
     /**
      * Unassigns a provider role from a provider
@@ -338,7 +338,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationship type is not a provider/patient relationship type
      */
     @Transactional(readOnly = true)
-    public List<Patient> getPatients(Person provider, RelationshipType relationshipType, Date date)
+    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -355,7 +355,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if invalid relationship found
      */
     @Transactional(readOnly = true)
-    public List<Patient> getPatients(Person provider, RelationshipType relationshipType)
+    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -370,7 +370,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Transactional(readOnly = true)
-    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+    public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -384,7 +384,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Transactional(readOnly = true)
-    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType)
+    public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
 
@@ -399,7 +399,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Transactional(readOnly = true)
-    public List<Person> getProviders(Patient patient, RelationshipType relationshipType, Date date)
+    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -412,7 +412,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Transactional(readOnly = true)
-    public List<Person> getProviders(Patient patient, RelationshipType relationshipType)
+    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -560,7 +560,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Relationship> getSupervisorRelationships(Person provider, Date date)
+    public List<Relationship> getSupervisorRelationshipsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -573,7 +573,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Relationship> getSupervisorRelationships(Person provider)
+    public List<Relationship> getSupervisorRelationshipsForProvider(Person provider)
             throws PersonIsNotProviderException;
     
     /**
@@ -586,7 +586,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Person> getSupervisors(Person provider, Date date)
+    public List<Person> getSupervisorsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -598,7 +598,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Person> getSupervisors(Person provider)
+    public List<Person> getSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException;
 
     /**
@@ -612,7 +612,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Relationship> getSuperviseeRelationships(Person supervisor, Date date)
+    public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -625,7 +625,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Relationship> getSuperviseeRelationships(Person supervisor)
+    public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
     /**
@@ -639,7 +639,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Person> getSupervisees(Person supervisor, Date date)
+    public List<Person> getSuperviseesForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -652,7 +652,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Transactional(readOnly = true)
-    public List<Person> getSupervisees(Person supervisor)
+    public List<Person> getSuperviseesForSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
 }

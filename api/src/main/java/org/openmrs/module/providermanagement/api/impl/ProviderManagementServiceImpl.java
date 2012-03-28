@@ -174,7 +174,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public void assignProviderRoleToProvider(Person provider, ProviderRole role, String identifier) {
+    public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier) {
         // TODO: make sure this syncs properly!
 
         if (provider == null) {
@@ -488,7 +488,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Patient> getPatients(Person provider, RelationshipType relationshipType, Date date)
+    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         if (provider == null) {
@@ -535,13 +535,13 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Patient> getPatients(Person provider, RelationshipType relationshipType)
+    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {
-        return getPatients(provider, relationshipType, new Date());
+        return getPatientsOfProvider(provider, relationshipType, new Date());
     }
 
     @Override
-    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+    public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {
         
         if (patient == null) {
@@ -573,16 +573,16 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType)
+    public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {
-        return getProviderRelationships(patient, provider, relationshipType, new Date());
+        return getProviderRelationshipsForPatient(patient, provider, relationshipType, new Date());
     }
 
     @Override
-    public List<Person> getProviders(Patient patient, RelationshipType relationshipType, Date date)
+    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {
         
-        List<Relationship> relationships = getProviderRelationships(patient, null, relationshipType, date);
+        List<Relationship> relationships = getProviderRelationshipsForPatient(patient, null, relationshipType, date);
         
         Set<Person> providers = new HashSet<Person>();
         
@@ -600,8 +600,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Person> getProviders(Patient patient, RelationshipType relationshipType) throws PersonIsNotProviderException, InvalidRelationshipTypeException {
-        return getProviders(patient, relationshipType, new Date());
+    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType) throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+        return getProvidersForPatient(patient, relationshipType, new Date());
     }
 
     @Override
@@ -634,7 +634,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
         
        // first get all the patients of the source provider
-       List<Patient> patients = getPatients(sourceProvider, relationshipType);
+       List<Patient> patients = getPatientsOfProvider(sourceProvider, relationshipType);
 
        // assign these patients to the new provider, unassign them from the old provider
         for (Patient patient : patients) {
@@ -648,7 +648,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 unassignPatientFromProvider(patient, sourceProvider, relationshipType);
             }
             catch (PatientNotAssignedToProviderException e) {
-                // we should fail hard here, because getPatients should only return patients of the provider,
+                // we should fail hard here, because getPatientsOfProvider should only return patients of the provider,
                 // so if this exception has been thrown, something has gone really wrong
                 throw new APIException("All patients here should be assigned to provider,", e);
             }
@@ -828,7 +828,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
 
     @Override
-    public List<Relationship> getSupervisorRelationships(Person provider, Date date)
+    public List<Relationship> getSupervisorRelationshipsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException {
 
         if (provider == null) {
@@ -843,16 +843,16 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Relationship> getSupervisorRelationships(Person provider)
+    public List<Relationship> getSupervisorRelationshipsForProvider(Person provider)
             throws PersonIsNotProviderException{
-        return getSupervisorRelationships(provider, new Date());
+        return getSupervisorRelationshipsForProvider(provider, new Date());
     }
 
     @Override
-    public List<Person> getSupervisors(Person provider, Date date)
+    public List<Person> getSupervisorsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException {
 
-        List<Relationship> relationships = getSupervisorRelationships(provider, date);
+        List<Relationship> relationships = getSupervisorRelationshipsForProvider(provider, date);
 
         Set<Person> providers = new HashSet<Person>();
 
@@ -870,13 +870,13 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Person> getSupervisors(Person provider)
+    public List<Person> getSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException {
-        return getSupervisors(provider, new Date());
+        return getSupervisorsForProvider(provider, new Date());
     }
 
     @Override
-    public List<Relationship> getSuperviseeRelationships(Person supervisor, Date date)
+    public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException {
         
         if (supervisor == null) {
@@ -891,16 +891,16 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Relationship> getSuperviseeRelationships(Person supervisor)
+    public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor)
             throws PersonIsNotProviderException {
-        return getSuperviseeRelationships(supervisor, new Date());
+        return getSuperviseeRelationshipsForSupervisor(supervisor, new Date());
     }
 
     @Override
-    public List<Person> getSupervisees(Person supervisor, Date date)
+    public List<Person> getSuperviseesForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException {
         
-        List<Relationship> relationships = getSuperviseeRelationships(supervisor, date);
+        List<Relationship> relationships = getSuperviseeRelationshipsForSupervisor(supervisor, date);
 
         Set<Person> providers = new HashSet<Person>();
 
@@ -918,9 +918,9 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Person> getSupervisees(Person supervisor)
+    public List<Person> getSuperviseesForSupervisor(Person supervisor)
             throws PersonIsNotProviderException {
-        return getSupervisees(supervisor, new Date());
+        return getSuperviseesForSupervisor(supervisor, new Date());
     }
 
     /**

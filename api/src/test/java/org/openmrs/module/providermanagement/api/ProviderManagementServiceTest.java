@@ -283,7 +283,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // add a new role to the existing provider
         Person provider = Context.getProviderService().getProvider(1006).getPerson();
         ProviderRole role = providerManagementService.getProviderRole(1003);
-        providerManagementService.assignProviderRoleToProvider(provider, role, "123");
+        providerManagementService.assignProviderRoleToPerson(provider, role, "123");
 
         // the provider should now have two roles
         List<ProviderRole> providerRoles = ProviderManagementUtils.getProviderRoles(provider);
@@ -311,7 +311,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // add a role that the provider already has
         Person provider = Context.getProviderService().getProvider(1006).getPerson();
         ProviderRole role = providerManagementService.getProviderRole(1002);
-        providerManagementService.assignProviderRoleToProvider(provider, role, "123");
+        providerManagementService.assignProviderRoleToPerson(provider, role, "123");
 
         // the provider should still only have one role
         List<ProviderRole> providerRoles = ProviderManagementUtils.getProviderRoles(provider);
@@ -327,7 +327,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // void this person, then attempt to add a role to it
         Context.getPersonService().voidPerson(provider, "test");
         
-        providerManagementService.assignProviderRoleToProvider(provider,role, "123");
+        providerManagementService.assignProviderRoleToPerson(provider, role, "123");
     }
 
     @Test
@@ -713,7 +713,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
 
         // confirm that the two patients are reported as patients of the provider
-        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType);
+        List<Patient> patients = providerManagementService.getPatientsOfProvider(provider, relationshipType);
         Assert.assertEquals(new Integer(2), (Integer) patients.size());
 
         // double-check to make sure the are the correct patients
@@ -749,7 +749,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
 
         // confirm that only the patient added in the past is reported if we query on the past date
-        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType, PAST_DATE);
+        List<Patient> patients = providerManagementService.getPatientsOfProvider(provider, relationshipType, PAST_DATE);
         Assert.assertEquals(new Integer(1), (Integer) patients.size());
         Assert.assertEquals(new Integer(2), patients.get(0).getId());
 
@@ -771,7 +771,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
 
         // confirm that only the patient of the specified relationship type is returned
-        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType, DATE);
+        List<Patient> patients = providerManagementService.getPatientsOfProvider(provider, relationshipType, DATE);
         Assert.assertEquals(new Integer(1), (Integer) patients.size());
         Assert.assertEquals(new Integer(8), patients.get(0).getId());
 
@@ -794,7 +794,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Context.getPatientService().voidPatient(p, "test");
         
         // confirm that only the non-voided patient is returned
-        List<Patient> patients = providerManagementService.getPatients(provider, relationshipType, DATE);
+        List<Patient> patients = providerManagementService.getPatientsOfProvider(provider, relationshipType, DATE);
         Assert.assertEquals(new Integer(1), (Integer) patients.size());
         Assert.assertEquals(new Integer(8), patients.get(0).getId());
     }
@@ -803,13 +803,13 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void getPatients_shouldFailIfRelationshipTypeIsNotProviderToPatientType() throws Exception {
         Person provider = Context.getProviderService().getProvider(1004).getPerson();
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
-        providerManagementService.getPatients(provider, relationshipType);
+        providerManagementService.getPatientsOfProvider(provider, relationshipType);
     }
 
     @Test(expected = APIException.class)
     public void getPatients_shouldFailIfProviderNull() throws Exception {
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
-        providerManagementService.getPatients(null, relationshipType);
+        providerManagementService.getPatientsOfProvider(null, relationshipType);
     }
 
     @Test(expected = APIException.class)
@@ -830,7 +830,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Context.getPersonService().saveRelationship(relationship);
 
         // this should fail when it finds a relationship to someone who isn't a patient
-        providerManagementService.getPatients(provider, relationshipType).size();
+        providerManagementService.getPatientsOfProvider(provider, relationshipType).size();
     }
 
     @Test
@@ -849,7 +849,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
 
         // confirm that the two patients are reported as patients of the provider
-        List<Patient> patients = providerManagementService.getPatients(provider, null);
+        List<Patient> patients = providerManagementService.getPatientsOfProvider(provider, null);
         Assert.assertEquals(new Integer(2), (Integer) patients.size());
 
         // double-check to make sure the are the correct patients
@@ -885,7 +885,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
 
         // fetch the patients on the past date
-        List<Patient> patients = providerManagementService.getPatients(provider, null, PAST_DATE);
+        List<Patient> patients = providerManagementService.getPatientsOfProvider(provider, null, PAST_DATE);
 
         // confirm that only the patient from the past is present
         Assert.assertEquals(new Integer(1), (Integer) patients.size());
@@ -906,8 +906,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider1, binome);
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
         
-        // now confirm that these two relationships are returned when we call getProviderRelationships
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, null, null);
+        // now confirm that these two relationships are returned when we call getProviderRelationshipsForPatient
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, null);
 
         // there should be two relationships
         Assert.assertEquals(new Integer(2), (Integer) relationships.size());
@@ -946,7 +946,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch only relationships with a specific provider
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, provider1, null);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, provider1, null);
 
         // there should be one relationship
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
@@ -969,7 +969,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch only relationships with a specific relationship type
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, null, acc);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, acc);
 
         // there should be one relationship
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
@@ -992,7 +992,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch only relationships with a specific provider type
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, provider2, acc);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, provider2, acc);
 
         // there should be one relationship
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
@@ -1003,27 +1003,27 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test
     public void getProviderRelationships_shouldReturnEmptyListIfPatientHasNoProviderRelationships() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, null, null);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, null);
         Assert.assertEquals(new Integer(0), (Integer) relationships.size());
     }
 
     @Test(expected = APIException.class)
     public void getProviderRelationships_shouldFailIfPatientNull() throws Exception {
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(null, null, null);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(null, null, null);
     }
 
     @Test(expected = PersonIsNotProviderException.class)
     public void getProviderRelationships_shouldFailIfPersonIsNotProvider() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
         Person person = Context.getPersonService().getPerson(502);
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, person, null);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, person, null);
     }
 
     @Test(expected = InvalidRelationshipTypeException.class)
     public void getProviderRelationships_shouldFailIfRelationshipIsNotProviderRelationship() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, null, relationshipType);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, relationshipType);
     }
 
     @Test
@@ -1040,14 +1040,14 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider1, binome);
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
-        // set up a non-provider relationship (so we can test that getProviderRelationships ignore it)
+        // set up a non-provider relationship (so we can test that getProviderRelationshipsForPatient ignore it)
         Relationship relationship = new Relationship();
         relationship.setPersonA(provider1);
         relationship.setPersonB(patient);
         relationship.setRelationshipType(Context.getPersonService().getRelationshipType(1));
         
-        // now confirm that these two relationships are returned when we call getProviderRelationships
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, null, null);
+        // now confirm that these two relationships are returned when we call getProviderRelationshipsForPatient
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, null);
 
         // there should be two relationships
         Assert.assertEquals(new Integer(2), (Integer) relationships.size());
@@ -1085,7 +1085,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc, DATE);
 
         // now get relationships in the past
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, null, null, PAST_DATE);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, null, PAST_DATE);
 
         // there should be one relationship
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
@@ -1108,11 +1108,11 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch and void the binome relationship
-        List<Relationship> relationships = providerManagementService.getProviderRelationships(patient, null, binome);
+        List<Relationship> relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, binome);
         Context.getPersonService().voidRelationship(relationships.get(0), "test");
         
         // now fetch all relationships
-        relationships = providerManagementService.getProviderRelationships(patient, null, null);
+        relationships = providerManagementService.getProviderRelationshipsForPatient(patient, null, null);
 
         // there should be only one relationship returned
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
@@ -1135,8 +1135,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider1, binome);
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
-        // now confirm that these two providers are returned when we call getProviderRelationships
-        List<Person> providers = providerManagementService.getProviders(patient, null);
+        // now confirm that these two providers are returned when we call getProviderRelationshipsForPatient
+        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null);
 
         // there should be two providers
         Assert.assertEquals(new Integer(2), (Integer) providers.size());
@@ -1173,7 +1173,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch only providers with a specific relationship type
-        List<Person> providers = providerManagementService.getProviders(patient, acc);
+        List<Person> providers = providerManagementService.getProvidersForPatient(patient, acc);
 
         // there should be one provider
         Assert.assertEquals(new Integer(1), (Integer) providers.size());
@@ -1183,20 +1183,20 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test
     public void getProviders_shouldReturnEmptyListIfPatientHasNoProviderRelationships() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
-        List<Person> providers = providerManagementService.getProviders(patient, null);
+        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null);
         Assert.assertEquals(new Integer(0), (Integer) providers.size());
     }
 
     @Test(expected = APIException.class)
     public void getProviders_shouldFailIfPatientNull() throws Exception {
-        providerManagementService.getProviders(null, null);
+        providerManagementService.getProvidersForPatient(null, null);
     }
 
     @Test(expected = InvalidRelationshipTypeException.class)
     public void getProviders_shouldFailIfRelationshipIsNotProviderRelationship() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
-        providerManagementService.getProviders(patient, relationshipType);
+        providerManagementService.getProvidersForPatient(patient, relationshipType);
     }
 
     @Test
@@ -1214,7 +1214,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc, DATE);
 
         // now get relationships in the past
-        List<Person> providers = providerManagementService.getProviders(patient, null, PAST_DATE);
+        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null, PAST_DATE);
 
         // there should be one relationship
         Assert.assertEquals(new Integer(1), (Integer) providers.size());
@@ -1236,7 +1236,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch only providers with a specific relationship type
-        List<Person> providers = providerManagementService.getProviders(patient, acc);
+        List<Person> providers = providerManagementService.getProvidersForPatient(patient, acc);
 
         // there should be one provider
         Assert.assertEquals(new Integer(1), (Integer) providers.size());
@@ -1261,8 +1261,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Provider providerToRetire = Context.getProviderService().getProvider(1004);
         Context.getProviderService().retireProvider(providerToRetire, "test");
 
-        // now confirm that these two providers are returned when we call getProviderRelationships
-        List<Person> providers = providerManagementService.getProviders(patient, null);
+        // now confirm that these two providers are returned when we call getProviderRelationshipsForPatient
+        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null);
 
         // there should be two providers
         Assert.assertEquals(new Integer(2), (Integer) providers.size());
@@ -1307,16 +1307,16 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.transferAllPatients(oldProvider, newProvider);
 
         // now fetch the patients of each provider and verify that they are accurate
-        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider, null);
-        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider, null);
+        List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null);
+        List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null);
 
         // on the current date, both patients should be assigned to both patients
         Assert.assertEquals(new Integer(2), (Integer) oldProviderPatients.size());
         Assert.assertEquals(new Integer(2), (Integer) newProviderPatients.size());
 
         // but, on some future date, the patients should no longer be associated with the old provider
-        oldProviderPatients = providerManagementService.getPatients(oldProvider, null, FUTURE_DATE);
-        newProviderPatients = providerManagementService.getPatients(newProvider, null, FUTURE_DATE);
+        oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null, FUTURE_DATE);
+        newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, FUTURE_DATE);
         Assert.assertEquals(new Integer(0), (Integer) oldProviderPatients.size());
         Assert.assertEquals(new Integer(2), (Integer) newProviderPatients.size());
 
@@ -1357,8 +1357,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
         // on some future date, one patient should still be associated to the old provider
         // and the other patient should be associated with the new provider
-        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider, null, FUTURE_DATE);
-        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider, null, FUTURE_DATE);
+        List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null, FUTURE_DATE);
+        List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, FUTURE_DATE);
         Assert.assertEquals(new Integer(1), (Integer) oldProviderPatients.size());
         Assert.assertEquals(new Integer(2), oldProviderPatients.get(0).getId());
         Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
@@ -1427,8 +1427,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, newProvider, relationshipType, DATE);
 
         // sanity check
-        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider, null);
-        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider, null);
+        List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null);
+        List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null);
         Assert.assertEquals(new Integer(2), (Integer) oldProviderPatients.size());
         // the second patient should already be assigned to the destination provider
         Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
@@ -1437,8 +1437,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // now do the transfer; everything should work, although the patient has already been assigned to new provider
         providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
 
-        oldProviderPatients = providerManagementService.getPatients(oldProvider, null, FUTURE_DATE);
-        newProviderPatients = providerManagementService.getPatients(newProvider, null, FUTURE_DATE);
+        oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null, FUTURE_DATE);
+        newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, FUTURE_DATE);
         Assert.assertEquals(new Integer(1), (Integer) oldProviderPatients.size());
         Assert.assertEquals(new Integer(2), oldProviderPatients.get(0).getId());
         Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
@@ -1460,20 +1460,20 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.transferAllPatients(oldProvider, newProvider);
 
         // on some future date, the patient should be associated with new provider, but not the old
-        List<Patient> oldProviderPatients = providerManagementService.getPatients(oldProvider, null, FUTURE_DATE);
-        List<Patient> newProviderPatients = providerManagementService.getPatients(newProvider, null, FUTURE_DATE);
+        List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null, FUTURE_DATE);
+        List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, FUTURE_DATE);
         Assert.assertEquals(new Integer(0), (Integer) oldProviderPatients.size());
         Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
         Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
 
         // double check that we can fetch the patient from the destination provider via either relationship type
         relationshipType = Context.getPersonService().getRelationshipType(1001);
-        newProviderPatients = providerManagementService.getPatients(newProvider, relationshipType, FUTURE_DATE);
+        newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, relationshipType, FUTURE_DATE);
         Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
         Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
 
         relationshipType = Context.getPersonService().getRelationshipType(1002);
-        newProviderPatients = providerManagementService.getPatients(newProvider, relationshipType, FUTURE_DATE);
+        newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, relationshipType, FUTURE_DATE);
         Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
         Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
     }
@@ -1767,7 +1767,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignProviderToSupervisor(provider2, supervisor);
 
         // verify that the getSuperviseeRelationship method returns these relationships
-        List<Relationship> relationships = providerManagementService.getSuperviseeRelationships(supervisor);
+        List<Relationship> relationships = providerManagementService.getSuperviseeRelationshipsForSupervisor(supervisor);
         
         Assert.assertEquals(new Integer(2), (Integer) relationships.size());
 
@@ -1800,7 +1800,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.unassignProviderFromSupervisor(provider2, supervisor, PAST_DATE);
 
         // verify that the getSupervisorRelationship method returns these relationships
-        List<Relationship> relationships = providerManagementService.getSuperviseeRelationships(supervisor, DATE);  // only query for relationships on past date
+        List<Relationship> relationships = providerManagementService.getSuperviseeRelationshipsForSupervisor(supervisor, DATE);  // only query for relationships on past date
 
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
         Assert.assertEquals(new Integer(6), relationships.get(0).getPersonB().getId());
@@ -1808,13 +1808,13 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     @Test(expected = APIException.class)
     public void getSuperviseeRelationships_shouldFailIfSupervisorNull() throws Exception {
-        providerManagementService.getSuperviseeRelationships(null, DATE);
+        providerManagementService.getSuperviseeRelationshipsForSupervisor(null, DATE);
     }
 
     @Test(expected = PersonIsNotProviderException.class)
     public void getSuperviseeRelationships_shouldFailIfSuperviseeNotProvider() throws Exception {
         Person supervisee = Context.getPersonService().getPerson(502);    // not a provider
-        providerManagementService.getSuperviseeRelationships(supervisee, DATE);
+        providerManagementService.getSuperviseeRelationshipsForSupervisor(supervisee, DATE);
     }
 
     @Test
@@ -1828,8 +1828,8 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignProviderToSupervisor(provider1, supervisor);
         providerManagementService.assignProviderToSupervisor(provider2, supervisor);
 
-        // verify that the getSupervisees method returns these providers
-        List<Person> supervisees = providerManagementService.getSupervisees(supervisor);
+        // verify that the getSuperviseesForSupervisor method returns these providers
+        List<Person> supervisees = providerManagementService.getSuperviseesForSupervisor(supervisor);
 
         Assert.assertEquals(new Integer(2), (Integer) supervisees.size());
 
@@ -1862,7 +1862,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.unassignProviderFromSupervisor(provider2, supervisor, PAST_DATE);
 
         // verify that the getSupervisorRelationship method returns these relationships
-        List<Person> providers = providerManagementService.getSupervisees(supervisor, DATE);  // only query for relationships on past date
+        List<Person> providers = providerManagementService.getSuperviseesForSupervisor(supervisor, DATE);  // only query for relationships on past date
 
         Assert.assertEquals(new Integer(1), (Integer) providers.size());
         Assert.assertEquals(new Integer(6), providers.get(0).getId());
@@ -1880,7 +1880,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignProviderToSupervisor(provider, supervisor2);
 
         // verify that the getSupervisorRelationship method returns these relationships
-        List<Relationship> relationships = providerManagementService.getSupervisorRelationships(provider);
+        List<Relationship> relationships = providerManagementService.getSupervisorRelationshipsForProvider(provider);
 
         Assert.assertEquals(new Integer(2), (Integer) relationships.size());
 
@@ -1913,7 +1913,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.unassignProviderFromSupervisor(provider, supervisor2, PAST_DATE);
 
         // verify that the getSupervisorRelationship method returns these relationships
-        List<Relationship> relationships = providerManagementService.getSupervisorRelationships(provider, DATE);  // only query for relationships on past date
+        List<Relationship> relationships = providerManagementService.getSupervisorRelationshipsForProvider(provider, DATE);  // only query for relationships on past date
 
         Assert.assertEquals(new Integer(1), (Integer) relationships.size());
         Assert.assertEquals(new Integer(8), relationships.get(0).getPersonA().getId());
@@ -1921,13 +1921,13 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     @Test(expected = APIException.class)
     public void getSupervisorRelationships_shouldFailIfProviderNull() throws Exception {
-        providerManagementService.getSupervisorRelationships(null, DATE);
+        providerManagementService.getSupervisorRelationshipsForProvider(null, DATE);
     }
 
     @Test(expected = PersonIsNotProviderException.class)
     public void getSupervisorRelationships_shouldFailIfProviderNotProvider() throws Exception {
         Person provider = Context.getPersonService().getPerson(502);    // not a provider
-        providerManagementService.getSupervisorRelationships(provider, DATE);
+        providerManagementService.getSupervisorRelationshipsForProvider(provider, DATE);
     }
 
     @Test
@@ -1942,7 +1942,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignProviderToSupervisor(provider, supervisor2);
 
         // verify that the getSupervisorRelationship method returns these relationships
-        List<Person> supervisors = providerManagementService.getSupervisors(provider);
+        List<Person> supervisors = providerManagementService.getSupervisorsForProvider(provider);
 
         Assert.assertEquals(new Integer(2), (Integer) supervisors.size());
 
@@ -1975,7 +1975,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.unassignProviderFromSupervisor(provider, supervisor2, PAST_DATE);
 
         // verify that the getSupervisorRelationship method returns these relationships
-        List<Person> providers = providerManagementService.getSupervisors(provider, DATE);  // only query for relationships on past date
+        List<Person> providers = providerManagementService.getSupervisorsForProvider(provider, DATE);  // only query for relationships on past date
 
         Assert.assertEquals(new Integer(1), (Integer) providers.size());
         Assert.assertEquals(new Integer(8), providers.get(0).getId());
