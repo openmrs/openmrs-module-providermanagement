@@ -151,7 +151,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         for (ProviderRole providerRole : getAllProviderRoles(includeRetired)) {
             
-            if (includeRetired == true) {
+            if (includeRetired) {
                 relationshipTypes.addAll(providerRole.getRelationshipTypes());
             }
             // filter out any retired relationships
@@ -159,7 +159,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 relationshipTypes.addAll(CollectionUtils.select(providerRole.getRelationshipTypes(), new Predicate() {
                     @Override
                     public boolean evaluate(Object relationshipType) {
-                        return ((RelationshipType) relationshipType).getRetired() == true ? false : true;
+                        return ((RelationshipType) relationshipType).getRetired();
                     }
                 }));
             }
