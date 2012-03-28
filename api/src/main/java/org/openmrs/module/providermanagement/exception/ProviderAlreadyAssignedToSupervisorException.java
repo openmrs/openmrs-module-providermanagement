@@ -12,15 +12,18 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.providermanagement;
+package org.openmrs.module.providermanagement.exception;
 
-/**
- * Constants used by the module
- */
-public class ProviderManagementConstants {
-    
-    public static final String PROVIDER_ROLE_ATTRIBUTE_TYPE_UUID = "cb7028a0-72c3-11e1-b0c4-0800200c9a66";
-    
-    public static final String SUPERVISOR_RELATIONSHIP_TYPE_UUID = "2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc";
+public class ProviderAlreadyAssignedToSupervisorException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+    public ProviderAlreadyAssignedToSupervisorException() {
+        super();
+    }
+
+    public ProviderAlreadyAssignedToSupervisorException(String message) {
+        super(message);
+    }
 
 }

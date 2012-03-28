@@ -18,7 +18,6 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.*;
 import org.springframework.transaction.annotation.Transactional;
-import sun.plugin.javascript.navig.LinkArray;
 
 import java.util.Date;
 import java.util.List;
@@ -182,6 +181,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return all providers with one of the specified roles
      * @should throw APIException if roles are empty or null
      */
+    @Transactional(readOnly = true)
     public List<Person> getProvidersByRoles(List<ProviderRole> roles);
     
     /**
@@ -233,7 +233,6 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if patient is null
      * @should fail if patient is voided
      * @should fail if provider is null
-     * @should fail if provider is not associated with a person
      * @should fail if provider is already assigned to patient
      */
     @Transactional
@@ -252,7 +251,6 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if patient is null
      * @should fail if patient is voided
      * @should fail if provider is null
-     * @should fail if provider is not associated with a person
      * @should fail if provider is already assigned to patient
      */
     @Transactional
@@ -371,6 +369,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
+    @Transactional(readOnly = true)
     public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -384,6 +383,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
+    @Transactional(readOnly = true)
     public List<Relationship> getProviderRelationships(Patient patient, Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -398,6 +398,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
+    @Transactional(readOnly = true)
     public List<Person> getProviders(Patient patient, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -410,6 +411,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
+    @Transactional(readOnly = true)
     public List<Person> getProviders(Patient patient, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -450,4 +452,207 @@ public interface ProviderManagementService extends OpenmrsService {
     public void transferAllPatients(Person sourceProvider, Person destinationProvider)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException;
+
+
+    /**
+     * Methods that handle supervisee to supervisor relationships
+     */
+
+    public RelationshipType getSupervisorRelationshipType();
+
+    /**
+     * Assigns the provider to the supervisor on the specified date
+     *
+     * @param provider
+     * @param supervisor
+     * @param date
+     * @should fail if provider is null
+     * @should fail if supervisor is null
+     * @should fail if provider is not a provider
+     * @should fail if supervisor is not a provider
+     * @should fail if supervisor's role(s) do not support any of supervisee's roles
+     * @should fail if provider is already assigned to supervisor
+     */
+    @Transactional
+    public void assignProviderToSupervisor(Person provider, Person supervisor, Date date)
+            throws PersonIsNotProviderException, InvalidSupervisorException,
+            ProviderAlreadyAssignedToSupervisorException;
+
+    /**
+     * Assigns the provider to the supervisor on the current date
+     *
+     * @param provider
+     * @param supervisor
+     * @should fail if provider is null
+     * @should fail if supervisor is null
+     * @should fail if provider is not a provider
+     * @should fail if supervisor is not a provider
+     * @should fail if supervisor's role(s) do not support any of supervisee's roles
+     * @should fail if provider is already assigned to supervisor
+     */
+    @Transactional
+    public void assignProviderToSupervisor(Person provider, Person supervisor)
+            throws PersonIsNotProviderException, InvalidSupervisorException,
+            ProviderAlreadyAssignedToSupervisorException;
+
+    /**
+     * Unassigns the provider from the supervisor on the specified date
+     *
+     * @param provider
+     * @param supervisor
+     * @param date
+     * @should fail if provider is null
+     * @should fail if supervisor is null
+     * @should fail if provider is not a provider
+     * @should fail if supervisor is not a provider
+     * @should fail if provider is not assigned to supervisor
+     */
+    @Transactional
+    public void unassignProviderFromSupervisor(Person provider, Person supervisor, Date date)
+            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException;
+
+    /**
+     * Unassigns the provider from the supervisor on the current date
+     *
+     * @param provider
+     * @param supervisor
+     * @should fail if provider is null
+     * @should fail if supervisor is null
+     * @should fail if provider is not a provider
+     * @should fail if supervisor is not a provider
+     * @should fail if provider is not assigned to supervisor
+     */
+    @Transactional
+    public void unassignProviderFromSupervisor(Person provider, Person supervisor)
+            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException;
+
+    /**
+     * Unassignes all of the supervisors currently associated with the passed provider
+     *
+     * @param provider
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional
+    public void unassignAllSupervisorsFromProvider(Person provider)
+            throws PersonIsNotProviderException;
+
+    /**
+     * Unassignes all of the providers currently associated with the passed supervisor
+     *
+     * @param supervisor
+     * @should fail if supervisor is null
+     * @should fail if supervisor is not a provider
+     */
+    @Transactional
+    public void unassignAllProvidersFromSupervisor(Person supervisor)
+            throws PersonIsNotProviderException;
+
+
+    /**
+     * Returns all the relationships this provider has with supervisors on the given date
+     *
+     * @param provider
+     * @param date
+     * @return all the relationships this provider has with supervisors on the given date
+     * @throws PersonIsNotProviderException
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Relationship> getSupervisorRelationships(Person provider, Date date)
+            throws PersonIsNotProviderException;
+
+    /**
+     * Returns all the relationships this provider has with supervisors on the current date
+     *
+     * @param provider
+     * @return all the relationships this provider has with supervisors on the current date
+     * @throws PersonIsNotProviderException
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Relationship> getSupervisorRelationships(Person provider)
+            throws PersonIsNotProviderException;
+    
+    /**
+     * Returns all the providers that that given provider supervises on the given date
+     *
+     * @param provider
+     * @param date
+     * @return all the providers that that given provider supervises on the given date
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Person> getSupervisors(Person provider, Date date)
+            throws PersonIsNotProviderException;
+
+    /**
+     * Returns all the providers that that given provider supervises on the current date
+     *
+     * @param provider
+     * @return all the providers that that given provider supervises on the current date
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Person> getSupervisors(Person provider)
+            throws PersonIsNotProviderException;
+
+    /**
+     * Returns all the relationships this supervisor has with supervisees on the specified date
+     *
+     * @param supervisor
+     * @param date
+     * @return all the relationships this supervisor has with supervisees on the specified date
+     * @throws PersonIsNotProviderException
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Relationship> getSuperviseeRelationships(Person supervisor, Date date)
+            throws PersonIsNotProviderException;
+
+    /**
+     * Returns all the relationships this supervisor has with supervisees on the current date
+     *
+     * @param supervisor
+     * @return all the relationships this supervisor has with supervisees on the cuirrent date
+     * @throws PersonIsNotProviderException
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Relationship> getSuperviseeRelationships(Person supervisor)
+            throws PersonIsNotProviderException;
+
+    /**
+     * Returns all the persons this supervisor supervises on the specified date
+     *
+     * @param supervisor
+     * @param date
+     * @return all the persons this supervisor supervises on the specified date
+     * @throws PersonIsNotProviderException
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Person> getSupervisees(Person supervisor, Date date)
+            throws PersonIsNotProviderException;
+
+    /**
+     * Returns all the persons this supervisor supervises on the current date
+     *
+     * @param supervisor
+     * @return all the persons this supervisor supervises on the current date
+     * @throws PersonIsNotProviderException
+     * @should fail if provider is null
+     * @should fail if provider is not a provider
+     */
+    @Transactional(readOnly = true)
+    public List<Person> getSupervisees(Person supervisor)
+            throws PersonIsNotProviderException;
+
 }

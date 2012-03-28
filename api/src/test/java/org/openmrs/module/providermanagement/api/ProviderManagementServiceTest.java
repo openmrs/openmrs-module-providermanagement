@@ -1141,7 +1141,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // there should be two providers
         Assert.assertEquals(new Integer(2), (Integer) providers.size());
 
-        // double-check to make sure the are the correct relationships
+        // double-check to make sure the are the correct providers
         // be iterating through and removing the two that SHOULD be there
         Iterator<Person> i = providers.iterator();
 
@@ -1477,5 +1477,509 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(new Integer(1), (Integer) newProviderPatients.size());
         Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
     }
+
+    @Test
+    public void getSupervisorRelationshipType_shouldGetSupervisorRelationshipType() {
+        RelationshipType supervisorRelationshipType = providerManagementService.getSupervisorRelationshipType();
+        Assert.assertEquals(new Integer(1004), supervisorRelationshipType.getId());
+    }
+
+    @Test
+    public void assignProviderToSupervisor_shouldAssignProviderToSupervisor() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // do the assignment
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+
+        // verify that the relationship now exists
+        List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, providerManagementService.getSupervisorRelationshipType());
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+    }
+
+    @Test
+    public void assignProviderToSupervisor_shouldAssignProviderToSupervisorOnSpecifiedDates() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, supervisor, PAST_DATE);
+        providerManagementService.assignProviderToSupervisor(provider2, supervisor, DATE);
+
+        // if we query the past date, only the first relationship should exist
+        List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, null, providerManagementService.getSupervisorRelationshipType(), PAST_DATE);
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Assert.assertEquals(provider1, relationships.get(0).getPersonB());
+
+        // but if query on the current date, both the relationships should exist
+        relationships = Context.getPersonService().getRelationships(supervisor, null, providerManagementService.getSupervisorRelationshipType(), DATE);
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the two that SHOULD be there
+        Iterator<Relationship> i = relationships.iterator();
+
+        while (i.hasNext()) {
+            Relationship r = i.next();
+
+            if (r.getPersonB().getId() == 6 || r.getPersonB().getId() == 7) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, relationships.size());
+    }
+
+    @Test(expected = APIException.class)
+    public void assignProviderToSupervisor_shouldFailIfProviderNull() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        providerManagementService.assignProviderToSupervisor(null, supervisor);
+    }
+
+    @Test(expected = APIException.class)
+    public void assignProviderToSupervisor_shouldFailIfSupervisorNull() throws Exception {
+        Person provider = Context.getPersonService().getPerson(6);  // binome
+        providerManagementService.assignProviderToSupervisor(provider, null);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void assignProviderToSupervisor_shouldFailIfProviderNotAProvider() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(502);    // not a provider
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void assignProviderToSupervisor_shouldFailIfSupervisorNotAProvider() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(502);  // not a provider
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+    }
+
+    @Test(expected = InvalidSupervisorException.class)
+    public void assignProviderToSupervisor_shouldFailIFSupervisorDoesNotSupportProvider() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(7);  // binome
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+    }
+
+    @Test(expected = ProviderAlreadyAssignedToSupervisorException.class)
+    public void assignProviderToSupervisor_shouldFailIfProviderAlreadyAssignedToSupervisor() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // do the assignment
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+
+       // if we try to do the assignment again, it should fail
+       providerManagementService.assignProviderToSupervisor(provider, supervisor);
+    }
+
+    @Test
+    public void unassignProviderFromSupervisor_shouldUnassignProviderFromSupervisor() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // do the assignment
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+
+        // now do the unassignment
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor);
+
+        // the relationship should still exist on the current date, but it should have an end date of the current date
+        List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, providerManagementService.getSupervisorRelationshipType(), DATE);
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Assert.assertEquals(ProviderManagementUtils.clearTimeComponent(new Date()), relationships.get(0).getEndDate());
+
+        // the relationship should not exist on a future date
+        // the relationship should still exist on the current date, but it should have an end date of the current date
+        relationships = Context.getPersonService().getRelationships(supervisor, provider, providerManagementService.getSupervisorRelationshipType(), FUTURE_DATE);
+        Assert.assertEquals(new Integer(0), (Integer) relationships.size());
+    }
+
+    @Test
+    public void unassignProviderFromSupervisor_shouldSetProperEndDate() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // do the assignment on a date in the past
+        providerManagementService.assignProviderToSupervisor(provider, supervisor, FURTHER_PAST_DATE);
+
+        // now do the unassignment
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor, PAST_DATE);
+
+        // the relationship should not exist on the current date
+        // the relationship should still exist on the current date, but it should have an end date of the current date
+        List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, providerManagementService.getSupervisorRelationshipType(), DATE);
+        Assert.assertEquals(new Integer(0), (Integer) relationships.size());
+        
+        // confirm that the relationship has the proper end date
+        relationships = Context.getPersonService().getRelationships(supervisor, provider, providerManagementService.getSupervisorRelationshipType(), PAST_DATE);
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Assert.assertEquals(PAST_DATE, relationships.get(0).getEndDate());
+    }
+
+    @Test(expected = APIException.class)
+    public void unassignProviderFromSupervisor_shouldFailIfProviderNull() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // do the assignment
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+
+        // attempt the unassignment
+        providerManagementService.unassignProviderFromSupervisor(null, supervisor);
+    }
+
+    @Test(expected = APIException.class)
+    public void unassignProviderFromSupervisor_shouldFailIfSupervisorNull() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // do the assignment
+        providerManagementService.assignProviderToSupervisor(provider, null);
+
+
+        // attempt the unassignment
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void unassignProviderFromSupervisor_shouldFailIfSupervisorNotProvider() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(502);  // not a provider
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // attempt the unassignment
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void unassignProviderFromSupervisor_shouldFailIfProviderNotProvider() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(502);    // not a provider
+
+        // attempt the unassignment
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor);
+    }
+
+    @Test(expected = ProviderNotAssignedToSupervisorException.class)
+    public void unassignProviderFromSupervisor_shouldFailIfProviderNotAssignedToSupervisor() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+
+        // attempt the unassignment
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor);
+    }
+
+    @Test
+    public void unassignAllSupervisorsFromProvider_shouldUnassignAllSupervisorsFromProvider() throws Exception {
+        // first, assign a couple supervisors to a provider
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+        Person supervisor1 = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisor2 = Context.getPersonService().getPerson(501);  // community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider, supervisor1);
+        providerManagementService.assignProviderToSupervisor(provider, supervisor2);
+
+        // sanity check
+        List<Relationship> relationships = Context.getPersonService().getRelationships(null, provider, providerManagementService.getSupervisorRelationshipType(), DATE);
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+        
+        // now do the unassignment
+        providerManagementService.unassignAllSupervisorsFromProvider(provider);
+        
+        // the relationships should still on the current date, but should be ended on the current date
+        relationships = Context.getPersonService().getRelationships(null, provider, providerManagementService.getSupervisorRelationshipType(), DATE);
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+        for (Relationship r : relationships) {
+            Assert.assertEquals(DATE, r.getEndDate());
+        }
+
+        // and if we check in the future, the relationships should not be returned
+        relationships = Context.getPersonService().getRelationships(null, provider, providerManagementService.getSupervisorRelationshipType(), FUTURE_DATE);
+        Assert.assertEquals(new Integer(0), (Integer) relationships.size());
+    }
+
+    @Test(expected = APIException.class)
+    public void unassignAllSupervisorsFromProvider_shouldFailIfProviderNull() throws Exception {
+        providerManagementService.unassignAllSupervisorsFromProvider(null);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void unassignAllSupervisorsFromProvider_shouldFailIfProviderNotProvider() throws Exception {
+        Person provider = Context.getPersonService().getPerson(502);
+        providerManagementService.unassignAllSupervisorsFromProvider(provider);
+    }
+    
+    @Test
+    public void unassignAllProvidersFromSupervisor_shouldUnassignAllProvidersFromSupervisor() throws Exception {
+        // first, assign a couple supervisors to a provider
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, supervisor);
+        providerManagementService.assignProviderToSupervisor(provider2, supervisor);
+
+        // sanity check
+        List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, null, providerManagementService.getSupervisorRelationshipType(), DATE);
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+
+        // now do the unassignment
+        providerManagementService.unassignAllProvidersFromSupervisor(supervisor);
+
+        // the relationships should still on the current date, but should be ended on the current date
+        relationships = Context.getPersonService().getRelationships(supervisor, null, providerManagementService.getSupervisorRelationshipType(), DATE);
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+        for (Relationship r : relationships) {
+            Assert.assertEquals(DATE, r.getEndDate());
+        }
+
+        // and if we check in the future, the relationships should not be returned
+        relationships = Context.getPersonService().getRelationships(supervisor, null, providerManagementService.getSupervisorRelationshipType(), FUTURE_DATE);
+        Assert.assertEquals(new Integer(0), (Integer) relationships.size());
+    }
+
+    @Test(expected = APIException.class)
+    public void unassignAllProvidersFromSupervisor_shouldFailIfSupervisorNull() throws Exception {
+        providerManagementService.unassignAllProvidersFromSupervisor(null);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void unassignAllProvidersFromSupervisor_shouldFailIfSupervisorNotProvider() throws Exception {
+        Person supervisor = Context.getPersonService().getPerson(502);
+        providerManagementService.unassignAllProvidersFromSupervisor(supervisor);
+    }
+
+    @Test
+    public void getSuperviseeRelationships_shouldGetAllSuperviseeRelationshipsForSupervisor() throws Exception {
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, supervisor);
+        providerManagementService.assignProviderToSupervisor(provider2, supervisor);
+
+        // verify that the getSuperviseeRelationship method returns these relationships
+        List<Relationship> relationships = providerManagementService.getSuperviseeRelationships(supervisor);
+        
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the two that SHOULD be there
+        Iterator<Relationship> i = relationships.iterator();
+
+        while (i.hasNext()) {
+            Relationship r = i.next();
+
+            if (r.getPersonB().getId() == 6 || r.getPersonB().getId() == 7) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, relationships.size());
+    }
+
+    @Test
+    public void getSuperviseeRelationships_shouldGetAllSuperviseeRelationshipsForSupervisorOnSpecifiedDate() throws Exception {
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, supervisor, DATE);
+        providerManagementService.assignProviderToSupervisor(provider2, supervisor, FURTHER_PAST_DATE);  // assign this relationship the past and end it
+        providerManagementService.unassignProviderFromSupervisor(provider2, supervisor, PAST_DATE);
+
+        // verify that the getSupervisorRelationship method returns these relationships
+        List<Relationship> relationships = providerManagementService.getSuperviseeRelationships(supervisor, DATE);  // only query for relationships on past date
+
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Assert.assertEquals(new Integer(6), relationships.get(0).getPersonB().getId());
+    }
+
+    @Test(expected = APIException.class)
+    public void getSuperviseeRelationships_shouldFailIfSupervisorNull() throws Exception {
+        providerManagementService.getSuperviseeRelationships(null, DATE);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void getSuperviseeRelationships_shouldFailIfSuperviseeNotProvider() throws Exception {
+        Person supervisee = Context.getPersonService().getPerson(502);    // not a provider
+        providerManagementService.getSuperviseeRelationships(supervisee, DATE);
+    }
+
+    @Test
+    public void getSupervisees_shouldGetAllSuperviseesForSupervisor() throws Exception {
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, supervisor);
+        providerManagementService.assignProviderToSupervisor(provider2, supervisor);
+
+        // verify that the getSupervisees method returns these providers
+        List<Person> supervisees = providerManagementService.getSupervisees(supervisor);
+
+        Assert.assertEquals(new Integer(2), (Integer) supervisees.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the two that SHOULD be there
+        Iterator<Person> i = supervisees.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 6 || p.getId() == 7) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, supervisees.size());
+    }
+
+    @Test
+    public void getSupervisees_shouldGetAllSuperviseesForSupervisorOnSpecifiedDate() throws Exception {
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, supervisor, DATE);
+        providerManagementService.assignProviderToSupervisor(provider2, supervisor, FURTHER_PAST_DATE);  // assign this relationship the past and end it
+        providerManagementService.unassignProviderFromSupervisor(provider2, supervisor, PAST_DATE);
+
+        // verify that the getSupervisorRelationship method returns these relationships
+        List<Person> providers = providerManagementService.getSupervisees(supervisor, DATE);  // only query for relationships on past date
+
+        Assert.assertEquals(new Integer(1), (Integer) providers.size());
+        Assert.assertEquals(new Integer(6), providers.get(0).getId());
+    }
+
+    @Test
+    public void getSupervisorRelationships_shouldGetAllSupervisorRelationshipsForProvider() throws Exception {
+        // first, assign a couple supervisors to a provider
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+        Person supervisor1 = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisor2 = Context.getPersonService().getPerson(501);  // community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider, supervisor1);
+        providerManagementService.assignProviderToSupervisor(provider, supervisor2);
+
+        // verify that the getSupervisorRelationship method returns these relationships
+        List<Relationship> relationships = providerManagementService.getSupervisorRelationships(provider);
+
+        Assert.assertEquals(new Integer(2), (Integer) relationships.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the two that SHOULD be there
+        Iterator<Relationship> i = relationships.iterator();
+
+        while (i.hasNext()) {
+            Relationship r = i.next();
+
+            if (r.getPersonA().getId() == 8 || r.getPersonA().getId() == 501) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, relationships.size());
+    }
+
+    @Test
+    public void getSupervisorRelationships_shouldGetAllSupervisorRelationshipsForProviderOnSpecifiedDate() throws Exception {
+        // first, assign a couple supervisors to a provider
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+        Person supervisor1 = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisor2 = Context.getPersonService().getPerson(501);  // community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider, supervisor1, DATE);
+        providerManagementService.assignProviderToSupervisor(provider, supervisor2, FURTHER_PAST_DATE);  // assign this relationship the past and end it
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor2, PAST_DATE);
+
+        // verify that the getSupervisorRelationship method returns these relationships
+        List<Relationship> relationships = providerManagementService.getSupervisorRelationships(provider, DATE);  // only query for relationships on past date
+
+        Assert.assertEquals(new Integer(1), (Integer) relationships.size());
+        Assert.assertEquals(new Integer(8), relationships.get(0).getPersonA().getId());
+    }
+
+    @Test(expected = APIException.class)
+    public void getSupervisorRelationships_shouldFailIfProviderNull() throws Exception {
+        providerManagementService.getSupervisorRelationships(null, DATE);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void getSupervisorRelationships_shouldFailIfProviderNotProvider() throws Exception {
+        Person provider = Context.getPersonService().getPerson(502);    // not a provider
+        providerManagementService.getSupervisorRelationships(provider, DATE);
+    }
+
+    @Test
+    public void getSupervisors_shouldGetAllSupervisorsForProvider() throws Exception {
+        // first, assign a couple supervisors to a provider
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+        Person supervisor1 = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisor2 = Context.getPersonService().getPerson(501);  // community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider, supervisor1);
+        providerManagementService.assignProviderToSupervisor(provider, supervisor2);
+
+        // verify that the getSupervisorRelationship method returns these relationships
+        List<Person> supervisors = providerManagementService.getSupervisors(provider);
+
+        Assert.assertEquals(new Integer(2), (Integer) supervisors.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the two that SHOULD be there
+        Iterator<Person> i = supervisors.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 8 || p.getId() == 501) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, supervisors.size());
+    }
+
+    @Test
+    public void getSupervisors_shouldGetAllSupervisorsForProviderOnSpecifiedDate() throws Exception {
+        // first, assign a couple supervisors to a provider
+        Person provider = Context.getPersonService().getPerson(6);    // binome
+        Person supervisor1 = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisor2 = Context.getPersonService().getPerson(501);  // community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider, supervisor1, DATE);
+        providerManagementService.assignProviderToSupervisor(provider, supervisor2, FURTHER_PAST_DATE);  // assign this relationship the past and end it
+        providerManagementService.unassignProviderFromSupervisor(provider, supervisor2, PAST_DATE);
+
+        // verify that the getSupervisorRelationship method returns these relationships
+        List<Person> providers = providerManagementService.getSupervisors(provider, DATE);  // only query for relationships on past date
+
+        Assert.assertEquals(new Integer(1), (Integer) providers.size());
+        Assert.assertEquals(new Integer(8), providers.get(0).getId());
+    }
+
 }
 

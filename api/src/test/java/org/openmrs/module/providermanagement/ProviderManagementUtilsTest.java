@@ -21,6 +21,7 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationServiceTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -209,5 +210,73 @@ public class ProviderManagementUtilsTest extends BaseModuleContextSensitiveTest 
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001); // binome relationship
         Assert.assertFalse(ProviderManagementUtils.supportsRelationshipType(provider, relationshipType));
     }
+    
+    @Test
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnRolesThatProviderCanSupervise() {
+        Person provider = Context.getPersonService().getPerson(2); // person who is both a binome supervisor and a community health nurse
+        List<ProviderRole> roles = ProviderManagementUtils.getProviderRolesThatProviderCanSupervise(provider);
+        Assert.assertEquals(new Integer (2), (Integer) roles.size());
 
+        // double-check to make sure the are the correct roles
+        // by iterating through and removing the two that SHOULD be there
+        Iterator<ProviderRole> i = roles.iterator();
+
+        while (i.hasNext()) {
+            ProviderRole role = i.next();
+            int id = role.getId();
+
+            if (id == 1001 || id == 1002 ) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, roles.size());
+
+    }
+
+    @Test
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnEmptyListIfProviderRoleDoesNotSupportSupervision() {
+        Person provider = Context.getPersonService().getPerson(6); // person who just a binome
+        List<ProviderRole> roles = ProviderManagementUtils.getProviderRolesThatProviderCanSupervise(provider);
+        Assert.assertEquals(new Integer (0), (Integer) roles.size());
+    }
+
+    @Test
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnEmptyListIfPersonIsNotProvider() {
+        Person provider = Context.getPersonService().getPerson(502); // person who is not a provider
+        List<ProviderRole> roles = ProviderManagementUtils.getProviderRolesThatProviderCanSupervise(provider);
+        Assert.assertEquals(new Integer (0), (Integer) roles.size());
+    }
+
+    @Test(expected = APIException.class)
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnEmptyListIfProviderNull() {
+        List<ProviderRole> roles = ProviderManagementUtils.getProviderRolesThatProviderCanSupervise(null);
+        Assert.assertEquals(new Integer (0), (Integer) roles.size());
+    }
+    
+    @Test
+    public void canSupervise_shouldReturnTrue() {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisee = Context.getPersonService().getPerson(6);    // binome
+        Assert.assertTrue(ProviderManagementUtils.canSupervise(supervisor, supervisee));
+    }
+
+    @Test
+    public void canSupervise_shouldReturnFalse() {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisee = Context.getPersonService().getPerson(9);    // accompagnateur
+        Assert.assertFalse(ProviderManagementUtils.canSupervise(supervisor, supervisee));
+
+        supervisor = Context.getPersonService().getPerson(6);  // binome
+        supervisee = Context.getPersonService().getPerson(7);    // binome
+        Assert.assertFalse(ProviderManagementUtils.canSupervise(supervisor, supervisee));
+    }
+
+    @Test
+    public void canSupervise_shouldReturnFalseIfSupervisorAndSuperviseeAreSamePerson() {
+        Person supervisor = Context.getPersonService().getPerson(2);  // person who is both a binome and community health nurse
+        Person supervisee = Context.getPersonService().getPerson(2);    // same person
+        Assert.assertFalse(ProviderManagementUtils.canSupervise(supervisor, supervisee));
+    }
 }

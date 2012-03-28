@@ -38,13 +38,15 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     // TODO: create a retire handler that ended provider/patient relationships and supervisor/supervisee relationships when a provider is retired?
     // TODO: what about a "purge" handler when a provider is purged?
 
-    // TODO: change exception for person is not a provider to use the new exception class?
+    // TODO: add checks to make sure person is not voided when appropriate (in the assignment classes?)
 
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private ProviderManagementDAO dao;
     
     private static ProviderAttributeType providerRoleAttributeType = null;
+
+    private static RelationshipType supervisorRelationshipType = null;
 	
 	/**
      * @param dao the dao to set
@@ -130,6 +132,15 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     public void purgeProviderRole(ProviderRole role) {
+
+        // TODO: this should fail if any provider is associated with this role
+
+        // first, remove this role as supervisee from any roles that can supervise it
+        for (ProviderRole r : getProviderRolesBySuperviseeProviderRole(role)) {
+            r.getSuperviseeProviderRoles().remove(role);
+            saveProviderRole(r);
+        }
+
         dao.deleteProviderRole(role);
     }
 
@@ -330,6 +341,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Patient cannot be voided");
         }
 
+        if (provider.isVoided()) {
+            throw new APIException("Provider cannot be voided");
+        }
+        
         if (!ProviderManagementUtils.isProvider(provider)) {
              throw new PersonIsNotProviderException(provider + " is not a provider");
         }
@@ -381,10 +396,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         if (relationshipType == null) {
             throw new APIException("Relationship type cannot be null");
-        }
-
-        if (patient.isVoided()) {
-            throw new APIException("Patient cannot be voided");
         }
 
         if (!ProviderManagementUtils.isProvider(provider)) {
@@ -659,6 +670,257 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 throw new APIException(e);
             }
         }
+    }
+
+    @Override
+    public RelationshipType getSupervisorRelationshipType() {
+        // TODO: error handling?
+        
+        if (supervisorRelationshipType == null) {
+            supervisorRelationshipType = Context.getPersonService().getRelationshipTypeByUuid(ProviderManagementConstants.SUPERVISOR_RELATIONSHIP_TYPE_UUID);   
+        }
+
+        return supervisorRelationshipType;
+    }
+
+    @Override
+    public void assignProviderToSupervisor(Person provider, Person supervisor, Date date)
+            throws PersonIsNotProviderException, InvalidSupervisorException,
+            ProviderAlreadyAssignedToSupervisorException {
+
+        if (supervisor == null) {
+            throw new APIException("Supervisor cannot be null");
+        }
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (!ProviderManagementUtils.isProvider(supervisor)) {
+            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+        }
+
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+
+        if (!ProviderManagementUtils.canSupervise(supervisor, provider)) {
+            throw new InvalidSupervisorException(supervisor + " is not a valid supervisor for " + provider);
+        }
+        
+        // if no date specified, use today's date
+        if (date == null) {
+            date = new Date();
+        }
+
+        // test to mark sure the relationship doesn't already exist
+        List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, getSupervisorRelationshipType(), date);
+        if (relationships != null && relationships.size() > 0) {
+            throw new ProviderAlreadyAssignedToSupervisorException(provider + " is already assigned to " + supervisor);
+        }
+
+        // go ahead and create the relationship
+        Relationship relationship = new Relationship();
+        relationship.setPersonA(supervisor);
+        relationship.setPersonB(provider);
+        relationship.setRelationshipType(getSupervisorRelationshipType());
+        relationship.setStartDate(ProviderManagementUtils.clearTimeComponent(date));
+        Context.getPersonService().saveRelationship(relationship);
+    }
+
+    @Override
+    public void assignProviderToSupervisor(Person provider, Person supervisor)
+            throws PersonIsNotProviderException, InvalidSupervisorException,
+            ProviderAlreadyAssignedToSupervisorException {
+        assignProviderToSupervisor(provider, supervisor, new Date());
+    }
+
+    @Override
+    public void unassignProviderFromSupervisor(Person provider, Person supervisor, Date date)
+            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException {
+
+        if (supervisor == null) {
+            throw new APIException("Supervisor cannot be null");
+        }
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (!ProviderManagementUtils.isProvider(supervisor)) {
+            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+        }
+
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+
+        // if no date specified, use today's date
+        if (date == null) {
+            date = new Date();
+        }
+
+        // find the existing relationship
+        List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, getSupervisorRelationshipType(), date);
+        if (relationships == null || relationships.size() == 0) {
+            throw new ProviderNotAssignedToSupervisorException("Provider " + provider + " is not assigned to supervisor " + supervisor);
+        }
+        if (relationships.size() > 1) {
+            // TODO: handle this better? maybe void all but one automatically?
+            throw new APIException("Duplicate supervisor relationship between " + provider + " and " + supervisor);
+        }
+
+        // go ahead and set the end date of the relationship
+        Relationship relationship = relationships.get(0);
+        relationship.setEndDate(ProviderManagementUtils.clearTimeComponent(date));
+        Context.getPersonService().saveRelationship(relationship);
+    }
+
+    @Override
+    public void unassignProviderFromSupervisor(Person provider, Person supervisor)
+            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException {
+        unassignProviderFromSupervisor(provider, supervisor, new Date());
+    }
+
+    @Override
+    public void unassignAllSupervisorsFromProvider(Person provider) 
+            throws PersonIsNotProviderException {
+         if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+
+        // go ahead and end each relationship on the current date
+        List<Relationship> relationships =
+                Context.getPersonService().getRelationships(null, provider, getSupervisorRelationshipType(), ProviderManagementUtils.clearTimeComponent(new Date()));
+        if (relationships != null || relationships.size() > 0) {
+            for (Relationship relationship : relationships) {
+                relationship.setEndDate(ProviderManagementUtils.clearTimeComponent(new Date()));
+                Context.getPersonService().saveRelationship(relationship);
+            }
+        }
+    }
+
+    @Override
+    public void unassignAllProvidersFromSupervisor(Person supervisor)
+            throws PersonIsNotProviderException {
+        if (supervisor == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (!ProviderManagementUtils.isProvider(supervisor)) {
+            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+        }
+
+        // go ahead and end each relationship on the current date
+        List<Relationship> relationships =
+                Context.getPersonService().getRelationships(supervisor, null, getSupervisorRelationshipType(), ProviderManagementUtils.clearTimeComponent(new Date()));
+        if (relationships != null || relationships.size() > 0) {
+            for (Relationship relationship : relationships) {
+                relationship.setEndDate(ProviderManagementUtils.clearTimeComponent(new Date()));
+                Context.getPersonService().saveRelationship(relationship);
+            }
+        }
+    }
+
+
+    @Override
+    public List<Relationship> getSupervisorRelationships(Person provider, Date date)
+            throws PersonIsNotProviderException {
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+
+        return Context.getPersonService().getRelationships(null, provider, getSupervisorRelationshipType(),ProviderManagementUtils.clearTimeComponent(new Date()));
+    }
+
+    @Override
+    public List<Relationship> getSupervisorRelationships(Person provider)
+            throws PersonIsNotProviderException{
+        return getSupervisorRelationships(provider, new Date());
+    }
+
+    @Override
+    public List<Person> getSupervisors(Person provider, Date date)
+            throws PersonIsNotProviderException {
+
+        List<Relationship> relationships = getSupervisorRelationships(provider, date);
+
+        Set<Person> providers = new HashSet<Person>();
+
+        for (Relationship relationship : relationships) {
+            if (!ProviderManagementUtils.isProvider(relationship.getPersonA()))   {
+                // something has gone really wrong here
+                throw new APIException(relationship.getPersonA() + " is not a provider");
+            }
+            else {
+                providers.add(relationship.getPersonA());
+            }
+        }
+
+        return new ArrayList<Person>(providers);
+    }
+
+    @Override
+    public List<Person> getSupervisors(Person provider)
+            throws PersonIsNotProviderException {
+        return getSupervisors(provider, new Date());
+    }
+
+    @Override
+    public List<Relationship> getSuperviseeRelationships(Person supervisor, Date date)
+            throws PersonIsNotProviderException {
+        
+        if (supervisor == null) {
+            throw new APIException("Supervisor cannot be null");
+        }
+
+        if (!ProviderManagementUtils.isProvider(supervisor)) {
+            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+        }
+
+        return Context.getPersonService().getRelationships(supervisor, null, getSupervisorRelationshipType(),ProviderManagementUtils.clearTimeComponent(new Date()));
+    }
+
+    @Override
+    public List<Relationship> getSuperviseeRelationships(Person supervisor)
+            throws PersonIsNotProviderException {
+        return getSuperviseeRelationships(supervisor, new Date());
+    }
+
+    @Override
+    public List<Person> getSupervisees(Person supervisor, Date date)
+            throws PersonIsNotProviderException {
+        
+        List<Relationship> relationships = getSuperviseeRelationships(supervisor, date);
+
+        Set<Person> providers = new HashSet<Person>();
+
+        for (Relationship relationship : relationships) {
+            if (!ProviderManagementUtils.isProvider(relationship.getPersonA()))   {
+                // something has gone really wrong here
+                throw new APIException(relationship.getPersonA() + " is not a provider");
+            }
+            else {
+                providers.add(relationship.getPersonB());
+            }
+        }
+
+        return new ArrayList<Person>(providers);
+    }
+
+    @Override
+    public List<Person> getSupervisees(Person supervisor)
+            throws PersonIsNotProviderException {
+        return getSupervisees(supervisor, new Date());
     }
 
     /**

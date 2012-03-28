@@ -15,6 +15,7 @@
 package org.openmrs.module.providermanagement;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.Predicate;
 import org.openmrs.*;
 import org.openmrs.api.APIException;
@@ -26,6 +27,26 @@ import java.util.*;
 public class ProviderManagementUtils {
 
     private static ProviderAttributeType providerRoleAttributeType = null;
+
+    /**
+     * Returns the role associated with the passed provider object
+     *
+     * @param provider
+     * @return the role associated with the passed provider object
+     */
+    public static ProviderRole getProviderRole(Provider provider) {
+        List<ProviderAttribute> attrs = provider.getActiveAttributes(getProviderRoleAttributeType());
+
+        if (attrs == null || attrs.size() == 0) {
+            return null;
+        }
+        else if (attrs.size() == 1){
+            return (ProviderRole) attrs.get(0).getValue();
+        }
+        else {
+            throw new APIException("Provider should never have more than one Provider Role");
+        }
+    }
 
     /**
      * Returns the provider roles associated with the specified provider
@@ -62,7 +83,7 @@ public class ProviderManagementUtils {
 
         return new ArrayList<ProviderRole>(providerRoles);
     }
-
+    
     /**
      * Returns whether or not the passed person has one or more associated providers (unretired or retired)
      * (So note that a person that only is associated with retired Provider objects is still consider a "provider")
@@ -103,7 +124,6 @@ public class ProviderManagementUtils {
     }
 
     /**
-     * 
      * Returns true if the specified provider can support the specified relationship type, false otherwise
      *
      * @param provider
@@ -130,6 +150,63 @@ public class ProviderManagementUtils {
         return false;
     }
 
+
+    /**
+     * Returns all the valid roles that the specified provider can supervise
+     *
+     * @param provider
+     * @return all the valid roles that the specified provider can supervise
+     */
+    public static List<ProviderRole> getProviderRolesThatProviderCanSupervise(Person provider) {
+
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        Set<ProviderRole> rolesThatProviderCanSupervise = new HashSet<ProviderRole>();
+        
+        // iterate through all the provider roles this provider supports
+        for (ProviderRole role : getProviderRoles(provider)) {
+            // add all roles that this role can supervise
+            if (role.getSuperviseeProviderRoles() != null && role.getSuperviseeProviderRoles().size() > 0) {
+                rolesThatProviderCanSupervise.addAll(role.getSuperviseeProviderRoles());
+            }
+        }
+
+        return new ArrayList<ProviderRole> (rolesThatProviderCanSupervise);
+    }
+    
+    /**
+     * Returns true if the specified supervisor can supervise the specified supervisee, false otherwise
+     * 
+     * @param supervisor
+     * @param supervisee
+     * @return true if the specified supervisor can supervise the specified supervisee, false otherwise
+     */
+    public static boolean canSupervise(Person supervisor, Person supervisee) {
+
+        if (supervisor == null) {
+            throw new APIException("Supervisor cannot be null");
+        }
+
+        if (supervisee == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        // return false if supervisor and supervisee are the same person!
+        if (supervisor.equals(supervisee)) {
+            return false;
+        }
+
+        // get all the provider roles the supervisor can supervise
+        List<ProviderRole> rolesThatProviderCanSupervisee = getProviderRolesThatProviderCanSupervise(supervisor);
+        
+        // get all the roles associated with the supervisee
+        List<ProviderRole> superviseeProviderRoles = getProviderRoles(supervisee);
+
+        return ListUtils.intersection(rolesThatProviderCanSupervisee, superviseeProviderRoles).size() > 0 ? true : false;
+    }
+    
     /**
      * Filters retired providers out of the list of passed providers
      * 
@@ -176,26 +253,6 @@ public class ProviderManagementUtils {
         cal.set(Calendar.MILLISECOND, 0);
 
         return cal.getTime();
-    }
-
-    /**
-     * Returns the role associated with the passed provider object
-     *
-     * @param provider
-     * @return the role associated with the passed provider object
-     */
-    public static ProviderRole getProviderRole(Provider provider) {
-        List<ProviderAttribute> attrs = provider.getActiveAttributes(getProviderRoleAttributeType());
-
-        if (attrs == null || attrs.size() == 0) {
-            return null;
-        }
-        else if (attrs.size() == 1){
-            return (ProviderRole) attrs.get(0).getValue();
-        }
-        else {
-            throw new APIException("Provider should never have more than one Provider Role");
-        }
     }
 
     /**
