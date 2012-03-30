@@ -15,6 +15,7 @@ package org.openmrs.module.providermanagement.api;
 
 import org.openmrs.*;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +32,12 @@ public interface ProviderManagementService extends OpenmrsService {
     // TODO: add permissions
 
 
+    public List<Provider> getProvidersByPerson(Person person);
 
 	/*
 	 * Basic methods for operating on provider roles
 	 */
+
 
     /**
      * Returns the provider attribute type that represents a provider role

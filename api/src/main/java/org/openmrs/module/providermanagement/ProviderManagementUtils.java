@@ -29,26 +29,6 @@ public class ProviderManagementUtils {
     private static ProviderAttributeType providerRoleAttributeType = null;
 
     /**
-     * Returns the role associated with the passed provider object
-     *
-     * @param provider
-     * @return the role associated with the passed provider object
-     */
-    public static ProviderRole getProviderRole(Provider provider) {
-        List<ProviderAttribute> attrs = provider.getActiveAttributes(getProviderRoleAttributeType());
-
-        if (attrs == null || attrs.size() == 0) {
-            return null;
-        }
-        else if (attrs.size() == 1){
-            return (ProviderRole) attrs.get(0).getValue();
-        }
-        else {
-            throw new APIException("Provider should never have more than one Provider Role");
-        }
-    }
-
-    /**
      * Returns the provider roles associated with the specified provider
      *
      * @param provider
@@ -69,15 +49,14 @@ public class ProviderManagementUtils {
         // (we use a set to avoid duplicates at this point)
         Set<ProviderRole> providerRoles = new HashSet<ProviderRole>();
         
-        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(provider);
+        Collection<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByPerson(provider);
 
         // TODO: no need to manually exclude retired providers after TRUNK-3219 has been implemented
         filterRetired(providers);
         
         for (Provider p : providers) {
-            ProviderRole providerRole = getProviderRole(p);
-            if (providerRole != null) {
-                providerRoles.add(providerRole);
+            if (p.getProviderRole() != null) {
+                providerRoles.add(p.getProviderRole());
             }
         }
 
@@ -98,7 +77,7 @@ public class ProviderManagementUtils {
         }
 
         // TODO: change this to explicitly include retired providers after TRUNK-3219 has been implemented
-        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
+        Collection<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByPerson(person);
         return providers == null || providers.size() == 0 ? false : true;
     }
 
@@ -132,7 +111,7 @@ public class ProviderManagementUtils {
      */
     public static boolean supportsRelationshipType(Person provider, RelationshipType relationshipType) {
 
-        Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(provider);
+        Collection<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByPerson(provider);
 
         // TODO: no need to manually exclude retired providers after TRUNK-3219 has been implemented
         filterRetired(providers);
@@ -276,15 +255,13 @@ public class ProviderManagementUtils {
             throw new APIException("Relationship type should not be null");
         }
 
-        ProviderRole role = getProviderRole(provider);
-
         // if this provider has no role, return false
-        if (role == null) {
+        if (provider.getProviderRole() == null) {
             return false;
         }
         // otherwise, test if the provider's role supports the specified relationship type
         else {
-            return role.supportsRelationshipType(relationshipType);
+            return provider.getProviderRole().supportsRelationshipType(relationshipType);
         }
     }
    

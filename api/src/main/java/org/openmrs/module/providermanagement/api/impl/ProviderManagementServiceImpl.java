@@ -21,9 +21,8 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.api.APIException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.module.providermanagement.ProviderManagementConstants;
-import org.openmrs.module.providermanagement.ProviderManagementUtils;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.*;
+import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 import org.openmrs.module.providermanagement.exception.*;
@@ -57,6 +56,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
      */
     public ProviderManagementDAO getDao() {
 	    return dao;
+    }
+
+    @Override
+    public List<Provider> getProvidersByPerson(Person person) {
+        return dao.getProvidersByPerson(person);
     }
 
     @Override
@@ -199,14 +203,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         Provider p = new Provider();
         p.setPerson(provider);
         p.setIdentifier(identifier);
-        
-        // create a new provider role attribute 
-        ProviderAttribute providerRoleAttribute = new ProviderAttribute();
-        providerRoleAttribute.setAttributeType(getProviderRoleAttributeType());
-        providerRoleAttribute.setValue(role);
-        p.setAttribute(providerRoleAttribute);
-        
-        // save this new provider
+        p.setProviderRole(role);
         Context.getProviderService().saveProvider(p);
     }
 
@@ -230,8 +227,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // note that we don't check to make sure this provider is a person
 
         // iterate through all the providers and retire any with the specified role
-        for (Provider p : Context.getProviderService().getProvidersByPerson(provider)) {
-            if (ProviderManagementUtils.getProviderRole(p).equals(role)) {
+        for (Provider p : getProvidersByPerson(provider)) {
+            if (p.getProviderRole().equals(role)) {
                 Context.getProviderService().retireProvider(p, "removing provider role " + role + " from " + provider);
             }
         }
@@ -249,21 +246,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         // TODO: figure out if we want to sort results here
 
-        List<Provider> providers = new ArrayList<Provider>();
-
-        // iterate through each role and fetch the matching providers for each role
-        // note that since a provider can only have one role, we don't
-        // have to worry about duplicates, ie. fetching the same provider twice
-
-        // TODO: but duplicate Persons could be a possibility...?
-
-        for (ProviderRole role : roles) {
-            // create the attribute type to add to the query
-            Map<ProviderAttributeType, Object> attributeValueMap = new HashMap<ProviderAttributeType, Object>();
-            attributeValueMap.put(getProviderRoleAttributeType(), role);
-            // find all providers with that role
-            providers.addAll(Context.getProviderService().getProviders(null, null, null, attributeValueMap));
-        }
+        List<Provider> providers = dao.getProvidersByProviderRoles(roles);
 
         return providersToPersons(providers);
     }

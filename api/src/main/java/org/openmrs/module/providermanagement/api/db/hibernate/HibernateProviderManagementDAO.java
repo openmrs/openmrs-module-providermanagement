@@ -17,9 +17,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Person;
 import org.openmrs.RelationshipType;
+import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 
@@ -92,5 +95,27 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     @Override
     public void deleteProviderRole(ProviderRole role) {
         sessionFactory.getCurrentSession().delete(role);
+    }
+
+    @Override
+    public List<Provider> getProvidersByPerson(Person person) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
+        criteria.add(Restrictions.eq("person", person));
+        criteria.add(Restrictions.eq("retired", false));
+        criteria.addOrder(Order.asc("providerId"));
+        @SuppressWarnings("unchecked")
+        List<Provider> list = criteria.list();
+        return list;
+    }
+
+    @Override
+    public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
+        criteria.add(Restrictions.in("providerRole", roles));
+        criteria.add(Restrictions.eq("retired", false));
+        criteria.addOrder(Order.asc("providerId"));
+        @SuppressWarnings("unchecked")
+        List<Provider> list = criteria.list();
+        return list;
     }
 }

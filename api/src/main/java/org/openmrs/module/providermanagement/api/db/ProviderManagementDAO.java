@@ -13,7 +13,9 @@
  */
 package org.openmrs.module.providermanagement.api.db;
 
+import org.openmrs.Person;
 import org.openmrs.RelationshipType;
+import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 
@@ -84,4 +86,8 @@ public interface ProviderManagementDAO {
      */
     public void deleteProviderRole(ProviderRole role);
 
+
+    public List<Provider> getProvidersByPerson(Person person);
+
+    public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles);
 }
