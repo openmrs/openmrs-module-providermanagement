@@ -31,6 +31,7 @@ public interface ProviderManagementService extends OpenmrsService {
     // TODO: add permissions
 
 
+
 	/*
 	 * Basic methods for operating on provider roles
 	 */
@@ -169,7 +170,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param role
      */
     @Transactional
-    public void unassignProviderRoleFromProvider(Person provider, ProviderRole role);
+    public void unassignProviderRoleFromPerson(Person provider, ProviderRole role);
 
 
     // TODO: probably need a purge option as well

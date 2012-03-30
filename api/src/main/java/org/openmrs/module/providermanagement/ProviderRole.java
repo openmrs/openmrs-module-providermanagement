@@ -30,20 +30,19 @@ import org.openmrs.RelationshipType;
  * For example, a "Community Health Worker" role might support an "Accompagnateur" relationship,
  * and "Head Surgeon" role might be able to oversee a person with Provider Role of "Surgeon".
  */
-public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
+    public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
-    // TODO: add the OpenMRS license everywhere
-    // TODO: toString method?
+        // TODO: toString method?
 
-	private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-    private Integer providerRoleId;
+        private Integer providerRoleId;
 
-    // the provider/patient relationships this role can support
-    private Set<RelationshipType> relationshipTypes;
+        // the provider/patient relationships this role can support
+        private Set<RelationshipType> relationshipTypes;
 
-    // the provider roles this provider role can supervisor
-    private Set<ProviderRole> superviseeProviderRoles;
+        // the provider roles this provider role can supervise
+        private Set<ProviderRole> superviseeProviderRoles;
 
 
     // whether or not this role can serve as a supervisor

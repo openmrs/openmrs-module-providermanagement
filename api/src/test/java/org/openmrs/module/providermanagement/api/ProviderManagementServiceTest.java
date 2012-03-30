@@ -334,9 +334,12 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void unassignProviderRoleFromProvider_shouldUnassignRoleFromProvider() {
         Person provider = Context.getProviderService().getProvider(1006).getPerson();
         ProviderRole role = providerManagementService.getProviderRole(1002);
-        providerManagementService.unassignProviderRoleFromProvider(provider, role);
+        providerManagementService.unassignProviderRoleFromPerson(provider, role);
         
         Assert.assertEquals(new Integer(0), (Integer) ProviderManagementUtils.getProviderRoles(provider).size());
+
+        // TODO: also make sure that the underlying provider has been voided
+
     }
 
     @Test
@@ -345,7 +348,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Person provider = Context.getPersonService().getPerson(2);
         
         // unassign one of these roles
-        providerManagementService.unassignProviderRoleFromProvider(provider, providerManagementService.getProviderRole(1001));
+        providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1001));
         
         // verify that only the other role remains
         List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
@@ -359,7 +362,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Person provider = Context.getPersonService().getPerson(6);
 
         // unassign some other role
-        providerManagementService.unassignProviderRoleFromProvider(provider, providerManagementService.getProviderRole(1002));
+        providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1002));
 
         // verify that the binome role still remains
         List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
@@ -373,7 +376,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
        Person provider = Context.getPersonService().getPerson(1);
 
        // unassign some role that this person does not have
-       providerManagementService.unassignProviderRoleFromProvider(provider, providerManagementService.getProviderRole(1002));
+       providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1002));
 
        List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
        Assert.assertEquals(new Integer(0), (Integer) roles.size());
@@ -385,7 +388,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Person provider = Context.getPersonService().getPerson(502);
 
         // unassign some role
-        providerManagementService.unassignProviderRoleFromProvider(provider, providerManagementService.getProviderRole(1002));
+        providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1002));
         Assert.assertTrue(!ProviderManagementUtils.isProvider(provider));
     }
 
@@ -1864,6 +1867,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // verify that the getSupervisorRelationship method returns these relationships
         List<Person> providers = providerManagementService.getSuperviseesForSupervisor(supervisor, DATE);  // only query for relationships on past date
 
+        // TODO: I think we can get rid of the new Integer and Integer casting here
         Assert.assertEquals(new Integer(1), (Integer) providers.size());
         Assert.assertEquals(new Integer(6), providers.get(0).getId());
     }

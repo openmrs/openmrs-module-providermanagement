@@ -35,9 +35,6 @@ import java.util.*;
  */
 public class ProviderManagementServiceImpl extends BaseOpenmrsService implements ProviderManagementService {
 
-    // TODO: create a retire handler that ended provider/patient relationships and supervisor/supervisee relationships when a provider is retired?
-    // TODO: what about a "purge" handler when a provider is purged?
-
     // TODO: add checks to make sure person is not voided when appropriate (in the assignment classes?)
 
 	protected final Log log = LogFactory.getLog(this.getClass());
@@ -159,7 +156,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 relationshipTypes.addAll(CollectionUtils.select(providerRole.getRelationshipTypes(), new Predicate() {
                     @Override
                     public boolean evaluate(Object relationshipType) {
-                        return ((RelationshipType) relationshipType).getRetired();
+                        return !((RelationshipType) relationshipType).getRetired();
                     }
                 }));
             }
@@ -214,7 +211,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public void unassignProviderRoleFromProvider(Person provider, ProviderRole role) {
+    public void unassignProviderRoleFromPerson(Person provider, ProviderRole role) {
         // TODO: make sure this syncs properly!
 
         if (provider == null) {
