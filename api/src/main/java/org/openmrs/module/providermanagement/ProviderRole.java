@@ -32,8 +32,6 @@ import org.openmrs.RelationshipType;
  */
     public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
 
-        // TODO: toString method?
-
         private static final long serialVersionUID = 1L;
 
         private Integer providerRoleId;
@@ -45,53 +43,61 @@ import org.openmrs.RelationshipType;
         private Set<ProviderRole> superviseeProviderRoles;
 
 
-    // whether or not this role can serve as a supervisor
-    public boolean isSupervisorRole() {
-        return (superviseeProviderRoles == null || superviseeProviderRoles.size() == 0) ? false : true;
+        // whether or not this role can serve as a supervisor
+        public boolean isSupervisorRole() {
+            return (superviseeProviderRoles == null || superviseeProviderRoles.size() == 0) ? false : true;
+        }
+
+        // whether or not this role can provide direct patient care
+        public boolean isDirectPatientCareRole() {
+            return (relationshipTypes == null || relationshipTypes.size() == 0) ? false : true;
+        }
+
+        // whether or not this role supports the specified relationship type
+        public boolean supportsRelationshipType(RelationshipType relationshipType) {
+            return (relationshipTypes != null && relationshipType != null && relationshipTypes.contains(relationshipType) ? true : false);
+        }
+
+    @Override
+    public String toString() {
+        return "ProviderRole{" +
+                "providerRoleId=" + providerRoleId +
+                ", name=" + this.getName() +
+                '}';
     }
 
-    // whether or not this role can provide direct patient care
-    public boolean isDirectPatientCareRole() {
-        return (relationshipTypes == null || relationshipTypes.size() == 0) ? false : true;
-    }
-    
-    // whether or not this role supports the specified relationship type
-    public boolean supportsRelationshipType(RelationshipType relationshipType) {
-        return (relationshipTypes != null && relationshipType != null && relationshipTypes.contains(relationshipType) ? true : false);
-    }
+    @Override
+        public Integer getId() {
+            return providerRoleId;
+        }
 
-	@Override
-	public Integer getId() {
-		return providerRoleId;
-	}
+        @Override
+        public void setId(Integer id) {
+            this.providerRoleId = id;
+        }
 
-	@Override
-	public void setId(Integer id) {
-		this.providerRoleId = id;
-	}
+        public Integer getProviderRoleId() {
+            return providerRoleId;
+        }
 
-    public Integer getProviderRoleId() {
-        return providerRoleId;
-    }
+        public void setProviderRoleId(Integer id) {
+            this.providerRoleId = id;
+        }
 
-    public void setProviderRoleId(Integer id) {
-        this.providerRoleId = id;
-    }
+        public Set<RelationshipType> getRelationshipTypes() {
+            return relationshipTypes;
+        }
 
-    public Set<RelationshipType> getRelationshipTypes() {
-        return relationshipTypes;
-    }
+        public void setRelationshipTypes(Set<RelationshipType> relationshipTypes) {
+            this.relationshipTypes = relationshipTypes;
+        }
 
-    public void setRelationshipTypes(Set<RelationshipType> relationshipTypes) {
-        this.relationshipTypes = relationshipTypes;
-    }
+        public Set<ProviderRole> getSuperviseeProviderRoles() {
+            return superviseeProviderRoles;
+        }
 
-    public Set<ProviderRole> getSuperviseeProviderRoles() {
-        return superviseeProviderRoles;
-    }
-
-    public void setSuperviseeProviderRoles(Set<ProviderRole> superviseeProviderRoles) {
-        this.superviseeProviderRoles = superviseeProviderRoles;
-    }
+        public void setSuperviseeProviderRoles(Set<ProviderRole> superviseeProviderRoles) {
+            this.superviseeProviderRoles = superviseeProviderRoles;
+        }
 
 }
