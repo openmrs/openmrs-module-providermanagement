@@ -1,9 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
 
-    <!-- this two types are baked into the module -->
-    <provider_attribute_type provider_attribute_type_id="1001" name="Provider Role" datatype="org.openmrs.module.providermanagement.ProviderRoleDatatype" uuid="cb7028a0-72c3-11e1-b0c4-0800200c9a66" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" max_occurs="1" retired="false" />
-    <relationship_type relationship_type_id="1004" a_is_to_b="Supervisor" b_is_to_a="Supervisee" preferred="0" weight="0" description="Relationship from supervisor to supervisee" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc"/>
+    <!-- this types is baked into the module -->
+     <relationship_type relationship_type_id="1004" a_is_to_b="Supervisor" b_is_to_a="Supervisee" preferred="0" weight="0" description="Relationship from supervisor to supervisee" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc"/>
 
     <!-- set up the provider roles and relationships and supervisees they support -->
     <providermanagement_provider_role provider_role_id="1001" name="Binome" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
@@ -32,7 +31,7 @@
     <!-- a binome supervisor -->
     <provider provider_id="1006" provider_role_id="1002" person_id="8" identifier="2a8" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cca9-11e0-9572-0800200c9a66" />
     <!-- an accompagnateur-->
-    <provider provider_id="1007" provider_role_id="1007" person_id="9" identifier="2a9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-11e0-9572-0800200c9a66" />
+    <provider provider_id="1007" provider_role_id="1011" person_id="9" identifier="2a9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-11e0-9572-0800200c9a66" />
     <!-- a community health nurse-->
     <provider provider_id="1008" provider_role_id="1005" person_id="501" identifier="2b9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-12e0-9572-0800200c9a66" />
     <!-- another community heath nurse, associated with the same person as provider 1003 -->

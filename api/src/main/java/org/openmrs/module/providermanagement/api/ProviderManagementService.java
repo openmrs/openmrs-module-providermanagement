@@ -31,22 +31,10 @@ public interface ProviderManagementService extends OpenmrsService {
 
     // TODO: add permissions
 
-
-    public List<Provider> getProvidersByPerson(Person person);
-
 	/*
 	 * Basic methods for operating on provider roles
 	 */
 
-
-    /**
-     * Returns the provider attribute type that represents a provider role
-     *
-     * @return the provider attribute type that represents a provider role
-     */
-    @Transactional(readOnly = true)
-    public ProviderAttributeType getProviderRoleAttributeType();
-    
     /**
      * Gets all unretired provider roles
      * @return list of all unretired provider roles
@@ -155,6 +143,33 @@ public interface ProviderManagementService extends OpenmrsService {
      * Basic methods for operating on providers using the new provider roles
      */
 
+    /**
+     * Returns all providers associated with the current person
+     *
+     * @param person
+     * @param includeRetired whether or not to include retired providers
+     * @return all providers associated with the current person
+     */
+    @Transactional(readOnly = true)
+    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
+
+    /**
+     * Returns all providers (excluding retired providers) associated with the current person
+     *
+     * @param person
+     * @return all providers (excluding retired providers) associated with the current person
+     */
+    @Transactional(readOnly = true)
+    public List<Provider> getProvidersByPerson(Person person);
+
+    /**
+     * Returns the provider roles associated with the specified provider
+     *
+     * @param provider
+     * @return the provider role associated with the specified provider
+     */
+    @Transactional(readOnly = true)
+    public List<ProviderRole> getProviderRoles(Person provider);
 
     /**
      * Assigns a provider role to a person

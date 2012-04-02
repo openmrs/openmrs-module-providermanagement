@@ -19,10 +19,6 @@ package org.openmrs.module.providermanagement;
  */
 public class ProviderManagementConstants {
 
-    public static final String PROVIDER_ROLE_ATTRIBUTE_TYPE_UUID = "cb7028a0-72c3-11e1-b0c4-0800200c9a66";
-
-    // TODO: is this wrong?  should we really be using uuids here, or something else?
-
     public static final String SUPERVISOR_RELATIONSHIP_TYPE_UUID = "2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc";
 
 }

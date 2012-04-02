@@ -16,7 +16,7 @@ package org.openmrs.module.providermanagement;
 
 public class Provider extends org.openmrs.Provider {
 
-    ProviderRole providerRole;
+    private ProviderRole providerRole;
 
     public ProviderRole getProviderRole() {
         return providerRole;

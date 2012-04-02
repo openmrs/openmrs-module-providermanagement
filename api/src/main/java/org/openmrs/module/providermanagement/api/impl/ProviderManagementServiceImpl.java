@@ -39,8 +39,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private ProviderManagementDAO dao;
-    
-    private static ProviderAttributeType providerRoleAttributeType = null;
 
     private static RelationshipType supervisorRelationshipType = null;
 	
@@ -56,22 +54,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
      */
     public ProviderManagementDAO getDao() {
 	    return dao;
-    }
-
-    @Override
-    public List<Provider> getProvidersByPerson(Person person) {
-        return dao.getProvidersByPerson(person);
-    }
-
-    @Override
-    public ProviderAttributeType getProviderRoleAttributeType() {
-        // TODO: error handling?
-
-        if (providerRoleAttributeType == null) {
-            providerRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(ProviderManagementConstants.PROVIDER_ROLE_ATTRIBUTE_TYPE_UUID);
-        }
-
-        return providerRoleAttributeType;
     }
 
     @Override
@@ -134,7 +116,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     public void purgeProviderRole(ProviderRole role) {
 
-        // TODO: this should fail if any provider is associated with this role
+        // TODO: this should catch ConstraintViolationExpection? fail if any provider is associated with this role
 
         // first, remove this role as supervisee from any roles that can supervise it
         for (ProviderRole r : getProviderRolesBySuperviseeProviderRole(role)) {
@@ -172,6 +154,42 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     public List<RelationshipType> getAllProviderRoleRelationshipTypes() {
         return getAllProviderRoleRelationshipTypes(false);
+    }
+
+    @Override
+    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
+        return dao.getProvidersByPerson(person, includeRetired);
+    }
+
+    @Override
+    public List<Provider> getProvidersByPerson(Person person) {
+        return getProvidersByPerson(person, false);
+    }
+
+    @Override
+    public List<ProviderRole> getProviderRoles(Person provider) {
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (!ProviderManagementUtils.isProvider(provider)) {
+            // return empty list if this person is not a provider
+            return new ArrayList<ProviderRole>();
+        }
+
+        // otherwise, collect all the roles associated with this provider
+        // (we use a set to avoid duplicates at this point)
+        Set<ProviderRole> providerRoles = new HashSet<ProviderRole>();
+
+        Collection<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByPerson(provider);
+
+        for (Provider p : providers) {
+            if (p.getProviderRole() != null) {
+                providerRoles.add(p.getProviderRole());
+            }
+        }
+
+        return new ArrayList<ProviderRole>(providerRoles);
     }
 
     @Override
@@ -246,7 +264,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         // TODO: figure out if we want to sort results here
 
-        List<Provider> providers = dao.getProvidersByProviderRoles(roles);
+        List<Provider> providers = dao.getProvidersByProviderRoles(roles, false);
 
         return providersToPersons(providers);
     }

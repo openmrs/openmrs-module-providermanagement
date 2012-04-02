@@ -15,6 +15,7 @@ package org.openmrs.module.providermanagement.api;
 
 import static org.junit.Assert.*;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -76,6 +77,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         roles = providerManagementService.getAllProviderRoles(false);
         roleCount = roles.size();
         Assert.assertEquals(11, roleCount);
+        Context.flushSession();
     }
 
     @Test
@@ -83,6 +85,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<ProviderRole> roles = providerManagementService.getAllProviderRoles(true);
         int roleCount = roles.size();
         Assert.assertEquals(12, roleCount);
+        Context.flushSession();
     }
 
     @Test
@@ -196,10 +199,17 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     @Test
     public void deleteProviderRole_shouldDeleteProviderRole() {
-        ProviderRole role = providerManagementService.getProviderRole(1002);
+        ProviderRole role = providerManagementService.getProviderRole(1012);
         providerManagementService.purgeProviderRole(role);
         Assert.assertEquals(10, providerManagementService.getAllProviderRoles().size());
-        Assert.assertNull(providerManagementService.getProviderRole(1002));
+        Assert.assertNull(providerManagementService.getProviderRole(1012));
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void deleteProviderRole_shouldFailIfForeignKeyConstraintExists() {
+        ProviderRole role = providerManagementService.getProviderRole(1002);
+        providerManagementService.purgeProviderRole(role);
+        Context.flushSession();
     }
 
     // TODO: remove the ignore from these two tests once the retiring of child collections issue is figured out (TRUNK-3174)
@@ -279,6 +289,47 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
+    public void getProviderRoles_shouldGetProviderRoles() {
+        Person provider = Context.getPersonService().getPerson(2);
+        List<ProviderRole> roles = providerManagementService.getProviderRoles(provider);
+        Assert.assertEquals(new Integer(2), (Integer) roles.size());
+
+        // double-check to make sure the are the correct roles
+        // be iterating through and removing the two that SHOULD be there
+        Iterator<ProviderRole> i = roles.iterator();
+
+        while (i.hasNext()) {
+            ProviderRole role = i.next();
+            int id = role.getId();
+
+            if (id == 1001 || id == 1005 ) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, roles.size());
+    }
+
+    @Test
+    public void getProviderRoles_shouldReturnEmptySetForProviderWithNoRole()  {
+        Person provider = Context.getProviderService().getProvider(1002).getPerson();
+        List<ProviderRole> roles = providerManagementService.getProviderRoles(provider);
+        Assert.assertEquals(new Integer(0), (Integer) roles.size());
+    }
+
+    @Test
+    public void getProviderRoles_shouldIgnoreRetiredRoles() {
+        Person provider = Context.getPersonService().getPerson(2);
+        // retire one provider object associated with this person
+        Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
+
+        List<ProviderRole> roles = providerManagementService.getProviderRoles(provider);
+        Assert.assertEquals(new Integer(1), (Integer) roles.size());
+        Assert.assertEquals(new Integer(1005), roles.get(0).getId());
+    }
+
+    @Test
     public void assignProviderRoleToProvider_shouldAssignProviderRole() {
         // add a new role to the existing provider
         Person provider = Context.getProviderService().getProvider(1006).getPerson();
@@ -286,7 +337,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignProviderRoleToPerson(provider, role, "123");
 
         // the provider should now have two roles
-        List<ProviderRole> providerRoles = ProviderManagementUtils.getProviderRoles(provider);
+        List<ProviderRole> providerRoles = providerManagementService.getProviderRoles(provider);
         Assert.assertEquals(2, providerRoles.size());
 
         // double-check to make sure the are the correct roles
@@ -314,7 +365,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignProviderRoleToPerson(provider, role, "123");
 
         // the provider should still only have one role
-        List<ProviderRole> providerRoles = ProviderManagementUtils.getProviderRoles(provider);
+        List<ProviderRole> providerRoles = providerManagementService.getProviderRoles(provider);
         Assert.assertEquals(1, providerRoles.size());
         Assert.assertEquals(new Integer(1002), providerRoles.get(0).getId());
     }
@@ -336,7 +387,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.unassignProviderRoleFromPerson(provider, role);
         
-        Assert.assertEquals(0,  ProviderManagementUtils.getProviderRoles(provider).size());
+        Assert.assertEquals(0,  providerManagementService.getProviderRoles(provider).size());
 
         Provider p = Context.getProviderService().getProvider(1006);
         Assert.assertTrue(p.isRetired());
@@ -351,7 +402,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1001));
         
         // verify that only the other role remains
-        List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
+        List<ProviderRole> roles = providerManagementService.getProviderRoles(provider);
         Assert.assertEquals(1, roles.size());
         Assert.assertEquals(new Integer(1005), roles.get(0).getId());
     }
@@ -365,7 +416,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1002));
 
         // verify that the binome role still remains
-        List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
+        List<ProviderRole> roles = providerManagementService.getProviderRoles(provider);
         Assert.assertEquals(1,roles.size());
         Assert.assertEquals(new Integer(1001), roles.get(0).getId());
     }
@@ -378,7 +429,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
        // unassign some role that this person does not have
        providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1002));
 
-       List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
+       List<ProviderRole> roles = providerManagementService.getProviderRoles(provider);
        Assert.assertEquals(0, roles.size());
     }
 
@@ -465,6 +516,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<Person> providers = providerManagementService.getProvidersByRelationshipType(relationshipType);
 
         // there should be four providers (the 3 binomes, the binome supervisor, and the accompagnateur) that support the accompagnateur relationship
+
         Assert.assertEquals(5, providers.size());
 
         // double-check to make sure the are the correct providers

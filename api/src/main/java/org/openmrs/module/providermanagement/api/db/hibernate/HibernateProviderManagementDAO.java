@@ -98,10 +98,12 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public List<Provider> getProvidersByPerson(Person person) {
+    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
         criteria.add(Restrictions.eq("person", person));
-        criteria.add(Restrictions.eq("retired", false));
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
+        }
         criteria.addOrder(Order.asc("providerId"));
         @SuppressWarnings("unchecked")
         List<Provider> list = criteria.list();
@@ -109,10 +111,12 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles) {
+    public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
         criteria.add(Restrictions.in("providerRole", roles));
-        criteria.add(Restrictions.eq("retired", false));
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
+        }
         criteria.addOrder(Order.asc("providerId"));
         @SuppressWarnings("unchecked")
         List<Provider> list = criteria.list();

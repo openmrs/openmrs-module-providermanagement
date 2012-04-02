@@ -50,10 +50,6 @@
                 CONSTRAINT FOREIGN KEY (supervisee_provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-            INSERT INTO provider_attribute_type
-                (name, datatype, min_occurs, max_occurs,creator,date_created,uuid) VALUES
-                    ('Provider Role','org.openmrs.module.providermanagement.ProviderRoleDatatype',0,1,1,NOW(),'cb7028a0-72c3-11e1-b0c4-0800200c9a66');
-
             INSERT INTO relationship_type
                 (a_is_to_b, b_is_to_a, preferred, weight, description, creator, date_created,uuid) VALUES
                     ('Supervisor','Supervisee',0,0,'Provider supervisor to provider supervisee relationship', 1, NOW(), '2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc');

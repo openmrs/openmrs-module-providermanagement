@@ -87,7 +87,21 @@ public interface ProviderManagementDAO {
     public void deleteProviderRole(ProviderRole role);
 
 
-    public List<Provider> getProvidersByPerson(Person person);
+    /**
+     * Gets all providers associated with the current person
+     *
+     * @param person
+     * @param includeRetired whether or not to include retired providers
+     * @return all providers associated with the current person
+     */
+    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 
-    public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles);
+    /**
+     * Gets all providers with the selected provider roles
+     *
+     * @param roles
+     * @param includeRetired whether or not to include retired providers
+     * @return all providers with the selected provider roles
+     */
+    public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired);
 }

@@ -29,41 +29,6 @@ public class ProviderManagementUtils {
     private static ProviderAttributeType providerRoleAttributeType = null;
 
     /**
-     * Returns the provider roles associated with the specified provider
-     *
-     * @param provider
-     * @return the provider role associated with the specified provider
-     */
-    public static List<ProviderRole> getProviderRoles(Person provider) {
-
-        if (provider == null) {
-            throw new APIException("Provider cannot be null");
-        }
-
-        if (!isProvider(provider)) {
-            // return empty list if this person is not a provider
-            return new ArrayList<ProviderRole>();
-        }
-        
-        // otherwise, collect all the roles associated with this provider
-        // (we use a set to avoid duplicates at this point)
-        Set<ProviderRole> providerRoles = new HashSet<ProviderRole>();
-        
-        Collection<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByPerson(provider);
-
-        // TODO: no need to manually exclude retired providers after TRUNK-3219 has been implemented
-        filterRetired(providers);
-        
-        for (Provider p : providers) {
-            if (p.getProviderRole() != null) {
-                providerRoles.add(p.getProviderRole());
-            }
-        }
-
-        return new ArrayList<ProviderRole>(providerRoles);
-    }
-    
-    /**
      * Returns whether or not the passed person has one or more associated providers (unretired or retired)
      * (So note that a person that only is associated with retired Provider objects is still consider a "provider")
      * 
@@ -76,8 +41,7 @@ public class ProviderManagementUtils {
             throw new APIException("Person cannot be null");
         }
 
-        // TODO: change this to explicitly include retired providers after TRUNK-3219 has been implemented
-        Collection<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByPerson(person);
+        Collection<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByPerson(person, true);
         return providers == null || providers.size() == 0 ? false : true;
     }
 
@@ -99,7 +63,7 @@ public class ProviderManagementUtils {
             throw new APIException("Role cannot be null");
         }
 
-        return getProviderRoles(provider).contains(role);
+        return Context.getService(ProviderManagementService.class).getProviderRoles(provider).contains(role);
     }
 
     /**
@@ -145,7 +109,7 @@ public class ProviderManagementUtils {
         Set<ProviderRole> rolesThatProviderCanSupervise = new HashSet<ProviderRole>();
         
         // iterate through all the provider roles this provider supports
-        for (ProviderRole role : getProviderRoles(provider)) {
+        for (ProviderRole role : Context.getService(ProviderManagementService.class).getProviderRoles(provider)) {
             // add all roles that this role can supervise
             if (role.getSuperviseeProviderRoles() != null && role.getSuperviseeProviderRoles().size() > 0) {
                 rolesThatProviderCanSupervise.addAll(role.getSuperviseeProviderRoles());
@@ -181,7 +145,7 @@ public class ProviderManagementUtils {
         List<ProviderRole> rolesThatProviderCanSupervisee = getProviderRolesThatProviderCanSupervise(supervisor);
         
         // get all the roles associated with the supervisee
-        List<ProviderRole> superviseeProviderRoles = getProviderRoles(supervisee);
+        List<ProviderRole> superviseeProviderRoles = Context.getService(ProviderManagementService.class).getProviderRoles(supervisee);
 
         return ListUtils.intersection(rolesThatProviderCanSupervisee, superviseeProviderRoles).size() > 0 ? true : false;
     }
@@ -237,13 +201,6 @@ public class ProviderManagementUtils {
     /**
      * Utility methods
      */
-    private static ProviderAttributeType getProviderRoleAttributeType() {
-        if (providerRoleAttributeType == null) {
-            providerRoleAttributeType = Context.getService(ProviderManagementService.class).getProviderRoleAttributeType();
-        }
-
-        return providerRoleAttributeType;
-    }
 
     private static boolean supportsRelationshipType(Provider provider, RelationshipType relationshipType) {
 

@@ -37,6 +37,8 @@ public class ProviderManagementUtilsTest extends BaseModuleContextSensitiveTest 
 
     private ProviderManagementService providerManagementService;
 
+    // TODO: flush session?
+
     @Before
     public void init() throws Exception {
         // execute the provider management test dataset
@@ -44,48 +46,6 @@ public class ProviderManagementUtilsTest extends BaseModuleContextSensitiveTest 
 
         // initialize the service
         providerManagementService = Context.getService(ProviderManagementService.class);
-    }
-
-    @Test
-    public void getProviderRoles_shouldGetProviderRoles() {
-        Person provider = Context.getPersonService().getPerson(2);
-        List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
-        Assert.assertEquals(new Integer(2), (Integer) roles.size());
-
-        // double-check to make sure the are the correct roles
-        // be iterating through and removing the two that SHOULD be there
-        Iterator<ProviderRole> i = roles.iterator();
-
-        while (i.hasNext()) {
-            ProviderRole role = i.next();
-            int id = role.getId();
-
-            if (id == 1001 || id == 1005 ) {
-                i.remove();
-            }
-        }
-
-        // list should now be empty
-        Assert.assertEquals(0, roles.size());
-    }
-
-
-    @Test
-    public void getProviderRoles_shouldReturnEmptySetForProviderWithNoRole()  {
-        Person provider = Context.getProviderService().getProvider(1002).getPerson();
-        List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
-        Assert.assertEquals(new Integer(0), (Integer) roles.size());
-    }
-
-    @Test
-    public void getProviderRoles_shouldIgnoreRetiredRoles() {
-        Person provider = Context.getPersonService().getPerson(2);
-        // retire one provider object associated with this person
-        Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
-
-        List<ProviderRole> roles = ProviderManagementUtils.getProviderRoles(provider);
-        Assert.assertEquals(new Integer(1), (Integer) roles.size());
-        Assert.assertEquals(new Integer(1005), roles.get(0).getId());
     }
 
     @Test
