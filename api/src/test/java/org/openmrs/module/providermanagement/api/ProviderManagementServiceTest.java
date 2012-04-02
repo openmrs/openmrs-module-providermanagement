@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.providermanagement.api;
 
-import static org.junit.Assert.*;
-
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for ProviderManagementService.
@@ -387,7 +387,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.unassignProviderRoleFromPerson(provider, role);
         
-        Assert.assertEquals(0,  providerManagementService.getProviderRoles(provider).size());
+        Assert.assertEquals(0, providerManagementService.getProviderRoles(provider).size());
 
         Provider p = Context.getProviderService().getProvider(1006);
         Assert.assertTrue(p.isRetired());

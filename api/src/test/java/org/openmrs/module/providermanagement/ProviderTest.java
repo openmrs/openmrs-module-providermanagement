@@ -14,15 +14,13 @@ package org.openmrs.module.providermanagement;
  */
 
 import junit.framework.Assert;
+import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-
-import org.hibernate.ObjectNotFoundException;
 
 import java.util.List;
 

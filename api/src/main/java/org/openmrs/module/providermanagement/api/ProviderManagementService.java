@@ -13,7 +13,10 @@
  */
 package org.openmrs.module.providermanagement.api;
 
-import org.openmrs.*;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;

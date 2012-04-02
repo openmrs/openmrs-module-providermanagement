@@ -13,12 +13,11 @@
  */
 package org.openmrs.module.providermanagement;
 
+import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.RelationshipType;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 
 /**
  * Used to store the possible provider roles.  A Provide can only have a single role (though a single person
