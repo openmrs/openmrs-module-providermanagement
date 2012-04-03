@@ -123,7 +123,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param role the provider role to delete
      */
     @Transactional
-    public void purgeProviderRole(ProviderRole role);
+    public void purgeProviderRole(ProviderRole role)
+            throws ProviderRoleInUseException;
 
     /**
      * Get all the relationship types associated with provider roles
@@ -145,6 +146,8 @@ public interface ProviderManagementService extends OpenmrsService {
     /**
      * Basic methods for operating on providers using the new provider roles
      */
+
+    // TODO: can we go back and make these methods private now? this work make sense if we are trying to "hide" the Provider object within the API
 
     /**
      * Returns all providers associated with the current person
@@ -185,7 +188,7 @@ public interface ProviderManagementService extends OpenmrsService {
     public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier);
 
     /**
-     * Unassigns a provider role from a provider
+     * Unassigns a provider role from a person by retiring the provider associated with that role
      *
      * @param provider
      * @param role
@@ -193,8 +196,13 @@ public interface ProviderManagementService extends OpenmrsService {
     @Transactional
     public void unassignProviderRoleFromPerson(Person provider, ProviderRole role);
 
-
-    // TODO: probably need a purge option as well
+    /**
+     * Purges a provider role from a person by purging the provider associated with that role
+     *
+     * @param provider
+     */
+    @Transactional
+    public void purgeProviderRoleFromPerson(Person provider, ProviderRole role);
 
     /**
      * Gets all providers whose role is in the list of specified roles

@@ -67,4 +67,7 @@
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1010" supervisee_provider_role_id="1001"/>
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1007" supervisee_provider_role_id="1011"/>
 
+    <!-- a voided relationship -->
+    <relationship relationship_id="1001" person_a="6" relationship="1001" person_b="8" creator="1" date_created="2008-08-18 11:50:15.0" voided="true" uuid="c18717dd-5d78-4a0e-84fc-ef62c5f0676a"/>
+
 </dataset>

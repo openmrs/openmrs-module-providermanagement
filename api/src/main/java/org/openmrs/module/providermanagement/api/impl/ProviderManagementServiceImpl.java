@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
@@ -119,9 +120,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public void purgeProviderRole(ProviderRole role) {
-
-        // TODO: this should catch ConstraintViolationExpection? fail if any provider is associated with this role
+    public void purgeProviderRole(ProviderRole role)
+            throws ProviderRoleInUseException {
 
         // first, remove this role as supervisee from any roles that can supervise it
         for (ProviderRole r : getProviderRolesBySuperviseeProviderRole(role)) {
@@ -129,7 +129,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             saveProviderRole(r);
         }
 
-        dao.deleteProviderRole(role);
+        try {
+            dao.deleteProviderRole(role);
+            Context.flushSession();  // shouldn't really have to do this, but we do to force a commit so that the exception will be thrown if necessary
+        }
+        catch (ConstraintViolationException e) {
+            throw new ProviderRoleInUseException("Cannot purge provider role. Most likely it is currently linked to an existing provider ", e);
+        }
+
     }
 
     @Override
@@ -258,16 +265,38 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
+    public void purgeProviderRoleFromPerson(Person provider, ProviderRole role) {
+        if (provider == null) {
+            throw new APIException("Cannot set provider role: provider is null");
+        }
+
+        if (role == null) {
+            throw new APIException("Cannot set provider role: role is null");
+        }
+
+        if (!ProviderManagementUtils.hasRole(provider,role)) {
+            // if the provider doesn't have this role, do nothing
+            return;
+        }
+
+        // note that we don't check to make sure this provider is a person
+
+        // iterate through all the providers and purge any with the specified role
+        for (Provider p : getProvidersByPerson(provider)) {
+            if (p.getProviderRole().equals(role)) {
+                Context.getProviderService().purgeProvider(p);
+            }
+        }
+    }
+
+    @Override
     public List<Person> getProvidersByRoles(List<ProviderRole> roles) {
-
-        // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
-
         // not allowed to pass null or empty set here
         if (roles == null || roles.isEmpty()) {
             throw new APIException("Roles cannot be null or empty");
         }
 
-        // TODO: figure out if we want to sort results here
+        // TODO: figure out if we want to sort results here -- could use PersonByNameComparator (or could just use this comparator in the web layer as needed?)
 
         List<Provider> providers = dao.getProvidersByProviderRoles(roles, false);
 
@@ -276,9 +305,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     public List<Person> getProvidersByRole(ProviderRole role) {
-
-        // TODO: this won't distinguish between retired and unretired providers until TRUNK-3170 is implemented
-
         // not allowed to pass null here
         if (role == null) {
             throw new APIException("Role cannot be null");
@@ -361,8 +387,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             date = new Date();
         }
 
-        // TODO: what about voided relationships?  does the get relationships method ignore voided?
-
         // test to mark sure the relationship doesn't already exist
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships != null && relationships.size() > 0) {
@@ -421,7 +445,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PatientNotAssignedToProviderException("Provider " + provider + " is not assigned to " + patient + " with a " + relationshipType + " relationship");
         }
         if (relationships.size() > 1) {
-            // TODO: handle this better? maybe void all but one automatically?
             throw new APIException("Duplicate " + relationshipType + " between " + provider + " and " + patient);
         }
 
@@ -677,10 +700,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     public RelationshipType getSupervisorRelationshipType() {
-        // TODO: error handling?
         
         if (supervisorRelationshipType == null) {
-            supervisorRelationshipType = Context.getPersonService().getRelationshipTypeByUuid(ProviderManagementConstants.SUPERVISOR_RELATIONSHIP_TYPE_UUID);   
+            supervisorRelationshipType = Context.getPersonService().getRelationshipTypeByUuid(ProviderManagementConstants.SUPERVISOR_RELATIONSHIP_TYPE_UUID);
+
+            // if the relationship type is still null, throw an exception here
+            if (supervisorRelationshipType == null) {
+                throw new APIException("Superviser relationship type does not exist in relationship type table");
+            }
         }
 
         return supervisorRelationshipType;
@@ -769,7 +796,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new ProviderNotAssignedToSupervisorException("Provider " + provider + " is not assigned to supervisor " + supervisor);
         }
         if (relationships.size() > 1) {
-            // TODO: handle this better? maybe void all but one automatically?
             throw new APIException("Duplicate supervisor relationship between " + provider + " and " + supervisor);
         }
 
