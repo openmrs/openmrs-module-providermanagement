@@ -14,7 +14,6 @@
 package org.openmrs.module.providermanagement.api;
 
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -49,7 +48,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     public static final Date PAST_DATE = ProviderManagementUtils.clearTimeComponent(new Date(DATE.getTime() - 31536000000L));
 
-    public static final Date FURTHER_PAST_DATE = ProviderManagementUtils.clearTimeComponent(new Date(PAST_DATE.getTime() - 31536000000L));
+    public static final Date FURTHER_PAST_DATE =ProviderManagementUtils.clearTimeComponent(new Date(PAST_DATE.getTime() - 31536000000L));
 
     public static final Date FUTURE_DATE = ProviderManagementUtils.clearTimeComponent(new Date(DATE.getTime() + 31536000000L));
 
@@ -438,7 +437,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
         // unassign some role
         providerManagementService.unassignProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1002));
-        Assert.assertTrue(!ProviderManagementUtils.isProvider(provider));
+        Assert.assertTrue(!providerManagementService.isProvider(provider));
     }
 
     @Test(expected = ObjectNotFoundException.class)
@@ -498,7 +497,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
         // purge some role
         providerManagementService.purgeProviderRoleFromPerson(provider, providerManagementService.getProviderRole(1002));
-        Assert.assertTrue(!ProviderManagementUtils.isProvider(provider));
+        Assert.assertTrue(!providerManagementService.isProvider(provider));
     }
 
     @Test
@@ -708,6 +707,198 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<Person> providers = providerManagementService.getProvidersBySuperviseeProviderRole(null);
     }
 
+    @Test
+    public void isProvider_shouldReturnTrue() {
+        Assert.assertTrue(providerManagementService.isProvider(Context.getPersonService().getPerson(2)));
+    }
+
+    @Test
+    public void isProvider_shouldReturnFalse() {
+        Assert.assertFalse(providerManagementService.isProvider(Context.getPersonService().getPerson(502)));
+    }
+
+    @Test
+    public void isProvider_shouldReturnTrueEvenIfAllAssociatedProvidersRetired() {
+        Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
+        Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1009), "test");
+
+        Assert.assertTrue(providerManagementService.isProvider(Context.getPersonService().getPerson(2)));
+    }
+
+    @Test(expected = APIException.class)
+    public void isProvider_shouldFailIfPersonNull() {
+        providerManagementService.isProvider(null);
+    }
+
+    @Test
+    public void hasRole_shouldReturnTrue() {
+        ProviderRole role1 = Context.getService(ProviderManagementService.class).getProviderRole(1001);
+        ProviderRole role2 = Context.getService(ProviderManagementService.class).getProviderRole(1005);
+        Person provider = Context.getPersonService().getPerson(2);
+
+        Assert.assertTrue(providerManagementService.hasRole(provider, role1));
+        Assert.assertTrue(providerManagementService.hasRole(provider, role2));
+    }
+
+    @Test
+    public void hasRole_shouldReturnFalse() {
+        ProviderRole role = Context.getService(ProviderManagementService.class).getProviderRole(1002);
+        Person provider = Context.getPersonService().getPerson(2);
+        Assert.assertFalse(providerManagementService.hasRole(provider, role));
+    }
+
+    @Test
+    public void hasRole_shouldReturnFalseIfRoleRetired() {
+        ProviderRole role = Context.getService(ProviderManagementService.class).getProviderRole(1001);
+        Person provider = Context.getPersonService().getPerson(2);
+
+        // retire the provider object associated with this role
+        Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
+
+        Assert.assertFalse(providerManagementService.hasRole(provider, role));
+    }
+
+    @Test
+    public void hasRole_shouldReturnFalseIfProviderHasNoRoles() {
+        ProviderRole role = Context.getService(ProviderManagementService.class).getProviderRole(1002);
+        Person provider = Context.getPersonService().getPerson(1);
+        Assert.assertFalse(providerManagementService.hasRole(provider, role));
+    }
+
+    @Test
+    public void hasRole_shouldReturnFalseIfPersonIsNotProvider() {
+        ProviderRole role = Context.getService(ProviderManagementService.class).getProviderRole(1002);
+        Person provider = Context.getPersonService().getPerson(502);
+        Assert.assertFalse(providerManagementService.hasRole(provider, role));
+    }
+
+    @Test(expected = APIException.class)
+    public void supportsRelationshipType_shouldFailIfRelationshipTypeIsNull() {
+        Assert.assertNull(providerManagementService.supportsRelationshipType(Context.getProviderService().getProvider(1).getPerson(), null));
+    }
+
+    @Test
+    public void supportsRelationshipType_shouldReturnFalseIfProviderHasNoRole() {
+        Person provider = Context.getProviderService().getProvider(1002).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        Assert.assertFalse(providerManagementService.supportsRelationshipType(provider, relationshipType));
+    }
+
+    @Test
+    public void supportsRelationshipType_shouldReturnTrueIfProviderSupportsRelationshipType() {
+        Person provider = Context.getProviderService().getProvider(1003).getPerson();  // binome
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);  // binome relationship
+        Assert.assertTrue(providerManagementService.supportsRelationshipType(provider, relationshipType));
+    }
+
+    @Test
+    public void supportsRelationshipType_shouldReturnTrueIfProviderAssociatedWithRoleRetired() {
+        Person provider = Context.getProviderService().getProvider(1003).getPerson();  // binome
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);  // binome relationship
+
+        // retire the provider object associated with this role
+        Context.getProviderService().retireProvider(Context.getProviderService().getProvider(1003), "test");
+
+        Assert.assertFalse(providerManagementService.supportsRelationshipType(provider, relationshipType));
+    }
+
+    @Test
+    public void supportsRelationshipType_shouldReturnFalseIfProviderDoesNotSupportsRelationshipType() {
+        Person provider = Context.getProviderService().getProvider(1007).getPerson(); // accompagneteur
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001); // binome relationship
+        Assert.assertFalse(providerManagementService.supportsRelationshipType(provider, relationshipType));
+    }
+
+    @Test
+    public void supportsRelationshipType_shouldReturnFalseIfProviderPersonHasNoRole() {
+        Person provider = Context.getProviderService().getProvider(1002).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        Assert.assertFalse(providerManagementService.supportsRelationshipType(provider, relationshipType));
+    }
+
+    @Test
+    public void supportsRelationshipType_shouldReturnTrueIfProviderPersonSupportsRelationshipType() {
+        Person provider = Context.getProviderService().getProvider(1003).getPerson();  // binome
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);  // binome relationship
+        Assert.assertTrue(providerManagementService.supportsRelationshipType(provider, relationshipType));
+    }
+
+    @Test
+    public void supportsRelationshipType_shouldReturnFalseIfProviderPersonDoesNotSupportsRelationshipType() {
+        Person provider = Context.getProviderService().getProvider(1007).getPerson(); // accompagneteur
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001); // binome relationship
+        Assert.assertFalse(providerManagementService.supportsRelationshipType(provider, relationshipType));
+    }
+
+    @Test
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnRolesThatProviderCanSupervise() {
+        Person provider = Context.getPersonService().getPerson(2); // person who is both a binome supervisor and a community health nurse
+        List<ProviderRole> roles = providerManagementService.getProviderRolesThatProviderCanSupervise(provider);
+        Assert.assertEquals(new Integer (2), (Integer) roles.size());
+
+        // double-check to make sure the are the correct roles
+        // by iterating through and removing the two that SHOULD be there
+        Iterator<ProviderRole> i = roles.iterator();
+
+        while (i.hasNext()) {
+            ProviderRole role = i.next();
+            int id = role.getId();
+
+            if (id == 1001 || id == 1002 ) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, roles.size());
+
+    }
+
+    @Test
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnEmptyListIfProviderRoleDoesNotSupportSupervision() {
+        Person provider = Context.getPersonService().getPerson(6); // person who just a binome
+        List<ProviderRole> roles = providerManagementService.getProviderRolesThatProviderCanSupervise(provider);
+        Assert.assertEquals(new Integer (0), (Integer) roles.size());
+    }
+
+    @Test
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnEmptyListIfPersonIsNotProvider() {
+        Person provider = Context.getPersonService().getPerson(502); // person who is not a provider
+        List<ProviderRole> roles = providerManagementService.getProviderRolesThatProviderCanSupervise(provider);
+        Assert.assertEquals(new Integer (0), (Integer) roles.size());
+    }
+
+    @Test(expected = APIException.class)
+    public void getProviderRolesThatProviderCanSupervise_shouldReturnEmptyListIfProviderNull() {
+        List<ProviderRole> roles = providerManagementService.getProviderRolesThatProviderCanSupervise(null);
+        Assert.assertEquals(new Integer (0), (Integer) roles.size());
+    }
+
+    @Test
+    public void canSupervise_shouldReturnTrue() {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisee = Context.getPersonService().getPerson(6);    // binome
+        Assert.assertTrue(providerManagementService.canSupervise(supervisor, supervisee));
+    }
+
+    @Test
+    public void canSupervise_shouldReturnFalse() {
+        Person supervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person supervisee = Context.getPersonService().getPerson(9);    // accompagnateur
+        Assert.assertFalse(providerManagementService.canSupervise(supervisor, supervisee));
+
+        supervisor = Context.getPersonService().getPerson(6);  // binome
+        supervisee = Context.getPersonService().getPerson(7);    // binome
+        Assert.assertFalse(providerManagementService.canSupervise(supervisor, supervisee));
+    }
+
+    @Test
+    public void canSupervise_shouldReturnFalseIfSupervisorAndSuperviseeAreSamePerson() {
+        Person supervisor = Context.getPersonService().getPerson(2);  // person who is both a binome and community health nurse
+        Person supervisee = Context.getPersonService().getPerson(2);    // same person
+        Assert.assertFalse(providerManagementService.canSupervise(supervisor, supervisee));
+    }
+    
     @Test(expected = APIException.class)
     public void assignPatientToProvider_shouldFailIfPatientNull() throws Exception {
         Person provider = Context.getProviderService().getProvider(1).getPerson();

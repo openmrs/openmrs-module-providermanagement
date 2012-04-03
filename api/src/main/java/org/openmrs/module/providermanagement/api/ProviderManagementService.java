@@ -21,7 +21,6 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -29,20 +28,20 @@ import java.util.List;
 /**
  * Provider Management Service
  */
-@Transactional
+
 public interface ProviderManagementService extends OpenmrsService {
 
     // TODO: add permissions
 
-	/*
-	 * Basic methods for operating on provider roles
-	 */
+    /*
+      * Basic methods for operating on provider roles
+      */
 
     /**
      * Gets all unretired provider roles
      * @return list of all unretired provider roles
      */
-    @Transactional(readOnly = true)
+
     public List<ProviderRole> getAllProviderRoles();
 
     /**
@@ -51,7 +50,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param includeRetired whether or not to include retired providers
      * @return list of all provider roles in the system
      */
-    @Transactional(readOnly = true)
+
     public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
 
     /**
@@ -60,7 +59,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param id
      * @return providerRole
      */
-    @Transactional(readOnly = true)
+    
     public ProviderRole getProviderRole(Integer id);
 
     /**
@@ -69,7 +68,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param uuid
      * @return providerRole
      */
-    @Transactional(readOnly = true)
+    
     public ProviderRole getProviderRoleByUuid(String uuid);
 
     /**
@@ -80,7 +79,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return the provider roles that support that relationship type
      * @should throw exception if relationshipType is null
      */
-    @Transactional(readOnly = true)
+    
     public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
 
     /**
@@ -91,7 +90,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return the provider roles that can supervise the specified provider role
      * @should throw exception if providerRole is null
      */
-    @Transactional(readOnly = true)
+    
     public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole);
 
     /**
@@ -99,7 +98,7 @@ public interface ProviderManagementService extends OpenmrsService {
      *
      * @param role the provider role to save
      */
-    @Transactional
+    
     public void saveProviderRole(ProviderRole role);
 
     /**
@@ -107,14 +106,14 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param role the role to retire
      * @param reason the reason the role is being retired
      */
-    @Transactional
+    
     public void retireProviderRole(ProviderRole role, String reason);
 
     /**
      * Unretires a provider role
      * @param role the role to unretire
      */
-    @Transactional
+    
     public void unretireProviderRole(ProviderRole role);
     
     /**
@@ -122,7 +121,7 @@ public interface ProviderManagementService extends OpenmrsService {
      *
      * @param role the provider role to delete
      */
-    @Transactional
+    
     public void purgeProviderRole(ProviderRole role)
             throws ProviderRoleInUseException;
 
@@ -132,7 +131,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param includeRetired whether or not to include retired relationship types
      * @return all the relationship types associated with provider roles
      */
-    @Transactional(readOnly = true)
+    
     public List<RelationshipType> getAllProviderRoleRelationshipTypes(boolean includeRetired);
 
     /**
@@ -140,33 +139,12 @@ public interface ProviderManagementService extends OpenmrsService {
      *
      * @return all the relationship types associated with provider roles
      */
-    @Transactional(readOnly = true)
+    
     public List<RelationshipType> getAllProviderRoleRelationshipTypes();
 
     /**
      * Basic methods for operating on providers using the new provider roles
      */
-
-    // TODO: can we go back and make these methods private now? this work make sense if we are trying to "hide" the Provider object within the API
-
-    /**
-     * Returns all providers associated with the current person
-     *
-     * @param person
-     * @param includeRetired whether or not to include retired providers
-     * @return all providers associated with the current person
-     */
-    @Transactional(readOnly = true)
-    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
-
-    /**
-     * Returns all providers (excluding retired providers) associated with the current person
-     *
-     * @param person
-     * @return all providers (excluding retired providers) associated with the current person
-     */
-    @Transactional(readOnly = true)
-    public List<Provider> getProvidersByPerson(Person person);
 
     /**
      * Returns the provider roles associated with the specified provider
@@ -174,7 +152,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param provider
      * @return the provider role associated with the specified provider
      */
-    @Transactional(readOnly = true)
+    
     public List<ProviderRole> getProviderRoles(Person provider);
 
     /**
@@ -184,7 +162,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param role the role to set
      * @param identifier the identifier to associate with this provider/role combination (mandatory)
      */
-    @Transactional
+    
     public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier);
 
     /**
@@ -193,7 +171,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param provider
      * @param role
      */
-    @Transactional
+    
     public void unassignProviderRoleFromPerson(Person provider, ProviderRole role);
 
     /**
@@ -201,7 +179,7 @@ public interface ProviderManagementService extends OpenmrsService {
      *
      * @param provider
      */
-    @Transactional
+    
     public void purgeProviderRoleFromPerson(Person provider, ProviderRole role);
 
     /**
@@ -211,7 +189,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return all providers with one of the specified roles
      * @should throw APIException if roles are empty or null
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getProvidersByRoles(List<ProviderRole> roles);
     
     /**
@@ -222,7 +200,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return list of providers with the specified role
      * @should throw APIException if role is null
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getProvidersByRole(ProviderRole role);
 
     /**
@@ -232,7 +210,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return the list of providers that support the specified relationship type
      * @should throw API Exception if relationship type is null
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getProvidersByRelationshipType(RelationshipType relationshipType);
 
     /**
@@ -242,12 +220,58 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return the list of providers that can supervise the specific provider role
      * @should throw API Exception if the provider role is null
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getProvidersBySuperviseeProviderRole(ProviderRole role);
 
-    /**
-     * Methods for assigning patient to providers
+     /**
+     * Returns whether or not the passed person has one or more associated providers (unretired or retired)
+     * (So note that a person that only is associated with retired Provider objects is still consider a "provider")
+     *
+     * @param person
+     * @return whether or not the passed person has one or more associated providers
      */
+    public boolean isProvider(Person person);
+
+    /**
+     * Returns whether or not the passed provider has the specified provider role
+     *
+     * @param provider
+     * @param role
+     * @return whether or not the passed provider has the specified provider role
+     */
+    public boolean hasRole(Person provider, ProviderRole role);
+
+    /**
+     * Returns true if the specified provider can support the specified relationship type, false otherwise
+     *
+     * @param provider
+     * @param relationshipType
+     * @return true if the specified provider can support the specified relationship type, false otherwise
+     */
+    public boolean supportsRelationshipType(Person provider, RelationshipType relationshipType);
+
+
+    /**
+     * Returns all the valid roles that the specified provider can supervise
+     *
+     * @param provider
+     * @return all the valid roles that the specified provider can supervise
+     */
+    public List<ProviderRole> getProviderRolesThatProviderCanSupervise(Person provider);
+
+    /**
+     * Returns true if the specified supervisor can supervise the specified supervisee, false otherwise
+     *
+     * @param supervisor
+     * @param supervisee
+     * @return true if the specified supervisor can supervise the specified supervisee, false otherwise
+     */
+    public boolean canSupervise(Person supervisor, Person supervisee);
+
+
+    /**
+    * Methods for assigning patient to providers
+    */
 
     // TODO: for assignment and unassignments, should we not allow dates in the future?  this is probably a good idea...?
 
@@ -265,7 +289,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is already assigned to patient
      */
-    @Transactional
+    
     public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
             PersonIsNotProviderException;
@@ -283,7 +307,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is already assigned to patient
      */
-    @Transactional
+    
     public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
             PersonIsNotProviderException;
@@ -302,7 +326,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not associated with a person
      * @should fail if provider is already assigned to patient
      */
-    @Transactional
+    
     public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -319,7 +343,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not associated with a person
      * @should fail if provider is not assigned to patient
      */
-    @Transactional
+    
     public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType)
             throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -334,7 +358,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationshipType is null
      * @should fail if provider is not associated with a person
      */
-    @Transactional
+    
     public void unassignAllPatientsFromProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -346,7 +370,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not associated with a person
      */
-    @Transactional
+    
     public void unassignAllPatientsFromProvider(Person provider)
             throws PersonIsNotProviderException;
 
@@ -367,7 +391,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider not associated with person
      * @should fail if relationship type is not a provider/patient relationship type
      */
-    @Transactional(readOnly = true)
+    
     public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -384,7 +408,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationship type is not a provider/patient relationship type
      * @should fail if invalid relationship found
      */
-    @Transactional(readOnly = true)
+    
     public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -399,7 +423,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Transactional(readOnly = true)
+    
     public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -413,7 +437,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Transactional(readOnly = true)
+    
     public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -428,7 +452,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -441,7 +465,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
@@ -458,7 +482,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if destinationProvider is not associated with a person
      * @should fail if relationshipType is null
      */
-    @Transactional
+    
     public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException, InvalidRelationshipTypeException;
@@ -478,7 +502,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if destination provider dose not support a relationship type that exists between source provider and patient
      * @should not fail if destination provider is already associated with patient
      */
-    @Transactional
+    
     public void transferAllPatients(Person sourceProvider, Person destinationProvider)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException;
@@ -503,7 +527,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if supervisor's role(s) do not support any of supervisee's roles
      * @should fail if provider is already assigned to supervisor
      */
-    @Transactional
+    
     public void assignProviderToSupervisor(Person provider, Person supervisor, Date date)
             throws PersonIsNotProviderException, InvalidSupervisorException,
             ProviderAlreadyAssignedToSupervisorException;
@@ -520,7 +544,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if supervisor's role(s) do not support any of supervisee's roles
      * @should fail if provider is already assigned to supervisor
      */
-    @Transactional
+    
     public void assignProviderToSupervisor(Person provider, Person supervisor)
             throws PersonIsNotProviderException, InvalidSupervisorException,
             ProviderAlreadyAssignedToSupervisorException;
@@ -537,7 +561,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if supervisor is not a provider
      * @should fail if provider is not assigned to supervisor
      */
-    @Transactional
+    
     public void unassignProviderFromSupervisor(Person provider, Person supervisor, Date date)
             throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException;
 
@@ -552,7 +576,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if supervisor is not a provider
      * @should fail if provider is not assigned to supervisor
      */
-    @Transactional
+    
     public void unassignProviderFromSupervisor(Person provider, Person supervisor)
             throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException;
 
@@ -563,7 +587,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional
+    
     public void unassignAllSupervisorsFromProvider(Person provider)
             throws PersonIsNotProviderException;
 
@@ -574,7 +598,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if supervisor is null
      * @should fail if supervisor is not a provider
      */
-    @Transactional
+    
     public void unassignAllProvidersFromSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
@@ -589,7 +613,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Relationship> getSupervisorRelationshipsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException;
 
@@ -602,7 +626,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Relationship> getSupervisorRelationshipsForProvider(Person provider)
             throws PersonIsNotProviderException;
     
@@ -615,7 +639,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getSupervisorsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException;
 
@@ -627,7 +651,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException;
 
@@ -641,7 +665,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException;
 
@@ -654,7 +678,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
@@ -668,7 +692,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getSuperviseesForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException;
 
@@ -681,8 +705,17 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Transactional(readOnly = true)
+    
     public List<Person> getSuperviseesForSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
+
+    /**
+     * Replacements for ProviderService.getProvidersByPerson to fetch new expanded provider model
+     * Should generally only be used internally, since the idea is this API "hides" knowledge of the Provider object
+     */
+
+    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
+
+    public List<Provider> getProvidersByPerson(Person person);
 }
