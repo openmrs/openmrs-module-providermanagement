@@ -52,8 +52,6 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     public static final Date FUTURE_DATE = ProviderManagementUtils.clearTimeComponent(new Date(DATE.getTime() + 31536000000L));
 
-    // TODO: some tests involving persons with multiple providers?
-
     @Before
     public void init() throws Exception {
         // execute the provider management test dataset
@@ -1061,8 +1059,6 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // just confirm that this doesn't throw an exception
         providerManagementService.unassignAllPatientsFromProvider(provider);
     }
-
-    // TODO: should there be other unit test for unassigning patients--think about null cases, and also when happens when voiding/etc
     
     @Test
     public void getPatients_shouldGetAllPatientsOfAProviderOnCurrentDate() throws Exception{
@@ -1098,6 +1094,14 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         }
 
         // list should now be empty
+        Assert.assertEquals(0, patients.size());
+    }
+
+    @Test
+    public void getPatients_shouldReturnEmptyListIfProviderHasNoPatients() throws Exception {
+        Person provider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        List<Patient> patients = providerManagementService.getPatientsOfProvider(provider, relationshipType);
         Assert.assertEquals(0, patients.size());
     }
 
@@ -1653,7 +1657,6 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     // TODO: transferAllPatients should not fail if no patients?
-    // TODO: get patients should not fial if no patients?
    
     @Test
     public void transferAllPatients_shouldTransferAllPatientsFromOneProviderToAnother() throws Exception {
@@ -1731,6 +1734,20 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(new Integer(2), oldProviderPatients.get(0).getId());
         Assert.assertEquals(1, newProviderPatients.size());
         Assert.assertEquals(new Integer(8), newProviderPatients.get(0).getId());
+    }
+
+    @Test
+    public void transferAllPatients_shouldNotFailIfSourceProviderHasNoPatients() throws Exception {
+        Person oldProvider = Context.getProviderService().getProvider(1004).getPerson();
+        Person newProvider = Context.getProviderService().getProvider(1005).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        providerManagementService.transferAllPatients(oldProvider, newProvider);
+
+        // confirm that neither provider has any patients
+        List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null);
+        List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null);
+        Assert.assertEquals(0, oldProviderPatients.size());
+        Assert.assertEquals(0, newProviderPatients.size());
     }
 
     @Test(expected = APIException.class)
