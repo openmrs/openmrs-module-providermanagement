@@ -14,10 +14,15 @@
 
 package org.openmrs.module.providermanagement.rules;
 
+// TODO: make criteria be a file link for security purposes?
+
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
 public class Rule {
+
+    // TODO: get this whole package in order, and then move on to the service
+    // TODO: this class needs to extend Openmrs Metadata
 
     private String criteria;
 

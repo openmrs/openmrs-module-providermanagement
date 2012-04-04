@@ -14,5 +14,13 @@
 
 package org.openmrs.module.providermanagement.rules;
 
+import org.openmrs.module.providermanagement.ProviderRole;
+
 public class SupervisorRule {
+
+    // TODO: the ability to associate multiple roles with the same role?
+
+    // provider role this rule applies to
+    private ProviderRole providerRole;
+
 }

@@ -14,12 +14,12 @@
 
 package org.openmrs.module.providermanagement.rules;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Mark
- * Date: 4/4/12
- * Time: 2:17 PM
- * To change this template use File | Settings | File Templates.
- */
-public interface PatientRuleEvaluator {
+import org.openmrs.RelationshipType;
+
+public class ProviderSuggestion extends Rule {
+
+    // the relationship type this rule is associated with
+    private RelationshipType relationshipType;
+
+
 }
