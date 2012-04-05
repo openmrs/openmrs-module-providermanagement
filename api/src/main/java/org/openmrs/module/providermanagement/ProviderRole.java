@@ -14,6 +14,7 @@
 package org.openmrs.module.providermanagement;
 
 import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.RelationshipType;
 
 import java.io.Serializable;
@@ -42,14 +43,17 @@ import java.util.Set;
         private Set<ProviderRole> superviseeProviderRoles;
 
 
+        // TODO: add this, the attribute types associated with this role
+        //private Set<ProviderAttributeType> attributeTypes;
+
         // whether or not this role can serve as a supervisor
         public boolean isSupervisorRole() {
-            return (superviseeProviderRoles == null || superviseeProviderRoles.size() == 0) ? false : true;
+            return (!(superviseeProviderRoles == null || superviseeProviderRoles.size() == 0));
         }
 
         // whether or not this role can provide direct patient care
         public boolean isDirectPatientCareRole() {
-            return (relationshipTypes == null || relationshipTypes.size() == 0) ? false : true;
+            return (!(relationshipTypes == null || relationshipTypes.size() == 0));
         }
 
         // whether or not this role supports the specified relationship type
