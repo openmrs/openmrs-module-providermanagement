@@ -57,13 +57,13 @@ import java.util.Set;
             return (relationshipTypes != null && relationshipType != null && relationshipTypes.contains(relationshipType) ? true : false);
         }
 
-    @Override
-    public String toString() {
-        return "ProviderRole{" +
-                "providerRoleId=" + providerRoleId +
-                ", name=" + this.getName() +
-                '}';
-    }
+        @Override
+        public String toString() {
+            return "ProviderRole{" +
+                    "providerRoleId=" + providerRoleId +
+                    ", name=" + this.getName() +
+                    '}';
+        }
 
         @Override
         public Integer getId() {

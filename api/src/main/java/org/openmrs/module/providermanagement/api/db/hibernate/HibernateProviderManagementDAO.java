@@ -24,6 +24,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
+import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 
 import java.util.List;
 
@@ -120,5 +121,18 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         @SuppressWarnings("unchecked")
         List<Provider> list = criteria.list();
         return list;
+    }
+
+    @Override
+    public ProviderSuggestion getProviderSuggestion(Integer id) {
+        return (ProviderSuggestion) sessionFactory.getCurrentSession().get(ProviderSuggestion.class, id);
+    }
+
+    @Override
+    public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderSuggestion.class);
+        criteria.add(Restrictions.eq("retired", false));
+        criteria.add(Restrictions.eq("relationshipType", relationshipType));
+        return (List<ProviderSuggestion>) criteria.list();
     }
 }

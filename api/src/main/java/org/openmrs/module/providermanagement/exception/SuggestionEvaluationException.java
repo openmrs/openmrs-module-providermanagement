@@ -12,14 +12,21 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.providermanagement.rules;
+package org.openmrs.module.providermanagement.exception;
 
-import org.openmrs.RelationshipType;
+public class SuggestionEvaluationException extends Exception {
 
-public class ProviderSuggestion extends Rule {
+    private static final long serialVersionUID = 1L;
 
-    // the relationship type this rule is associated with
-    private RelationshipType relationshipType;
+    public SuggestionEvaluationException() {
+        super();
+    }
 
+    public SuggestionEvaluationException(String message) {
+        super(message);
+    }
 
+    public SuggestionEvaluationException(String message, Exception e) {
+        super(message, e);
+    }
 }

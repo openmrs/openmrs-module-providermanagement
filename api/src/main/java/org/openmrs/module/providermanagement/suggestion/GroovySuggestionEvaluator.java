@@ -12,55 +12,52 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.providermanagement.rules;
+package org.openmrs.module.providermanagement.suggestion;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import groovy.lang.Script;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-public class GroovyRuleEvaluator implements RuleEvaluator {
+public class GroovySuggestionEvaluator implements SuggestionEvaluator {
 
 
     @Override
-    public List<Person> evaluate(Rule rule, Person provider, Date date) {
+    public Set<Person> evaluate(Suggestion suggestion, Person provider) {
 
         // TODO: combine this with
 
-        // TODO: definitely need to add some error catching here!!!
+        // TODO: definitely need to add some error catching here!!!   (or is handled by serviec that calls it?
 
         // TODO: a catch if the evaluate fails!
 
         Binding bindings = getBindings();
         bindings.setVariable("provider", provider);
-        bindings.setVariable("date", date);
 
-        return evaluate(rule, bindings);
+        return evaluate(suggestion, bindings);
     }
 
     @Override
-    public List<Person> evaluate(Rule rule, Patient patient, RelationshipType relationshipType, Date date) {
+    public Set<Person> evaluate(Suggestion suggestion, Patient patient, RelationshipType relationshipType) {
 
         Binding bindings = getBindings();
         bindings.setVariable("patient", patient);
         bindings.setVariable("relationshipType", relationshipType);
-        bindings.setVariable("date", date);
 
-        return evaluate(rule, bindings);
+        return evaluate(suggestion, bindings);
 
     }
 
-    private List<Person> evaluate(Rule rule, Binding bindings) {
+    private Set<Person> evaluate(Suggestion suggestion, Binding bindings) {
         GroovyShell shell = new GroovyShell(bindings);
-        List<Person> persons = (List<Person>) shell.evaluate(rule.getCriteria());
+        Set<Person> persons = (Set<Person>) shell.evaluate(suggestion.getCriteria());
 
         return persons;
     }

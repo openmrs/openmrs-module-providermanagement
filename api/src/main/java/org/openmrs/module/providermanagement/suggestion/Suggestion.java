@@ -12,26 +12,50 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.providermanagement.rules;
+package org.openmrs.module.providermanagement.suggestion;
 
 // TODO: make criteria be a file link for security purposes?
 
+import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.OpenmrsMetadata;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
-public class Rule {
+abstract public class Suggestion extends BaseOpenmrsMetadata {
 
     // TODO: get this whole package in order, and then move on to the service
     // TODO: this class needs to extend Openmrs Metadata
 
+    // the stores the actual "rule" used to make suggestions (currently must be a groovy script)
     private String criteria;
 
     /* The evaluator to use when evaluating the rule */
-    /* (Name of the class, stored as a string) */
     private String evaluator;
 
-    public Rule() {
+    public Suggestion() {
 
+    }
+
+    public SuggestionEvaluator instantiateEvaluator() {
+        if (evaluator != null) {
+            try {
+                return (SuggestionEvaluator) Context.loadClass(evaluator).newInstance();
+            }
+            catch (Exception e) {
+                throw new APIException("Unable to instantiate RuleEvaluator " + evaluator, e);
+            }
+        }
+        else {
+            throw new APIException("RuleEvaluator is null");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Suggestion{" +
+                "name='" + getName() + '\'' +
+                ", criteria='" + criteria + '\'' +
+                '}';
     }
 
     public String getCriteria() {
@@ -48,20 +72,6 @@ public class Rule {
 
     public void setEvaluator(String evaluator) {
         this.evaluator = evaluator;
-    }
-
-    public RuleEvaluator instantiateEvaluator() {
-        if (evaluator != null) {
-            try {
-                return (RuleEvaluator) Context.loadClass(evaluator).newInstance();
-            }
-            catch (Exception e) {
-                throw new APIException("Unable to instantiate RuleEvaluator " + evaluator, e);
-            }
-        }
-        else {
-            throw new APIException("RuleEvaluator is null");
-        }
     }
 
 }

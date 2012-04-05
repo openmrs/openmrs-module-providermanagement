@@ -12,16 +12,20 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.providermanagement.rules;
+package org.openmrs.module.providermanagement.suggestion;
 
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.RelationshipType;
 
-public class SuperviseeRule extends Rule {
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
-    // TODO: the ability to associate multiple roles with the same role?
+public interface SuggestionEvaluator {
 
-    // provider role this rule applies to
-    private ProviderRole providerRole;
+    public Set<Person> evaluate(Suggestion suggestion, Person provider);
 
+    public Set<Person> evaluate(Suggestion suggestion, Patient patient, RelationshipType relationshipType);
 
 }

@@ -18,6 +18,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 
 import java.util.List;
 
@@ -25,7 +26,9 @@ import java.util.List;
  *  Database methods for {@link ProviderManagementService}.
  */
 public interface ProviderManagementDAO {
-	
+
+    // TODO: sets vs lists?
+
 	/*
 	 * Base Methods for saving and loading provider roles
 	 */
@@ -104,4 +107,21 @@ public interface ProviderManagementDAO {
      * @return all providers with the selected provider roles
      */
     public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired);
+
+    /**
+     * Gets the provider suggestion referenced by the specified id
+     *
+     * @param id
+     * @return providerSuggestion
+     */
+    public ProviderSuggestion getProviderSuggestion(Integer id);
+
+    /**
+     * Gets the list of provider suggestions for the specified relationship type
+     * (Excludes retired provider roles)
+     *
+     * @param relationshipType
+     * @return ist of provider suggestions for the specified relationship type
+     */
+    public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType);
 }
