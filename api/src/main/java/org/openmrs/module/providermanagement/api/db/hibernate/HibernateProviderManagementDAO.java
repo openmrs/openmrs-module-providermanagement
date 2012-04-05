@@ -25,6 +25,8 @@ import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 
 import java.util.List;
 
@@ -150,6 +152,33 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
     @Override
     public void deleteProviderSuggestion(ProviderSuggestion suggestion) {
+        sessionFactory.getCurrentSession().delete(suggestion);
+    }
+
+    @Override
+    public SupervisionSuggestion getSupervisionSuggestion(Integer id) {
+        return (SupervisionSuggestion) sessionFactory.getCurrentSession().get(SupervisionSuggestion.class, id);
+    }
+
+    @Override
+    public SupervisionSuggestion getSupervisionSuggestionByUuid(String uuid) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SupervisionSuggestion.class);
+        criteria.add(Restrictions.eq("uuid", uuid));
+        return (SupervisionSuggestion) criteria.uniqueResult();
+    }
+
+    @Override
+    public List<SupervisionSuggestion> getProviderSuggestionsByRelationshipType(ProviderRole providerRole, SupervisionSuggestionType suggestionType) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion) {
+        sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
+    }
+
+    @Override
+    public void deleteSupervisionSuggestion(SupervisionSuggestion suggestion) {
         sessionFactory.getCurrentSession().delete(suggestion);
     }
 }

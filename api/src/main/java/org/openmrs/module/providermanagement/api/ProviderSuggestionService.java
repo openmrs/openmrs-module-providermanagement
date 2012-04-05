@@ -22,6 +22,7 @@ import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeEx
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 
 import java.util.Date;
 import java.util.List;
@@ -32,24 +33,136 @@ public interface ProviderSuggestionService {
 
     // TODO: document all this!
 
+    /**
+     * Gets the provider suggestion referenced by the specified id
+     *
+     * @param id
+     * @return the provider suggestion referenced by the specified id
+     */
     public ProviderSuggestion getProviderSuggestion(Integer id);
 
+    /**
+     * Gets the provider suggestion referenced by the specified uuid
+     *
+     * @param uuid
+     * @return the provider suggestion referenced by the specified uuid
+     */
     public ProviderSuggestion getProviderSuggestionByUuid(String uuid);
 
+    /**
+     * Gets the provider suggestions for the specified relationship type
+     *
+     * @param relationshipType
+     * @return the provider suggestions for the specified relationship type
+     */
     public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType);
 
+    /**
+     * Saves the specified provider suggestion
+     *
+     * @param suggestion
+     */
     public void saveProviderSuggestion(ProviderSuggestion suggestion);
 
+
+    /**
+     * Retires the specified provider suggestion
+     *
+     * @param suggestion
+     * @param reason
+     */
     public void retireProviderSuggestion(ProviderSuggestion suggestion, String reason);
 
+    /**
+     * Unretired the specified provider suggestion
+     *
+     * @param suggestion
+     */
     public void unretireProviderSuggestion(ProviderSuggestion suggestion);
 
+    /**
+     * Purges the specified provider suggestion
+     *
+     * @param suggestion
+     */
     public void purgeProviderSuggestion(ProviderSuggestion suggestion);
 
+    /**
+     * Suggests all the potential providers for a patient based on relationship type
+     *
+     * If no ProviderSuggestions are found for the specified relationship type, this
+     * method will return all providers in the system who support the specified relationship type
+     *
+     * If one or more ProviderSuggestions exist, the method will take the union of the provider sets
+     * returns by the suggestions; from the resultant set it will *remove* any providers who do not support
+     * the specified relationship type
+     *
+     * Finally, any providers currently associated with specified patient via the specified relationship type
+     * are removed from the result set
+     *
+     * @param patient
+     * @param relationshipType
+     * @return a list of potential providers for a patient based on relationship type
+     * @throws InvalidRelationshipTypeException
+     * @throws SuggestionEvaluationException
+     */
     public List<Person> suggestProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException, SuggestionEvaluationException;
 
+    /**
+     * Gets the Supervision Suggestion referenced by the specified id
+     *
+     * @param id
+     * @return the Supervision Suggestion referenced by the specified id
+     */
+    public SupervisionSuggestion getSupervisionSuggestion(Integer id);
 
+    /**
+     * Gets the Supervision Suggestion referenced by the specified uuid
+     *
+     * @param uuid
+     * @return the Supervision Suggestion referenced by the specified uuid
+     */
+    public SupervisionSuggestion getSupervisionSuggestionByUuid(String uuid);
+
+    /**
+     * Gets all Supervision Suggestions for the specified provider role of the specified type
+     *
+     * @param providerRole
+     * @param suggestionType
+     * @return  all Supervision Suggestions for the specified provider role of the specified type
+     */
+    public List<SupervisionSuggestion> getSugervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+
+    /**
+     * Saves the specified supervision suggestion
+     *
+     * @param suggestion
+     */
+    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion);
+
+    /**
+     * Retires the specified supervision suggestion
+     *
+     * @param suggestion
+     * @param reason
+     */
+    public void retireSupervisionSuggestion(SupervisionSuggestion suggestion, String reason);
+
+    /**
+     * Unretires the specified supervision suggestion
+     *
+     * @param suggestion
+     */
+    public void unretireSupervisionSuggestion(SupervisionSuggestion suggestion);
+
+
+    /**
+     * Purges the specified supervision suggestion
+     *
+     * @param suggestion
+     */
+    public void purgeSupervisionSuggestion(SupervisionSuggestion suggestion);
 
     // TODO: so for "SupervisionSuggestion" do we want an "auto-assign method"?
 }

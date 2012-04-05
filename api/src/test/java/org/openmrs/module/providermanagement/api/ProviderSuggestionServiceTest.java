@@ -25,6 +25,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.awt.peer.ListPeer;
@@ -321,6 +322,17 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         providerSuggestionService.suggestProvidersForPatient(patient, relationshipType);
     }
 
+    @Test
+    public void getSupervisionSuggestion_shouldGetSupervisionSuggestionById() {
+        SupervisionSuggestion suggestion = providerSuggestionService.getSupervisionSuggestion(1);
+        Assert.assertEquals("Some supervisor suggestion", suggestion.getName());
+    }
 
+    @Test
+    public void getSupervisionSuggestionByUuid_shouldGetSupervisionSuggestionByUuid() {
+        SupervisionSuggestion suggestion = providerSuggestionService.getSupervisionSuggestionByUuid("da7f623f-27ee-4bb2-89d6-6d1d05315bd5");
+        Assert.assertEquals(new Integer(1), suggestion.getId());
+    }
 
+    // TODO: finish up the rest of the supervision suggestion stuff, then move on to the provider attribute type?
 }

@@ -19,6 +19,8 @@ import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 
 import java.util.List;
 
@@ -146,5 +148,45 @@ public interface ProviderManagementDAO {
      * @param suggestion
      */
     public void deleteProviderSuggestion(ProviderSuggestion suggestion);
+
+    /**
+     * Gets the supervision suggestion referenced by the specified id
+     *
+     * @param id
+     * @return supervision suggestion
+     */
+    public SupervisionSuggestion getSupervisionSuggestion(Integer id);
+
+    /**
+     * Gets the supervision suggestion referenced by the specified uuid
+     *
+     * @param uuid
+     * @return  the supervision suggestion referenced by the specified uuid
+     */
+    public SupervisionSuggestion getSupervisionSuggestionByUuid(String uuid);
+
+    /**
+     * Gets the list of supervision suggestions for the specified provider role of the specified type
+     * (Excludes retired provider roles)
+     *
+     * @param providerRole
+     * @param suggestionType
+     * @return ist of provider suggestions for the specified relationship type
+     */
+    public List<SupervisionSuggestion> getProviderSuggestionsByRelationshipType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+
+    /**
+     * Saves the specified supervision suggestion
+     *
+     * @param suggestion
+     */
+    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion);
+
+    /**
+     * Deletes the specified supervision suggestion
+     *
+     * @param suggestion
+     */
+    public void deleteSupervisionSuggestion(SupervisionSuggestion suggestion);
 
 }

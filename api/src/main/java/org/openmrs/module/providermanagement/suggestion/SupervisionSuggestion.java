@@ -39,6 +39,14 @@ public class SupervisionSuggestion extends Suggestion {
         this.supervisionSuggestionId = id;
     }
 
+    public Integer getSupervisionSuggestionId() {
+        return supervisionSuggestionId;
+    }
+
+    public void setSupervisionSuggestionId(Integer supervisionSuggestionId) {
+        this.supervisionSuggestionId = supervisionSuggestionId;
+    }
+
     public ProviderRole getProviderRole() {
         return providerRole;
     }

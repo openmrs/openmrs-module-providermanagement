@@ -21,6 +21,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
@@ -28,6 +29,8 @@ import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeEx
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SuggestionEvaluator;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 
 import java.util.*;
 
@@ -135,5 +138,42 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getProvidersForPatient(patient, relationshipType));
 
         return new ArrayList<Person>(suggestedProviders);
+    }
+
+    @Override
+    public SupervisionSuggestion getSupervisionSuggestion(Integer id) {
+        return dao.getSupervisionSuggestion(id);
+    }
+
+    @Override
+    public SupervisionSuggestion getSupervisionSuggestionByUuid(String uuid) {
+        return dao.getSupervisionSuggestionByUuid(uuid);
+    }
+
+    @Override
+    public List<SupervisionSuggestion> getSugervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion) {
+        dao.saveSupervisionSuggestion(suggestion);
+    }
+
+    @Override
+    public void retireSupervisionSuggestion(SupervisionSuggestion suggestion, String reason) {
+        // BaseRetireHandler handles retiring the object
+        dao.saveSupervisionSuggestion(suggestion);
+    }
+
+    @Override
+    public void unretireSupervisionSuggestion(SupervisionSuggestion suggestion) {
+        // BaseRetireHandler handles retiring the object
+        dao.saveSupervisionSuggestion(suggestion);
+    }
+
+    @Override
+    public void purgeSupervisionSuggestion(SupervisionSuggestion suggestion) {
+        dao.deleteSupervisionSuggestion(suggestion);
     }
 }

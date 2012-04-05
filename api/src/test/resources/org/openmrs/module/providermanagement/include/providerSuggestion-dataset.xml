@@ -14,5 +14,10 @@
         evaluator="org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-27ee-4bb2-86d6-6d1d05315bd5"
         criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(9));return persons;"/>
 
+    <!-- some supervisor suggestions -->
+    <providermanagement_supervision_suggestion supervision_suggestion_id="1" name="Some supervisor suggestion" provider_role_id="1001" suggestion_type="SUPERVISOR_SUGGESTION"
+        evaluator="org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-27ee-4bb2-89d6-6d1d05315bd5"
+        criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(9));return persons;"/>
+
 </dataset>
 
