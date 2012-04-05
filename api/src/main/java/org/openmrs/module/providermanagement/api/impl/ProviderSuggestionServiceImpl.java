@@ -52,7 +52,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
     @Override
     public ProviderSuggestion getProviderSuggestionByUuid(String uuid) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+       return dao.getProviderSuggestionByUuid(uuid);
     }
 
     @Override
@@ -68,17 +68,24 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
     @Override
     public void saveProviderSuggestion(ProviderSuggestion suggestion) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        dao.saveProviderSuggestion(suggestion);
     }
 
     @Override
-    public void retireProviderSuggestion(ProviderSuggestion suggestion) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void retireProviderSuggestion(ProviderSuggestion suggestion, String reason) {
+        // BaseRetireHandler handles retiring the object
+        dao.saveProviderSuggestion(suggestion);
+    }
+
+    @Override
+    public void unretireProviderSuggestion(ProviderSuggestion suggestion) {
+        // BaseRetireHandler handles retiring the object
+        dao.saveProviderSuggestion(suggestion);
     }
 
     @Override
     public void purgeProviderSuggestion(ProviderSuggestion suggestion) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        dao.deleteProviderSuggestion(suggestion);
     }
 
     @Override
@@ -123,6 +130,9 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         // only keep those providers that are valid (ie, support the specified relationship type
         // TODO: might want to test the performance of this
         suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersByRelationshipType(relationshipType));
+
+        // finally, remove any providers that are already assigned to this patient
+        suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getProvidersForPatient(patient, relationshipType));
 
         return new ArrayList<Person>(suggestedProviders);
     }

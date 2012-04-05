@@ -449,12 +449,11 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param relationshipType limits returned providers to those linked by a specific type (if null, returns all providers)
      * @param date returns only those relationships on the specified date
      * @return all providers associated with the given patient on the specified date
-     * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
     
     public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType, Date date)
-            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+            throws InvalidRelationshipTypeException;
 
     /**
      * Returns all providers associated with the given patient on the specified date
@@ -462,12 +461,11 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param patient
      * @param relationshipType limits returned providers to those linked by a specific type (if null, returns all providers)
      * @return all providers associated with the given patient on the specified date
-     * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
     
     public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
-            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+            throws InvalidRelationshipTypeException;
 
     /**
      * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider

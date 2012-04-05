@@ -129,10 +129,27 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
+    public ProviderSuggestion getProviderSuggestionByUuid(String uuid) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderSuggestion.class);
+        criteria.add(Restrictions.eq("uuid", uuid));
+        return (ProviderSuggestion) criteria.uniqueResult();
+    }
+
+    @Override
     public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderSuggestion.class);
         criteria.add(Restrictions.eq("retired", false));
         criteria.add(Restrictions.eq("relationshipType", relationshipType));
         return (List<ProviderSuggestion>) criteria.list();
+    }
+
+    @Override
+    public void saveProviderSuggestion(ProviderSuggestion suggestion) {
+        sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
+    }
+
+    @Override
+    public void deleteProviderSuggestion(ProviderSuggestion suggestion) {
+        sessionFactory.getCurrentSession().delete(suggestion);
     }
 }

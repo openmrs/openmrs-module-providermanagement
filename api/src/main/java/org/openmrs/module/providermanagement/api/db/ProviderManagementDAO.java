@@ -117,6 +117,14 @@ public interface ProviderManagementDAO {
     public ProviderSuggestion getProviderSuggestion(Integer id);
 
     /**
+     * Gets the provider suggestion referenced by the specified uuid
+     *
+     * @param uuid
+     * @return  the provider suggestion referenced by the specified uuid
+     */
+    public ProviderSuggestion getProviderSuggestionByUuid(String uuid);
+
+    /**
      * Gets the list of provider suggestions for the specified relationship type
      * (Excludes retired provider roles)
      *
@@ -124,4 +132,19 @@ public interface ProviderManagementDAO {
      * @return ist of provider suggestions for the specified relationship type
      */
     public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType);
+
+    /**
+     * Saves the specified provider suggestion
+     *
+     * @param suggestion
+     */
+    public void saveProviderSuggestion(ProviderSuggestion suggestion);
+
+    /**
+     * Deletes the specified provider suggestion
+     *
+     * @param suggestion
+     */
+    public void deleteProviderSuggestion(ProviderSuggestion suggestion);
+
 }

@@ -40,11 +40,16 @@ public interface ProviderSuggestionService {
 
     public void saveProviderSuggestion(ProviderSuggestion suggestion);
 
-    public void retireProviderSuggestion(ProviderSuggestion suggestion);
+    public void retireProviderSuggestion(ProviderSuggestion suggestion, String reason);
+
+    public void unretireProviderSuggestion(ProviderSuggestion suggestion);
 
     public void purgeProviderSuggestion(ProviderSuggestion suggestion);
 
     public List<Person> suggestProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException, SuggestionEvaluationException;
 
+
+
+    // TODO: so for "SupervisionSuggestion" do we want an "auto-assign method"?
 }
