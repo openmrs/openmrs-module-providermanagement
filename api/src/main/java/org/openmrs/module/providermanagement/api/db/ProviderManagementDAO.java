@@ -173,7 +173,7 @@ public interface ProviderManagementDAO {
      * @param suggestionType
      * @return ist of provider suggestions for the specified relationship type
      */
-    public List<SupervisionSuggestion> getProviderSuggestionsByRelationshipType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
 
     /**
      * Saves the specified supervision suggestion

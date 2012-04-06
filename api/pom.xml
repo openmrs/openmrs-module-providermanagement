@@ -63,7 +63,7 @@
 				
 		<!-- End OpenMRS core -->
 
-        <!-- TODO: confirm that groovy is included in core -->
+        <!-- TODO: confirm that groovy is included in core OpenMRS -->
         <!--  include groovy, but mark as provided since it is included in core OpenMRS -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>

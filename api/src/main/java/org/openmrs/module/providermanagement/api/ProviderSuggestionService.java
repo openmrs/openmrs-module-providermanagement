@@ -19,6 +19,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
@@ -129,10 +130,18 @@ public interface ProviderSuggestionService {
      * Gets all Supervision Suggestions for the specified provider role of the specified type
      *
      * @param providerRole
-     * @param suggestionType
+     * @param suggestionType if set to null will return all suggestions for provider role regardless of type
      * @return  all Supervision Suggestions for the specified provider role of the specified type
      */
-    public List<SupervisionSuggestion> getSugervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+
+    /**
+     * Gets all Supervision Suggestions for the specified provider role
+     *
+     * @param providerRole
+     * @return  all Supervision Suggestions for the specified provider role
+     */
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ProviderRole providerRole);
 
     /**
      * Saves the specified supervision suggestion
@@ -156,7 +165,6 @@ public interface ProviderSuggestionService {
      */
     public void unretireSupervisionSuggestion(SupervisionSuggestion suggestion);
 
-
     /**
      * Purges the specified supervision suggestion
      *
@@ -165,4 +173,10 @@ public interface ProviderSuggestionService {
     public void purgeSupervisionSuggestion(SupervisionSuggestion suggestion);
 
     // TODO: so for "SupervisionSuggestion" do we want an "auto-assign method"?
+
+    public List<Person> suggestSupervisorsForProvider(Person provider)
+            throws PersonIsNotProviderException, SuggestionEvaluationException;
+
+    public List<Person> suggestSuperviseesForProvider(Person provider)
+            throws PersonIsNotProviderException, SuggestionEvaluationException;
 }

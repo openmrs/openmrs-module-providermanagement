@@ -14,6 +14,7 @@
 
 package org.openmrs.module.providermanagement.api;
 
+import org.hibernate.PropertyValueException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +23,13 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
+import org.openmrs.module.providermanagement.suggestion.Suggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.awt.peer.ListPeer;
@@ -334,5 +338,136 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         Assert.assertEquals(new Integer(1), suggestion.getId());
     }
 
-    // TODO: finish up the rest of the supervision suggestion stuff, then move on to the provider attribute type?
+    @Test
+    public void getSupervisionSuggestionByProviderRole_shouldGetAllSuggestionsForProviderRole() {
+        ProviderRole role = providerManagementService.getProviderRole(1001);
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
+
+        Assert.assertEquals(2, suggestions.size());
+
+        Iterator<SupervisionSuggestion> i = suggestions.iterator();
+
+        while (i.hasNext()) {
+            SupervisionSuggestion providerSuggestion = i.next();
+            int id = providerSuggestion.getId();
+
+            if (id == 1 || id == 2) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, suggestions.size());
+    }
+
+    @Test
+    public void getSupervisionSuggestionByProviderRoleAndSuggestionType_shouldGetAllSuggestionsForProviderRoleAndSuggestionType() {
+        ProviderRole role = providerManagementService.getProviderRole(1001);
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRoleAndSuggestionType(role, SupervisionSuggestionType.SUPERVISEE_SUGGESTION);
+
+        Assert.assertEquals(1, suggestions.size());
+        Assert.assertEquals(new Integer(2), suggestions.get(0).getId());
+    }
+
+    @Test
+    public void getSupervisionSuggestionForProviderRole_shouldReturnNullOrEmptyListIfNoSuggestions()  {
+        ProviderRole role = providerManagementService.getProviderRole(1002);
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
+        Assert.assertTrue(suggestions == null || suggestions.size() == 0);
+    }
+
+    @Test
+    public void saveSupervisionSuggestion_shouldSaveSupervisionSuggestion() {
+        ProviderRole role = providerManagementService.getProviderRole(1002);
+        SupervisionSuggestion suggestion = new SupervisionSuggestion();
+        suggestion.setName("new suggestion");
+        suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
+        suggestion.setCriteria("-- some groovy code --");
+        suggestion.setProviderRole(role);
+        suggestion.setSuggestionType(SupervisionSuggestionType.SUPERVISEE_SUGGESTION);
+
+        providerSuggestionService.saveSupervisionSuggestion(suggestion);
+
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
+        Assert.assertEquals(1, suggestions.size());
+        Assert.assertEquals("new suggestion", suggestions.get(0).getName());
+    }
+
+    // TODO: this will need to be changed once/if we add a validator?
+    @Test(expected = PropertyValueException.class)
+    public void saveSupervisionSuggestion_shouldFailIfNoTypeSpecified() {
+        ProviderRole role = providerManagementService.getProviderRole(1002);
+        SupervisionSuggestion suggestion = new SupervisionSuggestion();
+        suggestion.setName("new suggestion");
+        suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
+        suggestion.setCriteria("-- some groovy code --");
+        suggestion.setProviderRole(role);
+
+        providerSuggestionService.saveSupervisionSuggestion(suggestion);
+    }
+
+    @Test
+    public void retireSupervisionSuggestion_shouldRetireSupervisionSuggestion() {
+        SupervisionSuggestion suggestion = providerSuggestionService.getSupervisionSuggestion(1);
+        providerSuggestionService.retireSupervisionSuggestion(suggestion, "test");
+
+        // make sure only the unretired suggestion is now returned
+        ProviderRole role = providerManagementService.getProviderRole(1001) ;
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
+
+        // there should be only one
+        Assert.assertEquals(1, suggestions.size());
+        Assert.assertEquals(new Integer(2), suggestions.get(0).getId());
+    }
+
+    @Test
+    public void unretireSupervisionSuggestion_shouldUnretireSupervisionSuggestion() {
+        SupervisionSuggestion suggestion = providerSuggestionService.getSupervisionSuggestion(1);
+        providerSuggestionService.retireSupervisionSuggestion(suggestion, "test");
+        providerSuggestionService.unretireSupervisionSuggestion(suggestion);
+
+        ProviderRole role = providerManagementService.getProviderRole(1001) ;
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
+
+        Assert.assertEquals(2, suggestions.size());
+
+        Iterator<SupervisionSuggestion> i = suggestions.iterator();
+
+        while (i.hasNext()) {
+            SupervisionSuggestion providerSuggestion = i.next();
+            int id = providerSuggestion.getId();
+
+            if (id == 1 || id == 2) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, suggestions.size());
+    }
+
+    @Test
+    public void purgeSupervisionSuggestion_shouldPurgeSupervisionSuggestion() {
+        SupervisionSuggestion suggestion = providerSuggestionService.getSupervisionSuggestion(1);
+        providerSuggestionService.purgeSupervisionSuggestion(suggestion);
+
+        // make sure only the un-purged selection is now returned
+        ProviderRole role = providerManagementService.getProviderRole(1001) ;
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
+
+        Assert.assertEquals(1, suggestions.size());
+        Assert.assertEquals(new Integer(2), suggestions.get(0).getId());
+
+        // trying to fetch suggestion 1 should now return null
+        Assert.assertNull(providerSuggestionService.getSupervisionSuggestion(1));
+    }
+
+
+    // TODO: do we need a "validateProviderSuggestion" method that attempts to parse and validate the groovy code in the criteria
+
+
+
+
+
+
 }

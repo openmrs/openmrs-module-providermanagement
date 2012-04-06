@@ -168,8 +168,16 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public List<SupervisionSuggestion> getProviderSuggestionsByRelationshipType(ProviderRole providerRole, SupervisionSuggestionType suggestionType) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SupervisionSuggestion.class);
+        criteria.add(Restrictions.eq("retired", false));
+        criteria.add(Restrictions.eq("providerRole", providerRole));
+
+        if (suggestionType != null) {
+            criteria.add(Restrictions.eq("suggestionType", suggestionType));
+        }
+
+        return (List<SupervisionSuggestion>) criteria.list();
     }
 
     @Override

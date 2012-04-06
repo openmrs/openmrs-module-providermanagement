@@ -32,6 +32,7 @@ import java.util.List;
 public interface ProviderManagementService extends OpenmrsService {
 
     // TODO: add permissions
+    // TODO: make sure includeRetired is being handled correctly
 
     /*
       * Basic methods for operating on provider roles
@@ -41,7 +42,6 @@ public interface ProviderManagementService extends OpenmrsService {
      * Gets all unretired provider roles
      * @return list of all unretired provider roles
      */
-
     public List<ProviderRole> getAllProviderRoles();
 
     /**
