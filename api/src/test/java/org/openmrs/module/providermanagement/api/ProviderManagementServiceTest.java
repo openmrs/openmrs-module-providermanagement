@@ -38,6 +38,8 @@ import static org.junit.Assert.assertNotNull;
  */
 public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTest {
 
+    // TODO: add some more tests of the retired use cases
+
     protected static final String XML_DATASET_PATH = "org/openmrs/module/providermanagement/include/";
 
     protected static final String XML_DATASET = "providerManagement-dataset.xml";
@@ -67,21 +69,21 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 	}
 
     @Test
-    public void getAllProviderRoles_shouldGetAllProviderUnretiredRoles() {
+    public void getAllProviderRoles_shouldGetAllProviderRoles() {
         List<ProviderRole> roles = providerManagementService.getAllProviderRoles();
         int roleCount = roles.size();
-        Assert.assertEquals(11, roleCount);
+        Assert.assertEquals(12, roleCount);
 
-        roles = providerManagementService.getAllProviderRoles(false);
+        roles = providerManagementService.getAllProviderRoles(true);
         roleCount = roles.size();
-        Assert.assertEquals(11, roleCount);
+        Assert.assertEquals(12, roleCount);
     }
 
     @Test
-    public void getAllProviderRoles_shouldGetAllProviderRolesIncludingRetired() {
-        List<ProviderRole> roles = providerManagementService.getAllProviderRoles(true);
+    public void getAllProviderRoles_shouldGetAllProviderRolesExcludingRetired() {
+        List<ProviderRole> roles = providerManagementService.getAllProviderRoles(false);
         int roleCount = roles.size();
-        Assert.assertEquals(12, roleCount);
+        Assert.assertEquals(11, roleCount);
     }
 
     @Test
@@ -190,14 +192,14 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         ProviderRole role = new ProviderRole();
         role.setName("Some provider role");
         Context.getService(ProviderManagementService.class).saveProviderRole(role);
-        Assert.assertEquals(12, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(13, providerManagementService.getAllProviderRoles().size());
     }
 
     @Test
     public void deleteProviderRole_shouldDeleteProviderRole() throws Exception {
         ProviderRole role = providerManagementService.getProviderRole(1012);
         providerManagementService.purgeProviderRole(role);
-        Assert.assertEquals(10, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(11, providerManagementService.getAllProviderRoles().size());
         Assert.assertNull(providerManagementService.getProviderRole(1012));
     }
 
@@ -214,7 +216,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void retireProviderRole_shouldRetireProviderRole() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.retireProviderRole(role, "test");
-        Assert.assertEquals(9, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(10, providerManagementService.getAllProviderRoles().size());
         
         role = providerManagementService.getProviderRole(1002);
         Assert.assertTrue(role.isRetired());
@@ -227,7 +229,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void unretireProviderRole_shouldUnretireProviderRole() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.retireProviderRole(role, "test");
-        Assert.assertEquals(9, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(10, providerManagementService.getAllProviderRoles().size());
 
        role = providerManagementService.getProviderRole(1002);
        providerManagementService.unretireProviderRole(role);
@@ -263,7 +265,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Context.getPersonService().retireRelationshipType(relationshipType, "test");
 
         // verify that there are now only 2
-        List<RelationshipType> relationshipTypes = providerManagementService.getAllProviderRoleRelationshipTypes();
+        List<RelationshipType> relationshipTypes = providerManagementService.getAllProviderRoleRelationshipTypes(false);
         Assert.assertEquals(2, relationshipTypes.size());
 
         // double-check to make sure the are the correct relationships

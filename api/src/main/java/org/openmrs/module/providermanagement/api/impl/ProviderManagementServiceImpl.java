@@ -67,7 +67,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional(readOnly = true)
     public List<ProviderRole> getAllProviderRoles() {
-        return dao.getAllProviderRoles(false);
+        return dao.getAllProviderRoles(true);
     }
 
     @Override
@@ -179,7 +179,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional(readOnly = true)
     public List<RelationshipType> getAllProviderRoleRelationshipTypes() {
-        return getAllProviderRoleRelationshipTypes(false);
+        return getAllProviderRoleRelationshipTypes(true);
     }
 
     @Override
@@ -198,7 +198,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // (we use a set to avoid duplicates at this point)
         Set<ProviderRole> providerRoles = new HashSet<ProviderRole>();
 
-        Collection<Provider> providers = getProvidersByPerson(provider);
+        Collection<Provider> providers = getProvidersByPerson(provider, false);
 
         for (Provider p : providers) {
             if (p.getProviderRole() != null) {
@@ -264,7 +264,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // note that we don't check to make sure this provider is a person
 
         // iterate through all the providers and retire any with the specified role
-        for (Provider p : getProvidersByPerson(provider)) {
+        for (Provider p : getProvidersByPerson(provider, true)) {
             if (p.getProviderRole().equals(role)) {
                 Context.getProviderService().retireProvider(p, "removing provider role " + role + " from " + provider);
             }
@@ -290,7 +290,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // note that we don't check to make sure this provider is a person
 
         // iterate through all the providers and purge any with the specified role
-        for (Provider p : getProvidersByPerson(provider)) {
+        for (Provider p : getProvidersByPerson(provider, true)) {
             if (p.getProviderRole().equals(role)) {
                 Context.getProviderService().purgeProvider(p);
             }
@@ -393,7 +393,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional(readOnly = true)
     public boolean supportsRelationshipType(Person provider, RelationshipType relationshipType) {
 
-        Collection<Provider> providers = getProvidersByPerson(provider);
+        Collection<Provider> providers = getProvidersByPerson(provider, false);
 
         if (providers == null || providers.size() == 0) {
             return false;
@@ -541,7 +541,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         // we don't need to assure that the person supports the relationship type, but we need to make sure this a provider/patient relationship type
-        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+        if (!getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -590,7 +590,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         // we don't need to assure that the person supports the relationship type, but we need to make sure this a provider/patient relationship type
-        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+        if (!getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -614,7 +614,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Provider cannot be null");
         }
 
-        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
+        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes(false)) {
             try {
                 unassignAllPatientsFromProvider(provider, relationshipType);
             }
@@ -640,7 +640,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider + " is not a provider");
         }
 
-        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -695,7 +695,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider + " is not a provider");
         }
         
-        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
             throw new InvalidRelationshipTypeException(relationshipType + " is not a patient/provider relationship");
         }
         
@@ -807,7 +807,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public void transferAllPatients(Person sourceProvider, Person destinationProvider)
             throws ProviderDoesNotSupportRelationshipTypeException, PersonIsNotProviderException,
             SourceProviderSameAsDestinationProviderException {
-        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes()) {
+        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes(false)) {
             try {
                 transferAllPatients(sourceProvider, destinationProvider, relationshipType);
             }
@@ -1099,7 +1099,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Transactional(readOnly = true)
     public List<Provider> getProvidersByPerson(Person person) {
-        return getProvidersByPerson(person, false);
+        return getProvidersByPerson(person, true);
     }
 
     /**
