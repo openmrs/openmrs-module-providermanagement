@@ -62,8 +62,18 @@
 		</dependency>
 				
 		<!-- End OpenMRS core -->
-		
-	</dependencies>
+
+        <!-- TODO: confirm that groovy is included in core OpenMRS -->
+        <!--  include groovy, but mark as provided since it is included in core OpenMRS -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>1.7.6</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 	
 	<build>
 		<resources>

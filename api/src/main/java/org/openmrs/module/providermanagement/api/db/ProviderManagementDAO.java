@@ -18,6 +18,9 @@ import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 
 import java.util.List;
 
@@ -25,7 +28,9 @@ import java.util.List;
  *  Database methods for {@link ProviderManagementService}.
  */
 public interface ProviderManagementDAO {
-	
+
+    // TODO: sets vs lists?
+
 	/*
 	 * Base Methods for saving and loading provider roles
 	 */
@@ -104,4 +109,84 @@ public interface ProviderManagementDAO {
      * @return all providers with the selected provider roles
      */
     public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired);
+
+    /**
+     * Gets the provider suggestion referenced by the specified id
+     *
+     * @param id
+     * @return providerSuggestion
+     */
+    public ProviderSuggestion getProviderSuggestion(Integer id);
+
+    /**
+     * Gets the provider suggestion referenced by the specified uuid
+     *
+     * @param uuid
+     * @return  the provider suggestion referenced by the specified uuid
+     */
+    public ProviderSuggestion getProviderSuggestionByUuid(String uuid);
+
+    /**
+     * Gets the list of provider suggestions for the specified relationship type
+     * (Excludes retired provider roles)
+     *
+     * @param relationshipType
+     * @return ist of provider suggestions for the specified relationship type
+     */
+    public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType);
+
+    /**
+     * Saves the specified provider suggestion
+     *
+     * @param suggestion
+     */
+    public void saveProviderSuggestion(ProviderSuggestion suggestion);
+
+    /**
+     * Deletes the specified provider suggestion
+     *
+     * @param suggestion
+     */
+    public void deleteProviderSuggestion(ProviderSuggestion suggestion);
+
+    /**
+     * Gets the supervision suggestion referenced by the specified id
+     *
+     * @param id
+     * @return supervision suggestion
+     */
+    public SupervisionSuggestion getSupervisionSuggestion(Integer id);
+
+    /**
+     * Gets the supervision suggestion referenced by the specified uuid
+     *
+     * @param uuid
+     * @return  the supervision suggestion referenced by the specified uuid
+     */
+    public SupervisionSuggestion getSupervisionSuggestionByUuid(String uuid);
+
+    /**
+     * Gets the list of supervision suggestions for the specified provider role of the specified type
+     * (Excludes retired provider roles)
+     *
+     * @param providerRole
+     * @param suggestionType
+     * @return ist of provider suggestions for the specified relationship type
+     */
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+
+    /**
+     * Saves the specified supervision suggestion
+     *
+     * @param suggestion
+     */
+    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion);
+
+    /**
+     * Deletes the specified supervision suggestion
+     *
+     * @param suggestion
+     */
+    public void deleteSupervisionSuggestion(SupervisionSuggestion suggestion);
+
 }

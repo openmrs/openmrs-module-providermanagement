@@ -7,5 +7,7 @@
     <session-factory>
         <mapping resource="ProviderRole.hbm.xml" />
         <mapping resource="Provider.hbm.xml" />
+        <mapping resource="ProviderSuggestion.hbm.xml" />
+        <mapping resource="SupervisionSuggestion.hbm.xml" />
     </session-factory>
 </hibernate-configuration>

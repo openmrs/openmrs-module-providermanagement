@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+  ~ The contents of this file are subject to the OpenMRS Public License
+  ~ Version 1.0 (the "License"); you may not use this file except in
+  ~ compliance with the License. You may obtain a copy of the License at
+  ~ http://license.openmrs.org
+  ~
+  ~ Software distributed under the License is distributed on an "AS IS"
+  ~ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+  ~ License for the specific language governing rights and limitations
+  ~ under the License.
+  ~
+  ~ Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.module.providermanagement.suggestion">
+
+
+    <class name="SupervisionSuggestion" table="providermanagement_supervision_suggestion">
+
+        <id name="supervisionSuggestionId" type="int" column="supervision_suggestion_id" unsaved-value="0">
+            <generator class="native" />
+        </id>
+        <discriminator column="supervision_suggestion_id" insert="false" />
+        <property name="uuid" type="java.lang.String" column="uuid"
+                  length="38" unique="true" />
+
+        <property name="criteria" type="java.lang.String" column="criteria"
+                  not-null="true" length="5000" />
+
+        <property name="evaluator" type="java.lang.String" column="evaluator"
+                  not-null="true" length="255" />
+
+        <property name="suggestionType" column="suggestion_type" length="50" not-null="true">
+            <type name="org.openmrs.util.HibernateEnumType">
+                <param name="enumClassName">org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType</param>
+            </type>
+        </property>
+
+        <many-to-one name="providerRole" class="org.openmrs.module.providermanagement.ProviderRole" column="provider_role_id"
+                     not-null="true" />
+
+        <!--  standard OpenmrsMetaData -->
+        <property name="name" type="java.lang.String" column="name"
+                  not-null="true" length="255" />
+        <property name="description" type="string" />
+        <many-to-one name="creator" class="org.openmrs.User"
+                     not-null="true" />
+        <property name="dateCreated" type="java.util.Date" column="date_created"
+                  not-null="true" />
+        <many-to-one name="changedBy" class="org.openmrs.User"
+                     column="changed_by" />
+        <property name="dateChanged" type="java.util.Date" column="date_changed" />
+        <property name="retired" type="java.lang.Boolean" length="1"
+                  not-null="true" />
+        <many-to-one name="retiredBy" class="org.openmrs.User"
+                     column="retired_by" />
+        <property name="dateRetired" type="java.util.Date" column="date_retired" />
+        <property name="retireReason" type="string" column="retire_reason" />
+
+    </class>
+
+
+</hibernate-mapping>
+
+

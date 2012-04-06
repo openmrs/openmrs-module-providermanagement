@@ -725,10 +725,19 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional(readOnly = true)
     public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType, Date date)
-            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
-        
-        List<Relationship> relationships = getProviderRelationshipsForPatient(patient, null, relationshipType, date);
-        
+            throws InvalidRelationshipTypeException {
+
+        List<Relationship> relationships;
+
+        try {
+            relationships = getProviderRelationshipsForPatient(patient, null, relationshipType, date);
+        }
+        catch (PersonIsNotProviderException e) {
+            // should never reach here since we aren't specifying a provider in the above method
+            // just through an APIException here to avoid having have this method throw this exception
+            throw new APIException(e);
+        }
+
         Set<Person> providers = new HashSet<Person>();
         
         for (Relationship relationship : relationships) {
@@ -746,7 +755,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType) throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
+            throws InvalidRelationshipTypeException {
         return getProvidersForPatient(patient, relationshipType, new Date());
     }
 
@@ -1077,6 +1087,9 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 providers.add(relationship.getPersonB());
             }
         }
+
+        // TODO: so we'd have some sort of evaluator here?
+
 
         return new ArrayList<Person>(providers);
     }
