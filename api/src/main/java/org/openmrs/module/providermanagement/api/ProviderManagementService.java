@@ -31,11 +31,8 @@ import java.util.List;
 
 public interface ProviderManagementService extends OpenmrsService {
 
-    // TODO: fix the broken methods and refactor
-
-
     // TODO: add permissions
-    // TODO: make sure includeRetired is being handled correctly (default is to *include* retired?)
+    // TODO: make sure we are handling excluding/including retired metadata in a logical manner
 
     /*
       * Basic methods for operating on provider roles
@@ -363,8 +360,6 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException;
 
     // TODO: we will probably need a "purge" option for purging relationships created by accident, but we should probably spec this out a bit better
-
-    // TODO: refactor methods below into a single method?
 
     /**
      * Gets all patients that are patients of the specified provider with the specified relationship type on the specified date

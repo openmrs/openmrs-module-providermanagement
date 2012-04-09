@@ -23,9 +23,6 @@ import org.openmrs.api.context.Context;
 
 abstract public class Suggestion extends BaseOpenmrsMetadata {
 
-    // TODO: get this whole package in order, and then move on to the service
-    // TODO: this class needs to extend Openmrs Metadata
-
     // the stores the actual "rule" used to make suggestions (currently must be a groovy script)
     private String criteria;
 

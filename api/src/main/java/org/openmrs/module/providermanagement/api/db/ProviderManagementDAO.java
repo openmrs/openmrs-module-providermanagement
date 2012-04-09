@@ -29,8 +29,6 @@ import java.util.List;
  */
 public interface ProviderManagementDAO {
 
-    // TODO: sets vs lists?
-
 	/*
 	 * Base Methods for saving and loading provider roles
 	 */

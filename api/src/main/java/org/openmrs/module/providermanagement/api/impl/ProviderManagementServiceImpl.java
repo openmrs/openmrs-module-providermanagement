@@ -1083,9 +1083,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             }
         }
 
-        // TODO: so we'd have some sort of evaluator here?
-
-
         return new ArrayList<Person>(providers);
     }
 

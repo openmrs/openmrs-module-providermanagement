@@ -31,13 +31,6 @@ public class GroovySuggestionEvaluator implements SuggestionEvaluator {
 
     @Override
     public Set<Person> evaluate(Suggestion suggestion, Person provider) {
-
-        // TODO: combine this with
-
-        // TODO: definitely need to add some error catching here!!!   (or is handled by serviec that calls it?
-
-        // TODO: a catch if the evaluate fails!
-
         Binding bindings = getBindings();
         bindings.setVariable("provider", provider);
 
@@ -52,7 +45,6 @@ public class GroovySuggestionEvaluator implements SuggestionEvaluator {
         bindings.setVariable("relationshipType", relationshipType);
 
         return evaluate(suggestion, bindings);
-
     }
 
     private Set<Person> evaluate(Suggestion suggestion, Binding bindings) {

@@ -178,8 +178,4 @@ public class SuggestionTest extends BaseModuleContextSensitiveTest {
         // list should now be empty
         Assert.assertEquals(0, persons.size());
     }
-
-    // TODO: one that does an actual SQL query as well?
-
-
 }

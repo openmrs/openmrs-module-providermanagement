@@ -32,8 +32,6 @@ import java.util.List;
 
 public interface ProviderSuggestionService {
 
-    // TODO: document all this!
-
     /**
      * Gets the provider suggestion referenced by the specified id
      *
@@ -172,11 +170,45 @@ public interface ProviderSuggestionService {
      */
     public void purgeSupervisionSuggestion(SupervisionSuggestion suggestion);
 
-    // TODO: so for "SupervisionSuggestion" do we want an "auto-assign method"?
-
+    /**
+     * Suggests the supervisors for a provider based on that provider's role(s)
+     *
+     * If no SupervisionSuggestions of type "Supervisor" are found for the provider's roles, this
+     * method will return all providers who have roles that are valid supervisor roles for the roles
+     * of the passed provider
+     *
+     * If one or more SupervisionSuggestions exist, the method will take the union of the provider sets
+     * returns by the suggestions; from the resultant set it will *remove* any providers who do not
+     * have a role that is valid supervisory role for one or more of the roles of the passed provider
+     *
+     * Finally, any providers currently supervising the specified provider are removed from the result set
+     *
+     * @param provider
+     * @return
+     * @throws PersonIsNotProviderException
+     * @throws SuggestionEvaluationException
+     */
     public List<Person> suggestSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException;
 
+    /**
+     * Suggests the supervisees for a provider based on that provider's role(s)
+     *
+     * If no SupervisionSuggestions of type "Supervisee" are found for the provider's roles, this
+     * method will return all providers who have roles that are valid supervisee roles for the roles
+     * of the passed provider
+     *
+     * If one or more SupervisionSuggestions exist, the method will take the union of the provider sets
+     * returns by the suggestions; from the resultant set it will *remove* any providers who do not
+     * have a role that is valid supervisee role for one or more of the roles of the passed provider
+     *
+     * Finally, any providers currently being supervised by specified provider are removed from the result set
+     *
+     * @param provider
+     * @return
+     * @throws PersonIsNotProviderException
+     * @throws SuggestionEvaluationException
+     */
     public List<Person> suggestSuperviseesForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException;
 }
