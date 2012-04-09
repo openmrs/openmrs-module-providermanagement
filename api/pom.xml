@@ -63,8 +63,8 @@
 				
 		<!-- End OpenMRS core -->
 
-        <!-- TODO: confirm that groovy is included in core OpenMRS -->
-        <!--  include groovy, but mark as provided since it is included in core OpenMRS -->
+        <!--  include groovy, but mark as provided since it is included with the logic module -->
+        <!-- TODO: may need to modify this once logic is no longer provided -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
@@ -72,6 +72,26 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+
+
+        <!-- include sync for testing sync -->
+        <!-- TODO: may need to modify this once logic is no longer provided -->
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>sync-omod</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>sync-omod</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 	
