@@ -210,9 +210,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         }
 
         // now get all the roles that can supervise this provider
-        // TODO: add a getProviderRolesBySuperviseeProviderRoles method to ProviderManagement service
-        //List<ProviderRole> validRolesToServeAsSupervisor = Context.getService(ProviderManagementService.class).getProviderRolesBySuperviseeProviderRole(roles);
-        List<ProviderRole> validRolesToServeAsSupervisor = null;
+        List<ProviderRole> validRolesToServeAsSupervisor = Context.getService(ProviderManagementService.class).getProviderRolesThatCanSuperviseThisProvider(provider);
 
         // get any suggestions based on the provider roles
         Set<SupervisionSuggestion> suggestions = new HashSet<SupervisionSuggestion>();
@@ -252,7 +250,6 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
         // return the result set
         return new ArrayList<Person>(suggestedProviders);
-
     }
 
     @Override
@@ -323,5 +320,6 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
 
     // TODO: unit test this?
-    // TODO: remove the default "includeRetired" selection
+    // TODO: refactor
+    // TODO: remove the default "includeRetired" service methods
 }

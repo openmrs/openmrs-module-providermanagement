@@ -25,6 +25,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.Suggestion;
@@ -351,7 +352,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
             SupervisionSuggestion providerSuggestion = i.next();
             int id = providerSuggestion.getId();
 
-            if (id == 1 || id == 2) {
+            if (id == 1 || id == 3) {
                 i.remove();
             }
         }
@@ -362,23 +363,36 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
 
     @Test
     public void getSupervisionSuggestionByProviderRoleAndSuggestionType_shouldGetAllSuggestionsForProviderRoleAndSuggestionType() {
-        ProviderRole role = providerManagementService.getProviderRole(1001);
+        ProviderRole role = providerManagementService.getProviderRole(1002);
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRoleAndSuggestionType(role, SupervisionSuggestionType.SUPERVISEE_SUGGESTION);
 
-        Assert.assertEquals(1, suggestions.size());
-        Assert.assertEquals(new Integer(2), suggestions.get(0).getId());
+        Assert.assertEquals(2, suggestions.size());
+
+       Iterator<SupervisionSuggestion> i = suggestions.iterator();
+
+        while (i.hasNext()) {
+            SupervisionSuggestion providerSuggestion = i.next();
+            int id = providerSuggestion.getId();
+
+            if (id == 2 || id == 4) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, suggestions.size());;
     }
 
     @Test
     public void getSupervisionSuggestionForProviderRole_shouldReturnNullOrEmptyListIfNoSuggestions()  {
-        ProviderRole role = providerManagementService.getProviderRole(1002);
+        ProviderRole role = providerManagementService.getProviderRole(1003);
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
         Assert.assertTrue(suggestions == null || suggestions.size() == 0);
     }
 
     @Test
     public void saveSupervisionSuggestion_shouldSaveSupervisionSuggestion() {
-        ProviderRole role = providerManagementService.getProviderRole(1002);
+        ProviderRole role = providerManagementService.getProviderRole(1003);
         SupervisionSuggestion suggestion = new SupervisionSuggestion();
         suggestion.setName("new suggestion");
         suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
@@ -417,7 +431,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
 
         // there should be only one
         Assert.assertEquals(1, suggestions.size());
-        Assert.assertEquals(new Integer(2), suggestions.get(0).getId());
+        Assert.assertEquals(new Integer(3), suggestions.get(0).getId());
     }
 
     @Test
@@ -437,7 +451,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
             SupervisionSuggestion providerSuggestion = i.next();
             int id = providerSuggestion.getId();
 
-            if (id == 1 || id == 2) {
+            if (id == 1 || id == 3) {
                 i.remove();
             }
         }
@@ -456,18 +470,180 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
 
         Assert.assertEquals(1, suggestions.size());
-        Assert.assertEquals(new Integer(2), suggestions.get(0).getId());
+        Assert.assertEquals(new Integer(3), suggestions.get(0).getId());
 
         // trying to fetch suggestion 1 should now return null
         Assert.assertNull(providerSuggestionService.getSupervisionSuggestion(1));
     }
 
+    @Test
+    public void suggestSupervisorsForProvider_shouldReturnAllProvidersThatCanSupervisorProviderRolesIfNoRulesSpecified() throws Exception {
+        Person provider = Context.getPersonService().getPerson(9);
+
+        List<Person> providers = providerSuggestionService.suggestSupervisorsForProvider(provider);
+
+        // there should be two providers
+        Assert.assertEquals(2, providers.size());
+
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person person = i.next();
+            int id = person.getId();
+
+            if (id == 501 || id == 2) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+
+    @Test
+    public void suggestSupervisorsForProvider_shouldReturnAllProvidersBasedOnRulesExcludingInvalid() throws Exception {
+        Person provider = Context.getPersonService().getPerson(2);
+
+        List<Person> providers = providerSuggestionService.suggestSupervisorsForProvider(provider);
+
+        // there are two supervisor rules for binomes--one that suggests person 8, and the other that suggests person 9
+        // however, since person 9 is an accompagetuer, person 8 (a binome supervisor) should be the only valid result
+
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(8), providers.get(0).getId());
+    }
+
+    @Test
+    public void suggestSupervisorsForProvider_shouldIgnoreProvidersAlreadyAssignedToSupervise() throws Exception {
+        // this does the same thing as the above test, but assigned person 8 to supervise person 2 first
+        Person provider = Context.getPersonService().getPerson(2);
+        Person supervisor = Context.getPersonService().getPerson(8);
+        providerManagementService.assignProviderToSupervisor(provider, supervisor);
+
+        // now when we look for suggestions, there shouldn't be any (since the only valid supervisor for
+        // this provider has already been assigned to this provider)
+        List<Person> providers = providerSuggestionService.suggestSupervisorsForProvider(provider);
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test(expected = APIException.class)
+    public void suggestSupervisorsForProvider_shouldFailIfProviderNull() throws Exception {
+        providerSuggestionService.suggestSupervisorsForProvider(null);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void suggestSupervisorsForProvider_shouldFailIfPersonIsNotProvider() throws Exception {
+        Person provider = Context.getPersonService().getPerson(502);
+        providerSuggestionService.suggestSupervisorsForProvider(provider);
+    }
+
+    @Test(expected = SuggestionEvaluationException.class)
+    public void suggestSupervisorsForProvider_shouldFailIfInvalidSuggestion() throws Exception {
+
+        // add an invalid suggestion
+        ProviderRole role = providerManagementService.getProviderRole(1001);
+        SupervisionSuggestion suggestion = new SupervisionSuggestion();
+        suggestion.setName("new suggestion");
+        suggestion.setProviderRole(role);
+        suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
+        suggestion.setCriteria("invalid groovy code");
+        suggestion.setSuggestionType(SupervisionSuggestionType.SUPERVISOR_SUGGESTION);
+        providerSuggestionService.saveSupervisionSuggestion(suggestion);
+
+        Person provider = Context.getPersonService().getPerson(2);
+        providerSuggestionService.suggestSupervisorsForProvider(provider);
+    }
+
+    @Test
+    public void suggestSuperviseesForProvider_shouldReturnAllProvidersThatCanBeSupervisedByProviderRolesIfNoRulesSpecified() throws Exception {
+        Person provider = Context.getPersonService().getPerson(501);
+
+        List<Person> providers = providerSuggestionService.suggestSuperviseesForProvider(provider);
+
+        // there should be five providers
+        Assert.assertEquals(5, providers.size());
+
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person person = i.next();
+            int id = person.getId();
+
+            if (id == 2 || id == 6 || id == 7 || id == 8 || id == 9) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+
+    @Test
+    public void suggestSuperviseesForProvider_shouldReturnAllProvidersBasedOnRules() throws Exception {
+        Person provider = Context.getPersonService().getPerson(8);
+
+        List<Person> providers = providerSuggestionService.suggestSuperviseesForProvider(provider);
+
+        Assert.assertEquals(2, providers.size());
+
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person person = i.next();
+            int id = person.getId();
+
+            if (id == 2 || id == 6) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void suggestSuperviseeForProvider_shouldIgnoreProvidersAlreadyAssignedToSupervise() throws Exception {
+        // this does the same thing as the above test, but assigned person 8 to supervise person 2 first
+        Person provider = Context.getPersonService().getPerson(8);
+        Person supervisee = Context.getPersonService().getPerson(2);
+        providerManagementService.assignProviderToSupervisor(supervisee, provider);
+
+        List<Person> providers = providerSuggestionService.suggestSuperviseesForProvider(provider);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(6), providers.get(0).getId());
+    }
+
+    @Test(expected = APIException.class)
+    public void suggestSuperviseeForProvider_shouldFailIfProviderNull() throws Exception {
+        providerSuggestionService.suggestSuperviseesForProvider(null);
+    }
+
+    @Test(expected = PersonIsNotProviderException.class)
+    public void suggestSuperviseesForProvider_shouldFailIfPersonIsNotProvider() throws Exception {
+        Person provider = Context.getPersonService().getPerson(502);
+        providerSuggestionService.suggestSuperviseesForProvider(provider);
+    }
+
+    @Test(expected = SuggestionEvaluationException.class)
+    public void suggestSuperviseesForProvider_shouldFailIfInvalidSuggestion() throws Exception {
+
+        // add an invalid suggestion
+        ProviderRole role = providerManagementService.getProviderRole(1002);
+        SupervisionSuggestion suggestion = new SupervisionSuggestion();
+        suggestion.setName("new suggestion");
+        suggestion.setProviderRole(role);
+        suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
+        suggestion.setCriteria("invalid groovy code");
+        suggestion.setSuggestionType(SupervisionSuggestionType.SUPERVISEE_SUGGESTION);
+        providerSuggestionService.saveSupervisionSuggestion(suggestion);
+
+        Person provider = Context.getPersonService().getPerson(8);
+        providerSuggestionService.suggestSuperviseesForProvider(provider);
+    }
 
     // TODO: do we need a "validateProviderSuggestion" method that attempts to parse and validate the groovy code in the criteria
-
-
-
-
-
+    // TODO: a way to provider this search as a fitler?
 
 }

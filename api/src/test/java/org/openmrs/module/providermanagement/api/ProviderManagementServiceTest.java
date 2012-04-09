@@ -672,39 +672,39 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void getProvidersBySuperviseeRole_shouldReturnProvidersThatCanSuperviseProviderRole() {
-        ProviderRole providerRole = providerManagementService.getProviderRole(1001);
-        List<Person> providers = providerManagementService.getProvidersBySuperviseeProviderRole(providerRole);
-        Assert.assertEquals(3,providers.size());
+    public void getProviderRolesThatCanSuperviseThisProvider_shouldReturnProviderRolesThatCanSuperviseProvider() {
+        Person provider = Context.getPersonService().getPerson(2);
+        List<ProviderRole> roles = providerManagementService.getProviderRolesThatCanSuperviseThisProvider(provider);
+        Assert.assertEquals(5, roles.size());
 
-        // double-check to make sure the are the correct providers
+        // double-check to make sure the are the correct roles
         // be iterating through and removing the three that SHOULD be there
-        Iterator<Person> i = providers.iterator();
+        Iterator<ProviderRole> i = roles.iterator();
         
         while (i.hasNext()) {
-            Person provider = i.next();
+            ProviderRole role = i.next();
 
-            int id = provider.getId();
+            int id = role.getId();
 
-            if (id == 2 || id == 8 || id == 501) {
+            if (id == 1002 || id == 1003 || id == 1004 || id == 1005 || id == 1008) {
                 i.remove();
             }
         }
 
         // list should now be empty
-        Assert.assertEquals(0, providers.size());
+        Assert.assertEquals(0, roles.size());
     }
 
     @Test
-    public void getProvidersBySuperviseeProviderRole_shouldReturnEmptyListIfNoMatchingProvidersFound() {
-        ProviderRole providerRole = providerManagementService.getProviderRole(1008);
-        List<Person> providers = providerManagementService.getProvidersBySuperviseeProviderRole(providerRole);
-        Assert.assertEquals(0, providers.size());
+    public void getProviderRolesThatCanSuperviseThisProvider_shouldReturnEmptyListIfNoMatchingProvidersFound() {
+        Person provider = Context.getPersonService().getPerson(501);
+        List<ProviderRole> roles = providerManagementService.getProviderRolesThatCanSuperviseThisProvider(provider);
+        Assert.assertEquals(0, roles.size());
     }
 
     @Test(expected = APIException.class)
-    public void getProvidersBySuperviseeProviderRole_shouldFailIfCalledWithNull() {
-        List<Person> providers = providerManagementService.getProvidersBySuperviseeProviderRole(null);
+    public void getProviderRolesThatCanSuperviseThisProvider_shouldFailIfCalledWithNull() {
+        providerManagementService.getProviderRolesThatCanSuperviseThisProvider(null);
     }
 
     @Test
@@ -834,7 +834,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void getProviderRolesThatProviderCanSupervise_shouldReturnRolesThatProviderCanSupervise() {
         Person provider = Context.getPersonService().getPerson(2); // person who is both a binome supervisor and a community health nurse
         List<ProviderRole> roles = providerManagementService.getProviderRolesThatProviderCanSupervise(provider);
-        Assert.assertEquals(new Integer (2), (Integer) roles.size());
+        Assert.assertEquals(new Integer (3), (Integer) roles.size());
 
         // double-check to make sure the are the correct roles
         // by iterating through and removing the two that SHOULD be there
@@ -844,7 +844,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
             ProviderRole role = i.next();
             int id = role.getId();
 
-            if (id == 1001 || id == 1002 ) {
+            if (id == 1001 || id == 1002 || id == 1011) {
                 i.remove();
             }
         }

@@ -31,8 +31,11 @@ import java.util.List;
 
 public interface ProviderManagementService extends OpenmrsService {
 
+    // TODO: fix the broken methods and refactor
+
+
     // TODO: add permissions
-    // TODO: make sure includeRetired is being handled correctly
+    // TODO: make sure includeRetired is being handled correctly (default is to *include* retired?)
 
     /*
       * Basic methods for operating on provider roles
@@ -214,14 +217,22 @@ public interface ProviderManagementService extends OpenmrsService {
     public List<Person> getProvidersByRelationshipType(RelationshipType relationshipType);
 
     /**
-     * Gets all providers that can supervise the specified provider role
+     * Gets all the provider roles that can server as supervisors of the specified provider
      * 
-     * @param role
-     * @return the list of providers that can supervise the specific provider role
-     * @should throw API Exception if the provider role is null
+     * @param provider
+     * @return the list of provider roles that can supervise the specific provider
+     * @should throw API Exception if the provider is null
      */
     
-    public List<Person> getProvidersBySuperviseeProviderRole(ProviderRole role);
+    public List<ProviderRole> getProviderRolesThatCanSuperviseThisProvider(Person provider);
+
+    /**
+     * Returns all the valid roles that the specified provider can supervise
+     *
+     * @param provider
+     * @return all the valid roles that the specified provider can supervise
+     */
+    public List<ProviderRole> getProviderRolesThatProviderCanSupervise(Person provider);
 
      /**
      * Returns whether or not the passed person has one or more associated providers (unretired or retired)
@@ -249,15 +260,6 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return true if the specified provider can support the specified relationship type, false otherwise
      */
     public boolean supportsRelationshipType(Person provider, RelationshipType relationshipType);
-
-
-    /**
-     * Returns all the valid roles that the specified provider can supervise
-     *
-     * @param provider
-     * @return all the valid roles that the specified provider can supervise
-     */
-    public List<ProviderRole> getProviderRolesThatProviderCanSupervise(Person provider);
 
     /**
      * Returns true if the specified supervisor can supervise the specified supervisee, false otherwise

@@ -28,14 +28,23 @@
         evaluator="org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-27ee-4bb2-86d6-6d1d05315bd5"
         criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(9));return persons;"/>
 
-    <!-- some supervisor suggestions -->
+    <!-- some supervisor/supervisee suggestions -->
     <providermanagement_supervision_suggestion supervision_suggestion_id="1" name="Some supervisor suggestion" provider_role_id="1001" suggestion_type="SUPERVISOR_SUGGESTION"
         evaluator="org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-27ee-4bb2-89d6-6d1d05315bd5"
-        criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(9));return persons;"/>
+        criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(8));return persons;"/>
 
-    <providermanagement_supervision_suggestion supervision_suggestion_id="2" name="Another supervisor suggestion" provider_role_id="1001" suggestion_type="SUPERVISEE_SUGGESTION"
+    <providermanagement_supervision_suggestion supervision_suggestion_id="2" name="Some supervisee suggestion" provider_role_id="1002" suggestion_type="SUPERVISEE_SUGGESTION"
        evaluator="org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-67ee-4bb2-89d6-6d1d05315bd5"
+       criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(2));return persons;"/>
+
+    <providermanagement_supervision_suggestion supervision_suggestion_id="3" name="Another supervisor suggestion" provider_role_id="1001" suggestion_type="SUPERVISOR_SUGGESTION"
+       evaluator="org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f923f-27ee-4bb2-89d6-6d1d05315bd5"
        criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(9));return persons;"/>
+
+    <providermanagement_supervision_suggestion supervision_suggestion_id="4" name="Another supervisee suggestion" provider_role_id="1002" suggestion_type="SUPERVISEE_SUGGESTION"
+       evaluator="org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7g623f-67ee-4bb2-89d6-6d1d05315bd5"
+       criteria="Set&lt;org.openmrs.Person&gt; persons = new HashSet&lt;org.openmrs.Person&gt;();persons.add(personService.getPerson(6));return persons;"/>
+
 
 </dataset>
 

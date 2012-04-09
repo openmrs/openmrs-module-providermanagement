@@ -60,6 +60,7 @@
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1004" supervisee_provider_role_id="1011"/>
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1005" supervisee_provider_role_id="1001"/>
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1005" supervisee_provider_role_id="1002"/>
+    <providermanagement_provider_role_supervisee_provider_role provider_role_id="1005" supervisee_provider_role_id="1011"/>
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1008" supervisee_provider_role_id="1001"/>
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1008" supervisee_provider_role_id="1006"/>
     <providermanagement_provider_role_supervisee_provider_role provider_role_id="1008" supervisee_provider_role_id="1009"/>
