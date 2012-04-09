@@ -191,70 +191,16 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
     @Override
     public List<Person> suggestSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException {
-
-        if (provider == null) {
-            throw new APIException("Provider cannot be null");
-        }
-
-        // fail if the person is not a provider
-        if (!Context.getService(ProviderManagementService.class).isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
-        }
-
-        // first, get all the roles for this provider
-        List<ProviderRole> roles = Context.getService(ProviderManagementService.class).getProviderRoles(provider);
-
-        // if the provider has no roles, return an empty list
-        if (roles == null || roles.size() == 0) {
-            return new ArrayList<Person>();
-        }
-
-        // now get all the roles that can supervise this provider
-        List<ProviderRole> validRolesToServeAsSupervisor = Context.getService(ProviderManagementService.class).getProviderRolesThatCanSuperviseThisProvider(provider);
-
-        // get any suggestions based on the provider roles
-        Set<SupervisionSuggestion> suggestions = new HashSet<SupervisionSuggestion>();
-        for (ProviderRole role : roles) {
-            List<SupervisionSuggestion> s = getSupervisionSuggestionsByProviderRoleAndSuggestionType(role, SupervisionSuggestionType.SUPERVISOR_SUGGESTION);
-            if (s != null && s.size() > 0) {
-                suggestions.addAll(s);
-            }
-        }
-
-        // if there are no suggestions, just return all the providers with roles that are valid supervisory roles
-        if (suggestions.size() == 0) {
-            return Context.getService(ProviderManagementService.class).getProvidersByRoles(validRolesToServeAsSupervisor);
-        }
-
-        // otherwise, get all the providers that match the suggestion rules
-        Collection<Person> suggestedProviders = new HashSet<Person>();
-        for (SupervisionSuggestion suggestion : suggestions) {
-            try {
-                SuggestionEvaluator evaluator = suggestion.instantiateEvaluator();
-                Set<Person> p = evaluator.evaluate(suggestion, provider);
-                if (p != null) {
-                    // note that we are doing union, not intersection, here if there are multiple rules
-                    suggestedProviders.addAll(p);
-                }
-            }
-            catch (Exception e) {
-                throw new SuggestionEvaluationException("Unable to evaluate suggestion " + suggestion, e);
-            }
-        }
-
-        // only keep providers that are valid for this provider to supervise
-        suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersByRoles(validRolesToServeAsSupervisor));
-
-        // finally, remove any providers that this provider is already being supervised by
-        suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSupervisorsForProvider(provider));
-
-        // return the result set
-        return new ArrayList<Person>(suggestedProviders);
+        return suggestSupervisionForProviderHelper(provider, SupervisionSuggestionType.SUPERVISOR_SUGGESTION);
     }
 
     @Override
     public List<Person> suggestSuperviseesForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException {
+        return suggestSupervisionForProviderHelper(provider, SupervisionSuggestionType.SUPERVISEE_SUGGESTION);
+    }
+
+    private List<Person> suggestSupervisionForProviderHelper(Person provider, SupervisionSuggestionType type)      throws PersonIsNotProviderException, SuggestionEvaluationException {
 
         if (provider == null) {
             throw new APIException("Provider cannot be null");
@@ -273,21 +219,28 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             return new ArrayList<Person>();
         }
 
-        // now get all the roles that this provider can supervise
-        List<ProviderRole> validRolesToSupervise = Context.getService(ProviderManagementService.class).getProviderRolesThatProviderCanSupervise(provider);
+        // now get all the roles that this provider can supervise or be supervisors by (depending on type)
+        List<ProviderRole> validRoles;
+
+        if (type.equals(SupervisionSuggestionType.SUPERVISEE_SUGGESTION)) {
+            validRoles = Context.getService(ProviderManagementService.class).getProviderRolesThatProviderCanSupervise(provider);
+        }
+        else {
+            validRoles = Context.getService(ProviderManagementService.class).getProviderRolesThatCanSuperviseThisProvider(provider);
+        }
 
         // get any suggestions based on the provider roles
         Set<SupervisionSuggestion> suggestions = new HashSet<SupervisionSuggestion>();
         for (ProviderRole role : roles) {
-            List<SupervisionSuggestion> s = getSupervisionSuggestionsByProviderRoleAndSuggestionType(role, SupervisionSuggestionType.SUPERVISEE_SUGGESTION);
+            List<SupervisionSuggestion> s = getSupervisionSuggestionsByProviderRoleAndSuggestionType(role, type);
             if (s != null && s.size() > 0) {
                 suggestions.addAll(s);
             }
         }
 
-        // if there are no suggestions, just return all the providers with roles that the given provider can supervisee
+        // if there are no suggestions, just return all the providers with roles that the given provider can supervisee or can be supervised by
         if (suggestions.size() == 0) {
-           return Context.getService(ProviderManagementService.class).getProvidersByRoles(validRolesToSupervise);
+            return Context.getService(ProviderManagementService.class).getProvidersByRoles(validRoles);
         }
 
         // otherwise, get all the providers that match the suggestion rules
@@ -306,17 +259,20 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             }
         }
 
-        // only keep providers that are valid for this provider to supervise
-        suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersByRoles(validRolesToSupervise));
+        // only keep providers that are valid for this provider to supervise or be supervised by
+        suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersByRoles(validRoles));
 
-        // finally, remove any providers that this provider is already supervising
-        suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(provider));
+        // finally, remove any providers that this provider is already supervising or being supervised by
+        if (type.equals(SupervisionSuggestionType.SUPERVISEE_SUGGESTION)) {
+            suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(provider));
+        }
+        else {
+            suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSupervisorsForProvider(provider));
+        }
 
         // return the result set
         return new ArrayList<Person>(suggestedProviders);
     }
-
-
 
 
     // TODO: unit test this?
