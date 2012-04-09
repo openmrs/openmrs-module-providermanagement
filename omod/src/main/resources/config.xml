@@ -19,7 +19,14 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ProviderManagementActivator</activator>
 	
-	
+
+    <!-- Required Modules -->
+    <!-- logic module is required because it is where the Groovy jar comes from -->
+    <require_modules>
+        <require_module>org.openmrs.logic</require_module>
+    </require_modules>
+
+
 	<!-- Adds link to admin page -->
 	<extension>
 		<point>org.openmrs.admin.list</point>
