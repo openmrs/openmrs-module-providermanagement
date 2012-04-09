@@ -70,7 +70,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     @Test
     public void getAllProviderRoles_shouldGetAllProviderRoles() {
-        List<ProviderRole> roles = providerManagementService.getAllProviderRoles();
+        List<ProviderRole> roles = providerManagementService.getAllProviderRoles(true);
         int roleCount = roles.size();
         Assert.assertEquals(12, roleCount);
 
@@ -192,14 +192,14 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         ProviderRole role = new ProviderRole();
         role.setName("Some provider role");
         Context.getService(ProviderManagementService.class).saveProviderRole(role);
-        Assert.assertEquals(13, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(13, providerManagementService.getAllProviderRoles(true).size());
     }
 
     @Test
     public void deleteProviderRole_shouldDeleteProviderRole() throws Exception {
         ProviderRole role = providerManagementService.getProviderRole(1012);
         providerManagementService.purgeProviderRole(role);
-        Assert.assertEquals(11, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(11, providerManagementService.getAllProviderRoles(true).size());
         Assert.assertNull(providerManagementService.getProviderRole(1012));
     }
 
@@ -216,7 +216,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void retireProviderRole_shouldRetireProviderRole() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.retireProviderRole(role, "test");
-        Assert.assertEquals(10, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(9, providerManagementService.getAllProviderRoles(false).size());
         
         role = providerManagementService.getProviderRole(1002);
         Assert.assertTrue(role.isRetired());
@@ -229,7 +229,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void unretireProviderRole_shouldUnretireProviderRole() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.retireProviderRole(role, "test");
-        Assert.assertEquals(10, providerManagementService.getAllProviderRoles().size());
+        Assert.assertEquals(9, providerManagementService.getAllProviderRoles(false).size());
 
        role = providerManagementService.getProviderRole(1002);
        providerManagementService.unretireProviderRole(role);

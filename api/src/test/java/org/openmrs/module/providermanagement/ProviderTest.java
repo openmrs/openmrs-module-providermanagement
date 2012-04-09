@@ -48,7 +48,7 @@ public class ProviderTest extends BaseModuleContextSensitiveTest {
     public void shouldFetchProviderWithProperRole() {
         // first just test to make sure we can fetch a provider via the provider management service methods
         Person person = Context.getPersonService().getPerson(6);
-        List<Provider> providers = providerManagementService.getProvidersByPerson(person);
+        List<Provider> providers = providerManagementService.getProvidersByPerson(person, true);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(1004), providers.get(0).getId());
         Assert.assertEquals(new Integer(1001), providers.get(0).getProviderRole().getId());
@@ -68,7 +68,7 @@ public class ProviderTest extends BaseModuleContextSensitiveTest {
         Context.flushSession();
 
         // confirm that the provider has been saved with the appropriate role
-        List<Provider> providers = providerManagementService.getProvidersByPerson(person);
+        List<Provider> providers = providerManagementService.getProvidersByPerson(person, true);
         Assert.assertEquals(2, providers.size());
 
         for (Provider p : providers) {
@@ -99,7 +99,7 @@ public class ProviderTest extends BaseModuleContextSensitiveTest {
 
         // now make sure when we reload the provider using the new Provider object, the role still exists
         Person person = Context.getPersonService().getPerson(6);
-        List<Provider> providers = providerManagementService.getProvidersByPerson(person);
+        List<Provider> providers = providerManagementService.getProvidersByPerson(person, true);
         Assert.assertEquals(new Integer(1004), providers.get(0).getId());
         Assert.assertEquals(new Integer(1001), providers.get(0).getProviderRole().getId());
         Assert.assertEquals("my id", providers.get(0).getIdentifier());

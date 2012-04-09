@@ -42,12 +42,6 @@ public interface ProviderManagementService extends OpenmrsService {
       */
 
     /**
-     * Gets all unretired provider roles
-     * @return list of all unretired provider roles
-     */
-    public List<ProviderRole> getAllProviderRoles();
-
-    /**
      * Gets all Provider Roles in the database
      *
      * @param includeRetired whether or not to include retired providers
@@ -136,14 +130,6 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     
     public List<RelationshipType> getAllProviderRoleRelationshipTypes(boolean includeRetired);
-
-    /**
-     * Get all the unretired relationship types associated with provider roles
-     *
-     * @return all the relationship types associated with provider roles
-     */
-    
-    public List<RelationshipType> getAllProviderRoleRelationshipTypes();
 
     /**
      * Basic methods for operating on providers using the new provider roles
@@ -711,11 +697,9 @@ public interface ProviderManagementService extends OpenmrsService {
 
 
     /**
-     * Replacements for ProviderService.getProvidersByPerson to fetch new expanded provider model
+     * Replacement for ProviderService.getProvidersByPerson to fetch new expanded provider model
      * Should generally only be used internally, since the idea is this API "hides" knowledge of the Provider object
      */
 
     public List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
-
-    public List<Provider> getProvidersByPerson(Person person);
 }

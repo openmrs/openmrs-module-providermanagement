@@ -66,12 +66,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProviderRole> getAllProviderRoles() {
-        return dao.getAllProviderRoles(true);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
         return dao.getAllProviderRoles(includeRetired);
     }
@@ -174,12 +168,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         return new ArrayList<RelationshipType>(relationshipTypes);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<RelationshipType> getAllProviderRoleRelationshipTypes() {
-        return getAllProviderRoleRelationshipTypes(true);
     }
 
     @Override
@@ -1112,14 +1100,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
      * Methods to fetch Provider objects based on persons
      */
 
+    @Override
     @Transactional(readOnly = true)
     public List<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
         return dao.getProvidersByPerson(person, includeRetired);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Provider> getProvidersByPerson(Person person) {
-        return getProvidersByPerson(person, true);
     }
 
     /**

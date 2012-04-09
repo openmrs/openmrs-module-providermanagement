@@ -104,7 +104,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             throw new APIException("Relationship type cannot be null");
         }
 
-        if (!Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+        if (!Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a valid provider relationship type");
         }
 
@@ -273,9 +273,4 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         // return the result set
         return new ArrayList<Person>(suggestedProviders);
     }
-
-
-    // TODO: unit test this?
-    // TODO: refactor
-    // TODO: remove the default "includeRetired" service methods
 }
