@@ -28,13 +28,13 @@
                 retired_by int(11) default NULL,
                 date_retired datetime default NULL,
                 retire_reason varchar(255) default NULL,
-                uuid char(38) NOT NULL;
+                uuid char(38) NOT NULL,
                 PRIMARY KEY (provider_role_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             CREATE TABLE providermanagement_provider_role_relationship_type (
                 provider_role_id int(11) NOT NULL,
-                relationship_type_id int(11) NOT NULL.
+                relationship_type_id int(11) NOT NULL,
                 KEY provider_role_id (provider_role_id),
                 KEY relationship_type_id (relationship_type_id),
                 CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
@@ -43,7 +43,7 @@
 
             CREATE TABLE providermanagement_provider_role_supervisee_provider_role (
                 provider_role_id int(11) NOT NULL,
-                supervisee_provider_role_id int(11) NOT NULL.
+                supervisee_provider_role_id int(11) NOT NULL,
                 KEY provider_role_id (provider_role_id),
                 KEY supervisee_provider_role_id (supervisee_provider_role_id),
                 CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
@@ -52,7 +52,7 @@
 
             CREATE TABLE providermanagement_provider_role_provider_attribute_type (
                 provider_role_id int(11) NOT NULL,
-                provider_attribute_type_id int(11) NOT NULL.
+                provider_attribute_type_id int(11) NOT NULL,
                 KEY provider_role_id (provider_role_id),
                 KEY provider_attribute_type_id (provider_attribute_type_id),
                 CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
@@ -74,8 +74,8 @@
                 retired_by int(11) default NULL,
                 date_retired datetime default NULL,
                 retire_reason varchar(255) default NULL,
-                uuid char(38) NOT NULL;
-                PRIMARY KEY (provider_suggestion_id)
+                uuid char(38) NOT NULL,
+                PRIMARY KEY (provider_suggestion_id),
                 KEY relationship_type_id (relationship_type_id),
                 CONSTRAINT FOREIGN KEY (relationship_type_id) REFERENCES relationship_type (relationship_type_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -96,10 +96,10 @@
                 retired_by int(11) default NULL,
                 date_retired datetime default NULL,
                 retire_reason varchar(255) default NULL,
-                uuid char(38) NOT NULL;
-                PRIMARY KEY (supervision_suggestion_id)
+                uuid char(38) NOT NULL,
+                PRIMARY KEY (supervision_suggestion_id),
                 KEY provider_role_id (provider_role_id),
-                CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES provider_role (provider_role_id)
+                CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             INSERT INTO relationship_type
