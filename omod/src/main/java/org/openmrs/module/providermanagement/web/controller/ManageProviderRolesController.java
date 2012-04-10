@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * The main controller.
+ * Controller for the Manage Provider Roles admin page
  */
 @Controller
-public class  ProviderManagementManageController {
+public class ManageProviderRolesController {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	@RequestMapping(value = "/module/providermanagement/manage", method = RequestMethod.GET)
+	@RequestMapping(value = "/module/providermanagement/manageProviderRoles", method = RequestMethod.GET)
 	public void manage(ModelMap model) {
 		model.addAttribute("user", Context.getAuthenticatedUser());
 	}

@@ -38,13 +38,16 @@ public class AdminList extends AdministrationSectionExt {
 	public String getTitle() {
 		return "providermanagement.title";
 	}
+
+    // TODO: add privilege checks here!
 	
 	/**
 	 * @see AdministrationSectionExt#getLinks()
 	 */
 	public Map<String, String> getLinks() {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		map.put("/module/providermanagement/manage.form", "providermanagement.manage");
+		map.put("/module/providermanagement/manageProviderRoles.form", "providermanagement.manageProviderRoles");
+        map.put("/module/providermanagement/manageSuggestions.form", "providermanagement.manageSuggestions");
 		return map;
 	}
 	

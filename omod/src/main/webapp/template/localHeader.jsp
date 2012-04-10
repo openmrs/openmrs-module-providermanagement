@@ -5,13 +5,19 @@
 				code="admin.title.short" /></a></li>
 
 	<li
-		<c:if test='<%= request.getRequestURI().contains("/manage") %>'>class="active"</c:if>>
+		<c:if test='<%= request.getRequestURI().contains("/manageProviderRoles") %>'>class="active"</c:if>>
 		<a
-		href="${pageContext.request.contextPath}/module/providermanagement/manage.form"><spring:message
-				code="providermanagement.manage" /></a>
+		href="${pageContext.request.contextPath}/module/providermanagement/manageProviderRoles.form"><spring:message
+				code="providermanagement.manageProviderRoles" /></a>
 	</li>
-	
-	<!-- Add further links here -->
+
+    <li
+    <c:if test='<%= request.getRequestURI().contains("/manageSuggestions") %>'>class="active"</c:if>>
+    <a
+            href="${pageContext.request.contextPath}/module/providermanagement/manageSuggestions.form"><spring:message
+            code="providermanagement.manageSuggestions" /></a>
+    </li>
+
 </ul>
 <h2>
 	<spring:message code="providermanagement.title" />
