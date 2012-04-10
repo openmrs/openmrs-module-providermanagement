@@ -42,9 +42,8 @@ import java.util.Set;
         // the provider roles this provider role can supervise
         private Set<ProviderRole> superviseeProviderRoles;
 
-
-        // TODO: add this, the attribute types associated with this role
-        //private Set<ProviderAttributeType> attributeTypes;
+        // the attribute types associated with this role
+        private Set<ProviderAttributeType> providerAttributeTypes;
 
         // whether or not this role can serve as a supervisor
         public boolean isSupervisorRole() {
@@ -103,4 +102,11 @@ import java.util.Set;
             this.superviseeProviderRoles = superviseeProviderRoles;
         }
 
+        public Set<ProviderAttributeType> getProviderAttributeTypes() {
+            return providerAttributeTypes;
+        }
+
+        public void setProviderAttributeTypes(Set<ProviderAttributeType> providerAttributeTypes) {
+            this.providerAttributeTypes = providerAttributeTypes;
+        }
 }

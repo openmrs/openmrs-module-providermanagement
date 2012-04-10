@@ -26,10 +26,7 @@ import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.*;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -100,6 +97,14 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // just check the counts as a sanity check
         Assert.assertEquals(2, role.getRelationshipTypes().size());
         Assert.assertEquals(1, role.getSuperviseeProviderRoles().size());
+    }
+
+    @Test
+    public void confirmProviderAttributeTypesProperlyAssociatedWithProviderRole() {
+        ProviderRole role = providerManagementService.getProviderRole(1001);
+
+        // just check the counts as a sanity check
+        Assert.assertEquals(2, role.getProviderAttributeTypes().size());
     }
 
     @Test
@@ -188,9 +193,22 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void saveProviderRole_shouldSaveBasicProviderRole() {
+        public void saveProviderRole_shouldSaveBasicProviderRole() {
         ProviderRole role = new ProviderRole();
         role.setName("Some provider role");
+        Context.getService(ProviderManagementService.class).saveProviderRole(role);
+        Assert.assertEquals(13, providerManagementService.getAllProviderRoles(true).size());
+    }
+
+    @Test
+    public void saveProviderRole_shouldSaveProviderRoleWithProviderAttributeTypes() {
+        ProviderRole role = new ProviderRole();
+        role.setName("Some provider role");
+
+        Set<ProviderAttributeType> attributeTypes = new HashSet<ProviderAttributeType>();
+        attributeTypes.add(Context.getProviderService().getProviderAttributeType(1001));
+        attributeTypes.add(Context.getProviderService().getProviderAttributeType(1002));
+
         Context.getService(ProviderManagementService.class).saveProviderRole(role);
         Assert.assertEquals(13, providerManagementService.getAllProviderRoles(true).size());
     }

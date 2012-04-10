@@ -45,6 +45,12 @@
             <many-to-many column="supervisee_provider_role_id" class="org.openmrs.module.providermanagement.ProviderRole" />
         </set>
 
+        <!-- link to provider attribute types -->
+        <set name="providerAttributeTypes" table="providermanagement_provider_role_provider_attribute_type">
+            <key column="provider_role_id" />
+            <many-to-many column="provider_attribute_type_id" class="org.openmrs.ProviderAttributeType" />
+        </set>
+
 	</class>
 
 
