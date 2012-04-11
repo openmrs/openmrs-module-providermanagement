@@ -71,6 +71,12 @@
 		
 		<!-- End OpenMRS core -->
 
+        <!-- depends on ui framework module -->
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>uiframework-api</artifactId>
+        </dependency>
+
 	</dependencies>
 
 	<build>
