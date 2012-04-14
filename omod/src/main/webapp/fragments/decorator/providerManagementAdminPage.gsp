@@ -3,7 +3,7 @@
 
 <div id="adminMenu">
 
-    ${ ui.message("admin.title.short") } | ${ ui.message("providermanagement.manageProviderRoles") } | ${ ui.message("providermanagement.manageSuggestions") }
+   ${ ui.message("admin.title.short") } | <a href="${ ui.pageLink('manageProviderRoles') }">${ ui.message("providermanagement.manageSuggestions") }</a> | ${ ui.message("providermanagement.manageSuggestions") }
 
 </div>
 
