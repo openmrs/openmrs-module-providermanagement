@@ -71,4 +71,7 @@
     <!-- a voided relationship -->
     <relationship relationship_id="1001" person_a="6" relationship="1001" person_b="8" creator="1" date_created="2008-08-18 11:50:15.0" voided="true" uuid="c18717dd-5d78-4a0e-84fc-ef62c5f0676a"/>
 
+
+    <global_property property="sync.database_version" property_value="10" uuid="6ed7aeb4-0663-1121-8c99-2b4f0c4f671a"/>
+
 </dataset>
