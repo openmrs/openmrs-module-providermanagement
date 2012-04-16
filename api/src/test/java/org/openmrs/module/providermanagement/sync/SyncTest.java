@@ -34,22 +34,16 @@ import org.springframework.test.annotation.NotTransactional;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+// TODO: update the sync module to package it's testing omods
+// TODO: include the most recent released sync omod in the lib, (not the snapshot)
+// TODO: need to exclude the sync omod from the final packaging!
+// TODO: figure out why the test runs through IntelliJ but not Maven
+
 /**
  * Tests that the new OpenMRS objects added by the module sync properly
  */
-@StartModule(value = "sync-omod-1.1-SNAPSHOT.omod")
+@StartModule(value = "lib/sync-1.1-SNAPSHOT.omod")
 public class SyncTest extends SyncBaseTest {
-
-    @Before
-    public void setGlobalProperty()  {
-        GlobalProperty gp = new GlobalProperty();
-
-        gp.setProperty("sync.database_version");
-        gp.setValue("11");
-
-        Context.getAdministrationService().saveGlobalProperty(gp);
-
-    }
 
     @Override
     public String getInitialDataset() {
