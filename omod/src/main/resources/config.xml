@@ -25,6 +25,7 @@
     <require_modules>
         <require_module>org.openmrs.logic</require_module>
         <require_module>org.openmrs.module.uiframework</require_module>
+        <!-- TODO: rely on the ui library module -->
     </require_modules>
 
 
@@ -34,11 +35,12 @@
 		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
 	</extension>
 	
-	<!-- Maps hibernate file's, if present -->
+	<!-- Maps hibernate files, if present -->
 	<mappingFiles>
-				
-		ProviderRole.hbm.xml
-				
+		Provider.hbm.xml
+        ProviderRole.hbm.xml
+        ProviderSuggestion.hbm.xml
+		SupervisionSuggestion.hbm.xml
 	</mappingFiles>
 
 	<!-- Internationalization -->

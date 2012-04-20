@@ -18,6 +18,9 @@
         <property name="moduleId" value="providermanagement"/>
     </bean>
 
+    <!-- add type converter for ProviderRole -->
+    <bean class="org.openmrs.module.providermanagement.converter.StringToProviderRoleConverter"/>
+
 	<context:component-scan base-package="org.openmrs.module.providermanagement.web.controller" />
 
 </beans>

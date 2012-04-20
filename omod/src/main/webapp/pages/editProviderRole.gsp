@@ -2,5 +2,5 @@
 
 <% ui.decorateWith("providerManagementAdminPage") %>
 
-${ ui.includeFragment("providerRoleForm") }
+${ ui.includeFragment("providerRoleForm", [providerRoleId: param.providerRoleId,  successUrl: ui.pageLink("manageProviderRoles")]) }
 

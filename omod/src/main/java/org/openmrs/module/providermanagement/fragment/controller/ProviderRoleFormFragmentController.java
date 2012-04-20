@@ -14,24 +14,23 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.ProviderRoleInUseException;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 public class ProviderRoleFormFragmentController {
 
-    public void updateProviderRole(@BindParams() ProviderRole providerRole) {
-        Context.getService(ProviderManagementService.class).saveProviderRole(providerRole);
-    }
-
     public void controller(FragmentModel model,
-                           @FragmentParam(value="providerRoleId", required=false) Integer providerRoleId) {
+                           @FragmentParam(value= "providerRoleId", required=false) Integer providerRoleId) {
 
 
         // add any existing provider role to the form
@@ -46,5 +45,43 @@ public class ProviderRoleFormFragmentController {
         // add possible relationship types
         List<RelationshipType> relationshipTypes = Context.getPersonService().getAllRelationshipTypes(false);
         model.addAttribute("relationshipTypes", relationshipTypes);
+
+        // add possible supervisee roles
+        List<ProviderRole> providerRoles = Context.getService(ProviderManagementService.class).getAllProviderRoles(false);
+        model.addAttribute("providerRoles", providerRoles);
+
+        // add possible provider attributes
+        List<ProviderAttributeType> providerAttributeTypes = Context.getProviderService().getAllProviderAttributeTypes(false);
+        model.addAttribute("providerAttributeTypes", providerAttributeTypes);
     }
+
+    public void deleteProviderRole(@RequestParam(value = "providerRoleId", required = false) Integer providerRoleId) {
+
+        // TODO: add some validation/sanity check here
+
+        ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
+
+        try {
+            providerManagementService.purgeProviderRole(providerManagementService.getProviderRole(providerRoleId));
+        }
+        catch (ProviderRoleInUseException e) {
+            // give some kind of error message that you can't delete this role
+        }
+    }
+
+    public void retireProviderRole(@RequestParam(value = "providerRoleId", required = false) Integer providerRoleId) {
+
+        // TODO: add some validation/sanity check here
+
+        ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
+        providerManagementService.retireProviderRole(providerManagementService.getProviderRole(providerRoleId), "retired via provider management ui");
+    }
+
+    public void updateProviderRole(@BindParams() ProviderRole providerRole) {
+
+        // TODO: add validation
+
+        Context.getService(ProviderManagementService.class).saveProviderRole(providerRole);
+    }
+
 }

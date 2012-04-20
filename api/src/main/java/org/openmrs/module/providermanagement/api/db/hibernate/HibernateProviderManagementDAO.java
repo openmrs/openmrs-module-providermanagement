@@ -102,11 +102,13 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     @Override
     public List<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
+
         criteria.add(Restrictions.eq("person", person));
         if (!includeRetired) {
             criteria.add(Restrictions.eq("retired", false));
         }
         criteria.addOrder(Order.asc("providerId"));
+
         @SuppressWarnings("unchecked")
         List<Provider> list = criteria.list();
         return list;
