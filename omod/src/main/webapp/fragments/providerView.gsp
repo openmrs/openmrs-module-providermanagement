@@ -3,14 +3,14 @@
 
 <!-- TODO: include Person name portlet here instead -->
 
-<div class="providerView">
+<div class="content providerView">
 
     <table class="providerHeader">
         <tr>
-            <td class="providerName">${ person.personName.familyName }, ${ person.personName.givenName }</td>
+            <td class="label">${ person.personName.familyName }, ${ person.personName.givenName }</td>
         </tr>
         <tr>
-            <td class="providerRole"> ${ provider.providerRole?.name ?: '' }</td>
+            <td> ${ provider.providerRole?.name ?: '' }</td>
         </tr>
     </table>
 

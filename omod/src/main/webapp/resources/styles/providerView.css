@@ -1,23 +1,6 @@
 
-.providerView {
-   background-color: #e0ffff;
-}
-
 .providerView table {
     width: 100%
-}
-
-.providerView .providerName {
-    font-weight: bold;
-}
-
-.providerView th {
-    font-weight: bold;
-    background-color: #ffd700;
-}
-
-.providerView .label {
-   font-weight: bold;
 }
 
 .providerView .providerActionButtons td {

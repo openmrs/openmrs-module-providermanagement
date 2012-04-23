@@ -4,8 +4,16 @@ table {
 }
 
 th {
-    border: 10px;
-    border-color: black;
+    font-weight: bold;
+    background-color: #ffd700;
+}
+
+.content {
+    background-color: #e0ffff;
+}
+
+.label {
+    font-weight: bold;
 }
 
 #adminMenu {

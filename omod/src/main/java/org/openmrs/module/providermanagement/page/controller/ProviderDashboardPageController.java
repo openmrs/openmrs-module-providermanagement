@@ -14,6 +14,61 @@
 
 package org.openmrs.module.providermanagement.page.controller;
 
-public class ProviderDashboardPageController extends GenericProviderPageController {
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.RelationshipType;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.Provider;
+import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
+import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.ui.framework.page.PageModel;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+// TODO: fields of multi-select widgets should be customizable
+
+public class ProviderDashboardPageController {
+
+    public void controller (PageModel pageModel,
+                            @RequestParam(value = "person", required = false) Person personParam,
+                            @RequestParam(value = "personId", required = false) Integer personId)
+                throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+
+        ProviderManagementService pmService = Context.getService(ProviderManagementService.class);
+
+        // util fetches the appropriate person, throwing an exception if need be
+        Person person = ProviderManagementWebUtil.getPerson(personParam, personId);
+        pageModel.addAttribute("person", person);
+
+        // util fetches the appropriate provider, throwing an exception if need be
+        Provider provider = ProviderManagementWebUtil.getProvider(person);
+        pageModel.addAttribute("provider", provider);
+
+        // add the patients of this provider, grouped by relationship type
+        Map<RelationshipType, List<Patient>> patients = new HashMap<RelationshipType,List<Patient>>();
+        if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
+            for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
+                if (!relationshipType.isRetired()) {
+                    patients.put(relationshipType, new ArrayList<Patient>());
+
+                    for (Patient patient : pmService.getPatientsOfProvider(person, relationshipType)) {
+                        patients.get(relationshipType).add(patient);
+                    }
+                }
+            }
+        }
+
+       pageModel.addAttribute("patients", patients);
+
+       // TODO: add some sort of check here so to that the supervising box can be hidden for roles that don't allow supervising
+
+       List<Person> supervisees = pmService.getSuperviseesForSupervisor(person);
+       pageModel.addAttribute("supervisees", supervisees);
+    }
 }

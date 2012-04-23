@@ -1,5 +1,12 @@
 
 #providerDetails {
-    width: 400px;
+    width: 600px;
 }
 
+#patients {
+    width: 800px;
+}
+
+#supervisees {
+    width: 800px;
+}
