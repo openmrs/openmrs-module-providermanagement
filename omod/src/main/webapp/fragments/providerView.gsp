@@ -10,7 +10,7 @@
             <td class="providerName">${ person.personName.familyName }, ${ person.personName.givenName }</td>
         </tr>
         <tr>
-            <td class="providerRole"> ${ provider.providerRole.name }</td>
+            <td class="providerRole"> ${ provider.providerRole?.name ?: '' }</td>
         </tr>
     </table>
 
@@ -31,10 +31,10 @@
             <td><span class="label">${ ui.message("Person.birthdate") }:</span> ${ ui.format(person.birthdate) }</td>
         </tr>
 
-        <% provider.providerRole.providerAttributeTypes?.each { %>
-            <tr>
-                <td><span class="label">${ it.name }:</span> ${ provider.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
-            </tr>
+        <% provider.providerRole?.providerAttributeTypes?.each { %>
+        <tr>
+            <td><span class="label">${ it.name }:</span> ${ provider.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
+        </tr>
         <% } %>
 
         <tr>

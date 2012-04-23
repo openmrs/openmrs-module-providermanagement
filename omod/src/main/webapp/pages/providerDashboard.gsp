@@ -4,8 +4,7 @@
 <% ui.includeCss("providermanagement", "providerDashboard.css") %>
 
 <div id="providerDetails">
-    ${ ui.includeFragment("providerView", [ personId: param.personId,
-                                            actionButtons: [ [label: ui.message("general.edit")],
+    ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit")],
                                                              [label: ui.message("general.retire")]] ]) }
 </div>
 
