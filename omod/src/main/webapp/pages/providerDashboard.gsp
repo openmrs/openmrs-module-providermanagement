@@ -13,17 +13,23 @@
         ${ ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value,
                                                                     title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
                                                                     columns: ["personName"],
-                                                                    actionButtons: [[label: ui.message("general.add")],
-                                                                                    [label: ui.message("general.remove")],
-                                                                                    [label: ui.message("providermanagement.transfer")]] ]) }
+                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) }
     <% } %>
 </div>
 
-<div id="supervisees">
-    ${ ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees,
-                                                                title: ui.message("providermanagement.supervising"),
-                                                                columns: ["personName"],
-                                                                actionButtons: [[label: ui.message("general.add")],
-                                                                        [label: ui.message("general.remove")],
-                                                                        [label: ui.message("providermanagement.transfer")]] ]) }
-</div>
+<% if (provider.providerRole?.superviseeProviderRoles) { %>
+    <div id="supervisees">
+        ${ ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees,
+                                                                    title: ui.message("providermanagement.supervising"),
+                                                                    columns: ["personName"],
+                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) }
+
+    </div>
+
+    <div id="addSupervisee">
+        ${ ui.includeFragment("widget/providerSearch", [title: ui.message("providermanagement.addSupervisee"),
+                                                        roles: provider.providerRole?.superviseeProviderRoles,
+                                                        actionButtons: [[label: ui.message("general.add"), link: ui.pageLink('addSupervisee', [personId: person.id])]] ]) }
+    </div>
+
+<% } %>

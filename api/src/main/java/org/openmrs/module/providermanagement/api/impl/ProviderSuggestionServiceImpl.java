@@ -238,6 +238,8 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             }
         }
 
+        // TODO: add an error trap here if validRoles = null or is empty
+
         // if there are no suggestions, just return all the providers with roles that the given provider can supervisee or can be supervised by
         if (suggestions.size() == 0) {
             return Context.getService(ProviderManagementService.class).getProvidersByRoles(validRoles);
