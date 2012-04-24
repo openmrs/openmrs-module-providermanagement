@@ -172,6 +172,20 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
+    public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired) {
+        if (providerRoles == null) {
+            providerRoles = Collections.emptyList();
+        }
+
+        if (includeRetired == null) {
+            throw new RuntimeException("include retired must be specified when searching for providers");
+        }
+
+        return dao.getProviders(name, identifier, providerRoles, includeRetired);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<ProviderRole> getProviderRoles(Person provider) {
         if (provider == null) {
             throw new APIException("Provider cannot be null");

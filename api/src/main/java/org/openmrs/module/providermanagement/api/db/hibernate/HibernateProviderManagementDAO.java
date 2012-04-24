@@ -17,7 +17,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
@@ -77,7 +80,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
         criteria.add(Restrictions.eq("retired", false));
-        criteria.createCriteria("relationshipTypes").add(Restrictions.eq("relationshipTypeId", relationshipType.getId()));
+        criteria = criteria.createCriteria("relationshipTypes").add(Restrictions.eq("relationshipTypeId", relationshipType.getId()));
         return (List<ProviderRole>) criteria.list();
     }
 
@@ -85,7 +88,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderRole.class);
         criteria.add(Restrictions.eq("retired", false));
-        criteria.createCriteria("superviseeProviderRoles").add(Restrictions.eq("providerRoleId", providerRole.getId()));
+        criteria = criteria.createCriteria("superviseeProviderRoles").add(Restrictions.eq("providerRoleId", providerRole.getId()));
         return (List<ProviderRole>) criteria.list();
     }
 
@@ -97,6 +100,67 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     @Override
     public void deleteProviderRole(ProviderRole role) {
         sessionFactory.getCurrentSession().delete(role);
+    }
+
+    @Override
+    public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired) {
+
+        // first, create the provider criteria
+         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
+
+        // we want the result to be a list of person
+        criteria.setProjection(Property.forName("person"));
+
+        // restrict to ignore retired if flag is set
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
+        }
+
+        // restrict to providers with a specific identifier, if specified
+        if (identifier != null && identifier.length() > 0) {
+            criteria.add(Restrictions.ilike("identifier", identifier, MatchMode.START));
+        }
+
+        // restrict to provider with one of set of provider roles, if specified
+        if (providerRoles != null && providerRoles.size() > 0) {
+            criteria.add(Restrictions.in("providerRole", providerRoles));
+        }
+
+        // create person criteria on top of the provider criteria
+        criteria = criteria.createCriteria("person");
+
+        // we only want distinct people
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        // ignore voided people
+        criteria.add(Restrictions.eq("personVoided", false));
+
+        // create the person name query on top of the person query
+        criteria = criteria.createCriteria("names");
+
+        // order by name
+        criteria.addOrder(Order.asc("givenName"));
+        criteria.addOrder(Order.asc("middleName"));
+        criteria.addOrder(Order.asc("familyName"));
+
+        // handle restricting by name if any names have been specified
+        if (name != null && name.length() > 0) {
+            name = name.replace(", ", " ");
+            String[] names = name.split("\\s+");
+
+            for (String n : names) {
+                if (n != null && n.length() > 0) {
+                    criteria.add(Restrictions.or(Restrictions.ilike("givenName", n, MatchMode.START), Restrictions.or(Restrictions
+                            .ilike("familyName", n, MatchMode.START), Restrictions.or(Restrictions.ilike("middleName", n,
+                            MatchMode.START), Restrictions.ilike("familyName2", n, MatchMode.START)))));
+                }
+            }
+        }
+
+        // we only want distinct people
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (List<Person>) criteria.list();
+
     }
 
     @Override

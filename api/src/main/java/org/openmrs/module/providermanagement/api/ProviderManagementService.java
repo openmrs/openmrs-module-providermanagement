@@ -132,6 +132,18 @@ public interface ProviderManagementService extends OpenmrsService {
      * Basic methods for operating on providers using the new provider roles
      */
 
+
+    /**
+     * Gets the list of providers that match the specified parameters
+     *
+     * @param name name to search on
+     * @param identifier provider identifier
+     * @param providerRoles restrict results to providers with at least one of these roles
+     * @param includeRetired whether or not to include retired providers
+     * @return result list of providers
+     */
+    public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired);
+
     /**
      * Returns the provider roles associated with the specified provider
      *

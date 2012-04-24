@@ -3,6 +3,8 @@
 
 <% ui.includeCss("providermanagement", "providerDashboard.css") %>
 
+<!-- TODO: permissions! -->
+
 <div id="providerDetails">
     ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit")],
                                                              [label: ui.message("general.retire")]] ]) }

@@ -1514,7 +1514,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
 
     @Test
-    public void getProviders_shouldReturnAllProvidersForPatient() throws Exception {
+    public void getProvidersForPatient_shouldReturnAllProvidersForPatient() throws Exception {
 
         Patient patient = Context.getPatientService().getPatient(2);
         Person provider1 = Context.getPersonService().getPerson(6);
@@ -1551,7 +1551,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void getProviders_shouldReturnProviderWithSpecifiedRelationshipType() throws Exception {
+    public void getProvidersForPatient_shouldReturnProviderWithSpecifiedRelationshipType() throws Exception {
 
         Patient patient = Context.getPatientService().getPatient(2);
         Person provider1 = Context.getPersonService().getPerson(6);
@@ -1573,26 +1573,26 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void getProviders_shouldReturnEmptyListIfPatientHasNoProviderRelationships() throws Exception {
+    public void getProvidersForPatient_shouldReturnEmptyListIfPatientHasNoProviderRelationships() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
         List<Person> providers = providerManagementService.getProvidersForPatient(patient, null);
         Assert.assertEquals(0, providers.size());
     }
 
     @Test(expected = APIException.class)
-    public void getProviders_shouldFailIfPatientNull() throws Exception {
+    public void getProvidersForPatient_shouldFailIfPatientNull() throws Exception {
         providerManagementService.getProvidersForPatient(null, null);
     }
 
     @Test(expected = InvalidRelationshipTypeException.class)
-    public void getProviders_shouldFailIfRelationshipIsNotProviderRelationship() throws Exception {
+    public void getProvidersForPatient_shouldFailIfRelationshipIsNotProviderRelationship() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
         providerManagementService.getProvidersForPatient(patient, relationshipType);
     }
 
     @Test
-    public void getProviders_shouldReturnProvidersOnSpecifiedDate() throws Exception {
+    public void getProvidersForPatient_shouldReturnProvidersOnSpecifiedDate() throws Exception {
 
         Patient patient = Context.getPatientService().getPatient(2);
         Person provider1 = Context.getPersonService().getPerson(6);
@@ -1614,7 +1614,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void getProviders_shouldIgnoreRetiredProviders() throws Exception {
+    public void getProvidersForPatient_shouldIgnoreRetiredProviders() throws Exception {
 
         Patient patient = Context.getPatientService().getPatient(2);
         Person provider1 = Context.getPersonService().getPerson(6);
@@ -1636,7 +1636,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
-    public void getProviders_shouldNotIgnoreRetiredProviders() throws Exception {
+    public void getProvidersForPatient_shouldNotIgnoreRetiredProviders() throws Exception {
 
         Patient patient = Context.getPatientService().getPatient(2);
         Person provider1 = Context.getPersonService().getPerson(6);
@@ -2386,5 +2386,225 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(new Integer(8), providers.get(0).getId());
     }
 
+    @Test(expected = RuntimeException.class)
+    public void getProviders_shouldThrowExceptionIfIncludeRetiredNotSpecified() {
+        providerManagementService.getProviders(null, null, null, null);
+    }
+
+    @Test
+    public void getProviders_shouldGetProvidersReferencedByName() throws Exception {
+        List<Person> providers = providerManagementService.getProviders("jimmy", null, null, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(9), providers.get(0).getId());
+
+        providers = providerManagementService.getProviders("anet oloo", null, null, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(8), providers.get(0).getId());
+    }
+
+    @Test
+    public void getProviders_shouldGetProvidersReferencedByIdentifier() throws Exception {
+        List<Person> providers = providerManagementService.getProviders(null,"2a5",null, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(2), providers.get(0).getId());
+
+        // try a partial match
+        providers = providerManagementService.getProviders(null,"2a",null, false);
+        Assert.assertEquals(6, providers.size());
+
+        // double-check to make sure the are the correct providers
+        // be iterating through and removing those that SHOULD be there
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 1 || p.getId() == 2 || p.getId() == 6 || p.getId() == 7 || p.getId() == 8 || p.getId() == 9) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProviders_shouldGetProvidersByRole() throws Exception {
+
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+
+        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        Assert.assertEquals(3, providers.size());
+
+        // double-check to make sure the are the correct providers
+        // be iterating through and removing the those that SHOULD be there
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 2 || p.getId() == 6 || p.getId() == 7) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProviders_shouldGetProvidersByRoles() throws Exception {
+
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+        roles.add(providerManagementService.getProviderRole(1011));
+
+        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        Assert.assertEquals(4, providers.size());
+
+        // double-check to make sure the are the correct providers
+        // be iterating through and removing the those that SHOULD be there
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 2 || p.getId() == 6 || p.getId() == 7 || p.getId() == 9) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProviders_shouldNotGetSameProviderTwice() throws Exception {
+
+        // person 2 is associated with 2 providers, but result set should be unique
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+        roles.add(providerManagementService.getProviderRole(1005));
+
+        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        Assert.assertEquals(4, providers.size());
+
+        // double-check to make sure the are the correct providers
+        // be iterating through and removing the those that SHOULD be there
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+            if (p.getId() == 2 || p.getId() == 6 || p.getId() == 7 || p.getId() == 501) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProviders_shouldNotIgnoreRetiredProviders() throws Exception {
+
+        // retire a provider
+        Provider provider = Context.getProviderService().getProvider(1005);
+        Context.getProviderService().retireProvider(provider, "test");
+
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+
+        List<Person> providers = providerManagementService.getProviders(null,null, roles, true);
+        Assert.assertEquals(3, providers.size());
+
+        // double-check to make sure the are the correct providers
+        // be iterating through and removing the those that SHOULD be there
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 2 || p.getId() == 6 || p.getId() == 7) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProviders_shouldIgnoreRetiredProviders() throws Exception {
+
+        // retire a provider
+        Provider provider = Context.getProviderService().getProvider(1005);
+        Context.getProviderService().retireProvider(provider, "test");
+
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+
+        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        Assert.assertEquals(2, providers.size());
+
+        // double-check to make sure the are the correct providers
+        // be iterating through and removing the those that SHOULD be there
+        Iterator<Person> i = providers.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 2 || p.getId() == 6) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProvider_shouldSearchOnMultipleParameters() throws Exception {
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+        List<Person> providers = providerManagementService.getProviders("John Doe","2a6", roles, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(6), providers.get(0).getId());
+    }
+
+    @Test
+    public void getProviders_shouldOrderByName() throws Exception {
+
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+
+        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        Assert.assertEquals(3, providers.size());
+        Assert.assertEquals(new Integer(7), providers.get(0).getId());
+        Assert.assertEquals(new Integer(2), providers.get(1).getId());
+        Assert.assertEquals(new Integer(6), providers.get(2).getId());
+    }
+
+
+    @Test
+    public void getProviders_shouldReturnNullOrEmptyListIfNoMatches() throws Exception {
+
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        roles.add(providerManagementService.getProviderRole(1001));
+
+        List<Person> providers = providerManagementService.getProviders("barack",null, roles, false);
+        Assert.assertTrue(providers == null || providers.size() == 0);
+    }
+
+    @Test
+    public void getProviders_shouldIgnoreVoidedPersons() throws Exception {
+
+        // void person 9
+        Person person = Context.getPersonService().getPerson(9);
+        Context.getPersonService().voidPerson(person, "test");
+
+        List<Person> providers = providerManagementService.getProviders("jimmy", null, null, false);
+        Assert.assertTrue(providers == null || providers.size() == 0);
+    }
 }
 
