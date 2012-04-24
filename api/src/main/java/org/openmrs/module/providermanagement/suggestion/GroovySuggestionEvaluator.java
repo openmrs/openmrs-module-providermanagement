@@ -22,8 +22,6 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 public class GroovySuggestionEvaluator implements SuggestionEvaluator {

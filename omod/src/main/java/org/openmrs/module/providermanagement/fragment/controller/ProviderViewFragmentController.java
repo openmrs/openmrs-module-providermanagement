@@ -15,18 +15,12 @@
 package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.openmrs.Person;
-import org.openmrs.ProviderAttributeType;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
-import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.page.PageModel;
-
-import java.util.List;
 
 public class ProviderViewFragmentController {
 

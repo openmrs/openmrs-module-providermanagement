@@ -20,7 +20,16 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.exception.*;
+import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
+import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.module.providermanagement.exception.ProviderAlreadyAssignedToSupervisorException;
+import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.ProviderNotAssignedToSupervisorException;
+import org.openmrs.module.providermanagement.exception.ProviderRoleInUseException;
+import org.openmrs.module.providermanagement.exception.SourceProviderSameAsDestinationProviderException;
 
 import java.util.Date;
 import java.util.List;

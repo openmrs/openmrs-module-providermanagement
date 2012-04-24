@@ -25,9 +25,7 @@ import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 public class SuggestionTest extends BaseModuleContextSensitiveTest {
 

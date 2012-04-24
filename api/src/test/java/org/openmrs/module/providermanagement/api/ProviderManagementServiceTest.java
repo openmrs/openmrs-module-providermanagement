@@ -18,15 +18,34 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.*;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.Provider;
+import org.openmrs.ProviderAttributeType;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.exception.*;
+import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
+import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.PatientNotAssignedToProviderException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.module.providermanagement.exception.ProviderAlreadyAssignedToSupervisorException;
+import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.ProviderNotAssignedToSupervisorException;
+import org.openmrs.module.providermanagement.exception.ProviderRoleInUseException;
+import org.openmrs.module.providermanagement.exception.SourceProviderSameAsDestinationProviderException;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
 

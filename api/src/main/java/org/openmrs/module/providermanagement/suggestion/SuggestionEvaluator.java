@@ -18,8 +18,6 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 public interface SuggestionEvaluator {

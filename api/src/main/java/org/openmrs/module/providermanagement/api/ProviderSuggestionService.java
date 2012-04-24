@@ -25,7 +25,6 @@ import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 
-import java.util.Date;
 import java.util.List;
 
 // TODO: random note--will need to create a "provider" tag that displays provider information whe given a person?

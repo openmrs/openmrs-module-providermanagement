@@ -28,12 +28,10 @@ import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeEx
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
-import org.openmrs.module.providermanagement.suggestion.Suggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
-import java.awt.peer.ListPeer;
 import java.util.Iterator;
 import java.util.List;
 

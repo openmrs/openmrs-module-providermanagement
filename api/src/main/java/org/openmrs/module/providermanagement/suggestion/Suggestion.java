@@ -17,7 +17,6 @@ package org.openmrs.module.providermanagement.suggestion;
 // TODO: make criteria be a file link for security purposes?
 
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.OpenmrsMetadata;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
