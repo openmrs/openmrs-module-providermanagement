@@ -1,6 +1,7 @@
 
 <%  ui.includeCss("providermanagement", "widget/ajaxSearch.css")
-    def id = config.id ?: ui.randomId()  %>
+    def id = config.id ?: ui.randomId()
+    def selectIdParam = config.selectIdParam ?: 'id' %>
 
 <!-- TODO: will need to tweak this so that it doesn't reload on every keystroke? -->
 <!-- TODO: add support for searching by identifier -->
@@ -34,11 +35,11 @@
 
                             // configure the action that occurs on a row click
                             jq('#searchTable_${ id } > tbody > tr').click(function() {
-                                window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\'' }
+                                window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\' + ' }
                                         <% if (config.selectParams) { %>
                                             '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
                                         <% } %>
-                                        '&id=' + jq(this).children('input').val();
+                                        '&${ selectIdParam }=' + jq(this).children('input').val();
                             });
 
                             // configure highlighting
