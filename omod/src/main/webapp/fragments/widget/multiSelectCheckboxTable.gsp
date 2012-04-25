@@ -8,7 +8,7 @@
 <div class="content multiSelectCheckboxTable">
     <table>
         <tr>
-            <th colspan="${ config.columns.size + 1}">${ config.title }</th>
+            <th colspan="${ config.columns.size + 1 }">${ config.title }</th>
         </tr>
 
         <% config.items?.each { item -> %>
@@ -22,7 +22,7 @@
 
         <% if (config.actionButtons) { %>
             <tr class="multiSelectActionButtons">
-                <td>
+                <td colspan="${ config.columns.size + 1 }">
                     <% config.actionButtons.each { %>
                     <a href="${ it.link }"><button>${ it.label }</button></a>
                     <% } %>

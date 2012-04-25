@@ -142,6 +142,8 @@ public interface ProviderManagementService extends OpenmrsService {
      */
 
 
+    // TODO: this will need to be changed to so that the name and identifier search is an AND search?
+
     /**
      * Gets the list of providers that match the specified parameters
      *
