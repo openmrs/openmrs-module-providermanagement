@@ -7,28 +7,47 @@
 
 <script>
     jq(function() {
+        // configure the AJAX search call
         jq('#searchField_${ id }').keyup(function() {
             if (jq(this).val()) {
                 jq.getJSON('${ config.searchAction }',
                         { 'returnFormat': 'json',
                             'searchValue': jq(this).val(),
                             'resultFields': [ <%= config.resultFields.collect { "'${ it }'" }.join(",") %> ]
-                            <% config.params.each { %>
+                            <% config.searchParams.each { %>
                                 , '${ it.key }': ${ it.value }
                             <% } %>
                         })
                         .success(function(data) {
+
                             jq('#searchTable_${ id } > tbody > tr').remove();
                             var tbody = jq('#searchTable_${ id } > tbody');
                             for (index in data) {
                                 var item = data[index];
-                                var row = '<tr>';
+                                var row = '<tr><input type="hidden" value="' + item.id + '"/>';
                             <% config.resultFields.each { %>
                                 row += '<td>' + item.${ it } + '</td>';
                             <% } %>
                                 row += '</tr>';
                                 tbody.append(row);
                             }
+
+                            // configure the action that occurs on a row click
+                            jq('#searchTable_${ id } > tbody > tr').click(function() {
+                                window.location = '${ config.selectAction }'+
+                                        <% if (config.selectParams) { %>
+                                            '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
+                                        <% } %>
+                                        '&id=' + jq(this).children('input').val();
+                            });
+
+                            // configure highlighting
+                            jq('#searchTable_${ id } > tbody > tr').mouseover(function() {
+                                jq(this).addClass('highlighted');
+                            });
+                            jq('#searchTable_${ id } > tbody > tr').mouseout(function() {
+                                jq(this).removeClass('highlighted');
+                            });
                         })
                         .error(function(xhr, status, err) {
                             alert('search error ' + err);
@@ -39,6 +58,7 @@
                 jq('#searchTable_${ id } > tbody > tr').remove();
             }
         });
+
     });
 </script>
 

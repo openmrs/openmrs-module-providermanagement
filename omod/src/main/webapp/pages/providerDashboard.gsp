@@ -20,7 +20,9 @@
         ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
                 searchAction: ui.actionLink("patientSearch", "getPatients"),
                 resultFields: ["personName"],
-                selectAction: [[link: ui.pageLink('addSupervisee', [personId: person.id])]] ]) }
+                selectAction: ui.actionLink('providerUpdate', 'addPatient'),
+                selectParams: [ [key: 'providerId', value: person.id],
+                                [key: 'relationshipTypeId', value: it.key.id ]] ]) }
 
     <% } %>
 </div>
@@ -36,10 +38,11 @@
 
     <div id="addSupervisee">
         ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
-                                                searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                                resultFields: ["personName"],
-                                                params: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
-                                                selectAction: [[link: ui.pageLink('addSupervisee', [personId: person.id])]] ]) }
+                                                    searchAction: ui.actionLink("providerSearch", "getProviders"),
+                                                    resultFields: ["personName"],
+                                                    searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
+                                                    selectAction: ui.actionLink('providerUpdate', 'addSupervisee'),
+                                                    selectParams: [ [key: 'superviserId', value: person.id] ] ]) }
     </div>
 
 <% } %>

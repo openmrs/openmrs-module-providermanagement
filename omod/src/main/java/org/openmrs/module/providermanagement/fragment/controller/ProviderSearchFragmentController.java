@@ -14,6 +14,7 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderRole;
@@ -38,6 +39,9 @@ public class ProviderSearchFragmentController {
         if (resultFields == null || resultFields.length == 0) {
             resultFields = new String[] {"personName"};
         }
+
+        // always want to return the id of the result objects
+         resultFields = ArrayUtils.add(resultFields, "id");
 
         // build the list of roles from the request params
         List<ProviderRole> providerRoles = new ArrayList<ProviderRole>();

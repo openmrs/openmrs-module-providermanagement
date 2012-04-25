@@ -14,6 +14,7 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
@@ -34,6 +35,9 @@ public class PatientSearchFragmentController {
         if (resultFields == null || resultFields.length == 0) {
             resultFields = new String[] {"personName"};
         }
+
+        // always want to return the id of the result objects
+        resultFields = ArrayUtils.add(resultFields, "id");
 
         // TODO: add searching by identifier
 
