@@ -13,17 +13,16 @@
 <div id="patients">
     <% patients?.each { %>
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
-                                                                    title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
-                                                                    columns: ["personName"],
-                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) %>
+                                                                        title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
+                                                                        columns: ["personName"],
+                                                                        actionButtons: [[label: ui.message("general.remove")]] ]) %>
 
-        ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
-                searchAction: ui.actionLink("patientSearch", "getPatients"),
-                resultFields: ["personName"],
-                selectAction: ui.actionLink('providerUpdate', 'addPatient'),
-                selectParams: [ [key: 'providerId', value: person.id],
-                                [key: 'relationshipTypeId', value: it.key.id ]] ]) }
-
+        <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
+                                                        searchAction: ui.actionLink("patientSearch", "getPatients"),
+                                                        resultFields: ["personName"],
+                                                        selectAction: ui.actionLink('providerUpdate', 'addPatient'),
+                                                        selectParams: [ [key: 'providerId', value: person.id],
+                                                                        [key: 'relationshipTypeId', value: it.key.id ]] ])  %>
     <% } %>
 </div>
 
@@ -32,17 +31,19 @@
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName.toString() },
                                                                     title: ui.message("providermanagement.supervising"),
                                                                     columns: ["personName"],
+                                                                    selectAction: ui.pageLink('providerDashboard') + "?",
+                                                                    selectIdParam: "personId",
                                                                     actionButtons: [[label: ui.message("general.remove")]] ]) %>
 
     </div>
 
     <div id="addSupervisee">
-        ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
-                                                    searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                                    resultFields: ["personName"],
-                                                    searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
-                                                    selectAction: ui.actionLink('providerUpdate', 'addSupervisee'),
-                                                    selectParams: [ [key: 'superviserId', value: person.id] ] ]) }
+        <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
+                                                        searchAction: ui.actionLink("providerSearch", "getProviders"),
+                                                        searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
+                                                        resultFields: ["personName"],
+                                                        selectAction: ui.actionLink('providerUpdate', 'addSupervisee'),
+                                                        selectParams: [ [key: 'superviserId', value: person.id] ] ]) %>
     </div>
 
 <% } %>

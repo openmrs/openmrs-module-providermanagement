@@ -6,3 +6,7 @@
 .multiSelectActionButtons td {
     text-align: center;
 }
+
+.multiSelectCheckboxTable .checkboxCell {
+    width: 10%
+}
