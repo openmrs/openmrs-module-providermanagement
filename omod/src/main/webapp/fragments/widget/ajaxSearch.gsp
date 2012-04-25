@@ -34,7 +34,7 @@
 
                             // configure the action that occurs on a row click
                             jq('#searchTable_${ id } > tbody > tr').click(function() {
-                                window.location = '${ config.selectAction }'+
+                                window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\'' }
                                         <% if (config.selectParams) { %>
                                             '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
                                         <% } %>

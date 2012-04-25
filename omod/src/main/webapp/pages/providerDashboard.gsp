@@ -31,7 +31,7 @@
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName.toString() },
                                                                     title: ui.message("providermanagement.supervising"),
                                                                     columns: ["personName"],
-                                                                    selectAction: ui.pageLink('providerDashboard') + "?",
+                                                                    selectAction: ui.pageLink('providerDashboard'),
                                                                     selectIdParam: "personId",
                                                                     actionButtons: [[label: ui.message("general.remove")]] ]) %>
 

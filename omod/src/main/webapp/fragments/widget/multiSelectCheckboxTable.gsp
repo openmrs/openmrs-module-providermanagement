@@ -8,17 +8,6 @@
 
 <script>
     jq(function() {
-       <% if (config.selectAction) { %>
-            // configure the action that occurs on a row click
-            jq('#multiSelectCheckboxTable_${ id } > tbody > tr').click(function() {
-                window.location = '${ config.selectAction }'+
-                        <% if (config.selectParams) { %>
-                        '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
-                        <% } %>
-                        '&${ selectIdParam }=' + jq(this).find('input').val();
-            });
-        <% } %>
-
         // configure highlighting
         jq('#multiSelectCheckboxTable_${ id } > tbody > tr').mouseover(function() {
             jq(this).addClass('highlighted');
@@ -42,7 +31,15 @@
             <% config.items?.each { item -> %>
                 <tr>
                      <% config.columns.each { %>
-                        <td>${ item[it] }</td>
+                        <td>
+                            <% if (config.selectAction) { %>
+                                <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
+                             <% } %>
+                                ${ item[it] }
+                             <% if (config.selectAction) { %>
+                                </a>
+                             <% } %>
+                        </td>
                      <% } %>
                     <td class="checkboxCell"><input type="checkbox" value="${ item.id }"/></td>
                 </tr>
