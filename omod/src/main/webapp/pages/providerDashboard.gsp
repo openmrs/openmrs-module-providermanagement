@@ -12,10 +12,10 @@
 
 <div id="patients">
     <% patients?.each { %>
-        ${ ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value,
+        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
                                                                     title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
                                                                     columns: ["personName"],
-                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) }
+                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) %>
 
         ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
                 searchAction: ui.actionLink("patientSearch", "getPatients"),
@@ -29,10 +29,10 @@
 
 <% if (provider.providerRole?.superviseeProviderRoles) { %>
     <div id="supervisees">
-        ${ ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees,
+        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName.toString() },
                                                                     title: ui.message("providermanagement.supervising"),
                                                                     columns: ["personName"],
-                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) }
+                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) %>
 
     </div>
 
