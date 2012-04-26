@@ -1,6 +1,11 @@
 
-#providerDetails {
+#providerView {
     width: 600px;
+}
+
+#providerEdit {
+    width: 600px;
+    display: none;
 }
 
 #patients {

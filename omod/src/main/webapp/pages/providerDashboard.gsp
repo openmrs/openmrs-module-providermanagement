@@ -5,9 +5,28 @@
 
 <!-- TODO: permissions! -->
 
-<div id="providerDetails">
-    ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit")],
+<script>
+    jq(function() {
+        // buttons
+        jq('#showEdit').click(function() {
+            jq('#providerView').hide();
+            jq('#providerEdit').show();
+        });
+        jq('#cancelEdit').click(function() {
+            jq('#providerEdit').hide();
+            jq('#providerView').show();
+        });
+    });
+</script>
+
+<div id="providerView">
+    ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEdit"],
                                                              [label: ui.message("general.retire")]] ]) }
+</div>
+
+<div id="providerEdit">
+    ${ ui.includeFragment("providerEdit", [ actionButtons: [ [label: ui.message("general.save")],
+                                                                [label: ui.message("general.cancel"), id: "cancelEdit"] ] ]) }
 </div>
 
 <div id="patients">

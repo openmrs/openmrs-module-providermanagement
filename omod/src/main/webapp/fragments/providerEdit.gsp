@@ -1,12 +1,12 @@
+<% ui.includeCss("providermanagement", "providerEdit.css") %>
 
-<% ui.includeCss("providermanagement", "providerView.css") %>
-
-<div class="content providerView">
+<div class="content providerEdit">
 
     <table class="providerHeader">
-        <tr>
-            <td colspan="2" class="label">${ person.personName }</td>
-        </tr>
+
+        <!-- include the name fragment -->
+        ${ ui.includeFragment("personName", [personName: person.personName, mode: 'edit']) }
+
         <tr>
             <td colspan="2"> ${ provider.providerRole?.name ?: '' }</td>
         </tr>
@@ -19,7 +19,7 @@
 
         <tr>
             <td><span class="label">${ ui.message("providermanagement.identifier") }:</span></td>
-            <td>${ provider.identifier ?: '' }</td>
+            <td><input type="text" id="identifier" name="identifier" size="20" value="${ provider.identifier ?: ''}"/></td>
         </tr>
 
         <tr>
@@ -44,19 +44,19 @@
         </tr>
 
         <!-- include the address fragment -->
-        ${ ui.includeFragment("personAddress", [personAddress: person.personAddress, mode: 'view']) }
+        ${ ui.includeFragment("personAddress", [personAddress: person.personAddress, mode: 'edit']) }
 
     </table>
 
 
     <% if (config.actionButtons) { %>
-        <table class="providerActionButtons">
-            <tr>
-                <td colspan="2">
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons])}
-                </td>
-            </tr>
-        </table>
+    <table class="providerActionButtons">
+        <tr>
+            <td colspan="2">
+                ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons])}
+            </td>
+        </tr>
+    </table>
     <% } %>
 
 </div>
