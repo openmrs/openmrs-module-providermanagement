@@ -1,13 +1,11 @@
 
 <% ui.includeCss("providermanagement", "providerView.css") %>
 
-<!-- TODO: include Person name portlet here instead -->
-
 <div class="content providerView">
 
     <table class="providerHeader">
         <tr>
-            <td class="label">${ person.personName.familyName }, ${ person.personName.givenName }</td>
+            <td class="label">${ person.personName }</td>
         </tr>
         <tr>
             <td> ${ provider.providerRole?.name ?: '' }</td>
@@ -41,7 +39,9 @@
             <th>${ ui.message("Person.address") }</th>
         </tr>
 
-        <!-- TODO: include address fragment -->
+        <!-- include the address fragment -->
+        ${ ui.includeFragment("personAddress", [personAddress: person.personAddress, mode: 'view']) }
+
     </table>
 
 
