@@ -48,6 +48,7 @@ public class AdminList extends AdministrationSectionExt {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 		map.put("/pages/manageProviderRoles.page", "providermanagement.manageProviderRoles");
         map.put("/pages/manageSuggestions.page", "providermanagement.manageSuggestions");
+        map.put("/pages/manageOtherSettings.page", "providermanagement.manageOtherSettings");
 		return map;
 	}
 	

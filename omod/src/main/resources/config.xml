@@ -43,6 +43,15 @@
 		SupervisionSuggestion.hbm.xml
 	</mappingFiles>
 
+    <!-- Required Global Properties -->
+    <globalProperty>
+        <property>providermanagement.personAttributes</property>
+        <defaultValue></defaultValue>
+        <description>
+            Person attributes to display on the provider dashboard: specified as a pipe-delimited list of person attribute type uuids
+        </description>
+    </globalProperty>
+
 	<!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->
 	<messages>
