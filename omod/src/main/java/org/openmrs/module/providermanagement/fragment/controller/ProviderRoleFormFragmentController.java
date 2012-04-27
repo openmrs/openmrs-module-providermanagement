@@ -77,7 +77,7 @@ public class ProviderRoleFormFragmentController {
         providerManagementService.retireProviderRole(providerManagementService.getProviderRole(providerRoleId), "retired via provider management ui");
     }
 
-    public void updateProviderRole(@BindParams() ProviderRole providerRole) {
+    public void saveProviderRole(@BindParams() ProviderRole providerRole) {
 
         // TODO: add validation
 

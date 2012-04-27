@@ -1,7 +1,7 @@
 <div>
 
 
-${ ui.startForm("updateProviderRole", [id: providerRole?.providerRoleId, successUrl: config.successUrl]) }
+${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUrl: config.successUrl]) }
 
     <table>
 

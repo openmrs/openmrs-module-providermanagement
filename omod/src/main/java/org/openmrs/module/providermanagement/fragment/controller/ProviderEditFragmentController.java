@@ -15,12 +15,18 @@
 package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
+import org.openmrs.ui.framework.annotation.Validate;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.validator.PersonValidator;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public class ProviderEditFragmentController {
 
@@ -40,4 +46,24 @@ public class ProviderEditFragmentController {
         model.addAttribute("provider", provider);
     }
 
+    public void saveProvider(@RequestParam("personId") @BindParams() Person person,
+                             @RequestParam("provider.identifier") String identifier)
+            throws PersonIsNotProviderException {
+
+        // TODO: add validation via annotation when it works
+
+        // fetch the provider associated with this person
+        Provider provider = ProviderManagementWebUtil.getProvider(person);
+
+        // TODO: could potentially create a custom personId to provider converter and then could bind directly here, using a @BindParams("provider") and namespacing all the provider fields with "provider"
+
+        // need to manually bind the provider attributes
+        provider.setIdentifier(identifier);
+
+        // TODO: add provider validation?
+
+        // save the provider and the person (may not need to save person, because it cascades?)
+        Context.getProviderService().saveProvider(provider);
+        Context.getPersonService().savePerson(person);
+    }
 }

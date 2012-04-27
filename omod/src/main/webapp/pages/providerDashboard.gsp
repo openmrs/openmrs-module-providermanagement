@@ -12,6 +12,9 @@
             jq('#providerView').hide();
             jq('#providerEdit').show();
         });
+
+
+        // TODO: this should also reset the form!
         jq('#cancelEdit').click(function() {
             jq('#providerEdit').hide();
             jq('#providerView').show();
@@ -25,8 +28,8 @@
 </div>
 
 <div id="providerEdit">
-    ${ ui.includeFragment("providerEdit", [ actionButtons: [ [label: ui.message("general.save")],
-                                                                [label: ui.message("general.cancel"), id: "cancelEdit"] ] ]) }
+    ${ ui.includeFragment("providerEdit", [ actionButtons: [ [label: ui.message("general.save"), type: "submit"],
+                                                                [label: ui.message("general.cancel"), id: "cancelEdit", type: "reset"] ] ]) }
 </div>
 
 <div id="patients">
