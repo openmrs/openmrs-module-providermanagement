@@ -16,6 +16,7 @@ package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.openmrs.Person;
 import org.openmrs.module.providermanagement.Provider;
+import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.annotation.FragmentParam;
@@ -38,5 +39,10 @@ public class ProviderViewFragmentController {
         // add the person and the provider to the module
         model.addAttribute("person", person);
         model.addAttribute("provider", provider);
+
+        System.out.println("types = " + ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES());
+
+        // also add the person attribute types we want to display
+        model.addAttribute("personAttributeTypes", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES());
     }
 }

@@ -23,19 +23,18 @@ import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProviderSearchFragmentController {
 
-    public List<SimpleObject> getProviders(@RequestParam(value="searchValue", required=true) String searchValue,
+    public List<SimpleObject> getProviders(
+            HttpServletRequest request, @RequestParam(value="searchValue", required=true) String searchValue,
                                           @RequestParam(value="providerRoleIds", required=false) Integer[] providerRoleIds,
                                           @RequestParam(value="resultFields", required=false) String[] resultFields,
                                           UiUtils ui) {
 
-        // TODO: this should handle searching by identifier as well
-
-        // TODO: set resultFields required=true and remove this default once binding problem is fixed
         if (resultFields == null || resultFields.length == 0) {
             resultFields = new String[] {"personName"};
         }
@@ -52,6 +51,8 @@ public class ProviderSearchFragmentController {
                 providerRoles.add(Context.getService(ProviderManagementService.class).getProviderRole(providerRoleId));
             }
         }
+
+        // TODO: we will have to hack in a way to display provider parameters here?
 
         // now fetch the results
         List<Person> providers = Context.getService(ProviderManagementService.class).getProviders(searchValue, null, providerRoles, false);

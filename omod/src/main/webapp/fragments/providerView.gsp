@@ -32,6 +32,15 @@
             <td>${ ui.format(person.birthdate) }</td>
         </tr>
 
+        <!-- display person attribute types: assumption is only one attribute per person per type -->
+        <% personAttributeTypes?.each { %>
+        <tr>
+            <td><span class="label">${ it.name }:</span></td>
+            <td>${ person.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
+        </tr>
+        <% } %>
+
+        <!-- display provider attribute types: assumption is only one attribute per provider per type -->
         <% provider.providerRole?.providerAttributeTypes?.each { %>
         <tr>
             <td><span class="label">${ it.name }:</span></td>

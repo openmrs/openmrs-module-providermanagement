@@ -18,7 +18,9 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
+import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
+import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
@@ -41,9 +43,24 @@ public class ProviderEditFragmentController {
         Person person = ProviderManagementWebUtil.getPerson(sharedPageModel, personParam, personId);
         Provider provider = ProviderManagementWebUtil.getProvider(person);
 
+        // TODO: this is a bit of a hack
+        // TODO: should I remove this person address field if not used?
+        // make sure the provider has an address (so we can bind to it)
+        if (person.getPersonAddress() == null) {
+            person.addAddress(new PersonAddress());
+            Context.getPersonService().savePerson(person);
+        }
+
         // add the person and the provider to the module
         model.addAttribute("person", person);
         model.addAttribute("provider", provider);
+
+        // also add the person attribute types we want to display
+        model.addAttribute("personAttributeTypes", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES());
+
+        // add the possible provider roles
+        model.addAttribute("providerRoles", Context.getService(ProviderManagementService.class).getAllProviderRoles(false));
+
     }
 
     public void saveProvider(@RequestParam("personId") @BindParams() Person person,
@@ -60,7 +77,8 @@ public class ProviderEditFragmentController {
         // need to manually bind the provider attributes
         provider.setIdentifier(identifier);
 
-        // TODO: add provider validation?
+        // TODO: add provider validation?  should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
+        // TODO: think about validation issues here... if we simply trap person validation and it fails, we would still want to be able to roll back provider information
 
         // save the provider and the person (may not need to save person, because it cascades?)
         Context.getProviderService().saveProvider(provider);

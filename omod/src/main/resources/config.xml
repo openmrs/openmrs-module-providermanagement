@@ -45,10 +45,19 @@
 
     <!-- Required Global Properties -->
     <globalProperty>
-        <property>providermanagement.personAttributes</property>
+        <property>providermanagement.personAttributeTypes</property>
         <defaultValue></defaultValue>
         <description>
             Person attributes to display on the provider dashboard: specified as a pipe-delimited list of person attribute type uuids
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>providermanagement.providerSearchDisplayFields</property>
+        <defaultValue></defaultValue>
+        <description>
+            Fields to display in the provider search box; specified as a pipe-delimited list of person or provider fields
+            For example "person.personAddress.cityState|person.personName|provider.id"
         </description>
     </globalProperty>
 

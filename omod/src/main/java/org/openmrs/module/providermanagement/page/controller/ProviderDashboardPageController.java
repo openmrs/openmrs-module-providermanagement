@@ -19,6 +19,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
+import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
@@ -70,5 +71,8 @@ public class ProviderDashboardPageController {
 
        List<Person> supervisees = pmService.getSuperviseesForSupervisor(person);
        pageModel.addAttribute("supervisees", supervisees);
+
+        // add the global property that specifies the fields to display in the provider search results
+        pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
     }
 }

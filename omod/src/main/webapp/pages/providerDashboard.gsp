@@ -63,7 +63,7 @@
         <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
                                                         searchAction: ui.actionLink("providerSearch", "getProviders"),
                                                         searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
-                                                        resultFields: ["personName"],
+                                                        resultFields: providerSearchDisplayFields,
                                                         selectAction: ui.actionLink('providerUpdate', 'addSupervisee'),
                                                         selectParams: [ [key: 'superviserId', value: person.id] ] ]) %>
     </div>

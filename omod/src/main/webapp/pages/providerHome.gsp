@@ -7,7 +7,7 @@
 
     <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.findProvider"),
             searchAction: ui.actionLink("providerSearch", "getProviders"),
-            resultFields: ["personName"],
+            resultFields: providerSearchDisplayFields,
             selectIdParam: "personId",
             selectAction: ui.pageLink('providerDashboard') ]) %>
 

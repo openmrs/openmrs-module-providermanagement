@@ -6,14 +6,14 @@ ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUr
     <table>
 
        <tr>
-           <td>${ ui.message("providermanangement.providerRole") }:</td>
+           <td>${ ui.message("providermanagement.providerRole") }:</td>
            <td><input name="name" type="text" value="${ providerRole?.name ?: ''}"/></td>
        </tr>
 
 
 
         <tr>
-            <td>${ ui.message("providermanangement.superviseeRoles") }:</td>
+            <td>${ ui.message("providermanagement.superviseeRoles") }:</td>
             <td>
                 <select name="superviseeProviderRoles" multiple>
                     <% providerRoles.each { %>
@@ -27,7 +27,7 @@ ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUr
 
 
         <tr>
-            <td>${ ui.message("providermanangement.associatedRelationshipTypes") }:</td>
+            <td>${ ui.message("providermanagement.associatedRelationshipTypes") }:</td>
             <td>
                 <select name="relationshipTypes" multiple>
                     <% relationshipTypes.each { %>
@@ -41,7 +41,7 @@ ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUr
 
 
         <tr>
-            <td>${ ui.message("providermanangement.associatedAttributeTypes") }:</td>
+            <td>${ ui.message("providermanagement.associatedAttributeTypes") }:</td>
             <td>
                 <select name="providerAttributeTypes" multiple>
                     <% providerAttributeTypes.each { %>

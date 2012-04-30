@@ -10,7 +10,10 @@
             ${ ui.includeFragment("personName", [personName: person.personName, mode: 'edit']) }
 
             <tr>
-                <td colspan="2"> ${ provider.providerRole?.name ?: '' }</td>
+                <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
+                <td> ${ ui.includeFragment("widget/selectList", [ field: "provider.providerRole",
+                        value: provider.providerRole.id, options: providerRoles, optionsKeyField: 'name',
+                        optionsValueField: 'id'] ) }</td>
             </tr>
         </table>
 
@@ -35,7 +38,12 @@
                 <td>${ ui.format(person.birthdate) }</td>
             </tr>
 
-            <!-- TODO: add person attributes -->
+            <% personAttributeTypes?.each { %>
+            <tr>
+                <td><span class="label">${ it.name }:</span></td>
+                <td>${ person.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
+            </tr>
+            <% } %>
 
             <!-- TODO: assumption here is that there is only one attribute of any type? -->
             <!-- TODO: change this so that it supports non-text attributes?? -->

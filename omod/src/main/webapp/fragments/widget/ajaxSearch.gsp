@@ -27,7 +27,7 @@
                                 var item = data[index];
                                 var row = '<tr><input type="hidden" value="' + item.id + '"/>';
                             <% config.resultFields.each { %>
-                                row += '<td>' + item.${ it } + '</td>';
+                                row += '<td>' + ((item.${ it } != undefined) ? item.${ it } : '') + '</td>';
                             <% } %>
                                 row += '</tr>';
                                 tbody.append(row);

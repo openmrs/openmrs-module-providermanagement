@@ -1,12 +1,12 @@
 
 ${ ui.startForm("saveGlobalProperty", [propertyName: property.property])}
-    <select name="values" ${ config.multiple ? 'multiple' : '' }>
-        <% config.options.each { %>
-            <option value="${ it[config.valueField] }"
-                ${ values?.contains(it[config.valueField]) ? 'selected' : ''}
-            >${ it[config.keyField] }</option>
-        <% } %>
-    </select>
+    <% if (config.options) { %>
+    ${ ui.includeFragment("widget/selectList", [ field: "values",
+            values: values, options: config.options, optionsKeyField: config.optionsKey,
+            optionsValueField: config.optionsValue, multiple: config.multiple] ) }
+    <% } else { %>
+        <textarea name="value" rows="5" cols="30">${ value ?: ''}</textarea>
+    <% } %>
     <input type="submit"/>
 ${ ui.endForm() }
 

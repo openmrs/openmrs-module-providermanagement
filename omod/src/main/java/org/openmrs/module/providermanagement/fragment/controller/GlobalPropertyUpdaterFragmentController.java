@@ -27,29 +27,61 @@ import java.util.List;
 
 public class GlobalPropertyUpdaterFragmentController {
 
+    // TODO: rework so that this operates on multiple properties on one page!
+
     public void controller(FragmentModel model,
-                           @FragmentParam("propertyName") GlobalProperty property) {
+                           @FragmentParam("propertyName") GlobalProperty property,
+                           @FragmentParam("type") String type) {
 
-        List<String> values = new ArrayList<String>();
-        String value = property.getPropertyValue();
+        String currentValue = property.getPropertyValue();
 
-        if (StringUtils.isNotBlank(value)) {
-            for (String v : value.split("\\|")) {
-                values.add(v);
+        // handle select list
+        if (type.equalsIgnoreCase("selectList")) {
+            List<String> values = new ArrayList<String>();
+
+            if (StringUtils.isNotBlank(currentValue)) {
+                for (String v : currentValue.split("\\|")) {
+                    values.add(v);
+                }
             }
+            model.addAttribute("values", values);
+        }
+        // handle text area
+        else if (type.equalsIgnoreCase("text")) {
+            StringBuilder value = new StringBuilder();
+
+            if (StringUtils.isNotBlank(currentValue)) {
+                for (String v : currentValue.split("\\|")) {
+                    value.append(v + "\n");
+                }
+            }
+            model.addAttribute("value", value);
+        }
+        else {
+            throw new RuntimeException("Invalid global property type: must be select list or text");
         }
 
-        model.addAttribute("values", values);
         model.addAttribute("property", property);
     }
 
     public void saveGlobalProperty(@RequestParam("propertyName") GlobalProperty property,
-                                   @RequestParam("values") String[] values) {
+                                   @RequestParam(value = "value", required = false) String value,
+                                   @RequestParam(value = "values", required = false) String[] values) {
 
         // concatenate the values
-        String value = StringUtils.join(values,'|');
+        String updatedValue;
 
-        property.setValue(value);
+        if (values != null) {
+            updatedValue = StringUtils.join(values,'|');
+        }
+        else {
+            // TODO: confirm that this is a regex that splits on whitespace + newlines?
+            updatedValue = StringUtils.join(value.split("\\s+"),"|");
+        }
+
+        System.out.println("updated value = " + updatedValue);
+
+        property.setPropertyValue(updatedValue);
         Context.getAdministrationService().saveGlobalProperty(property);
     }
 }
