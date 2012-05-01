@@ -141,14 +141,24 @@ public interface ProviderManagementService extends OpenmrsService {
      * Basic methods for operating on providers using the new provider roles
      */
 
-
-    // TODO: this will need to be changed to so that the name and identifier search is an AND search?
+    /**
+     * Gets the list of providers that match a specified name OR identifier, restricting based on specified provider roles
+     * (If query is null, empty list is returned)
+     *
+     * @param query name or identifier to search on (does a like 'query%' search)
+     * @param providerRoles restrict results to providers with at least one of these roles
+     * @param includeRetired whether or not to include retired providers
+     * @should return empty list if query null
+     * @return result list of providers
+     */
+    public List<Person> getProviders(String query, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
-     * Gets the list of providers that match the specified parameters
+     * Gets the list of providers that match the specified name, identifier, and provider roles
+     * (If any field is null it is ignored)
      *
-     * @param name name to search on
-     * @param identifier provider identifier
+     * @param name name to search on (does a like 'name%' search against name fields)
+     * @param identifier provider identifier (does a like 'identifier%' search)
      * @param providerRoles restrict results to providers with at least one of these roles
      * @param includeRetired whether or not to include retired providers
      * @return result list of providers

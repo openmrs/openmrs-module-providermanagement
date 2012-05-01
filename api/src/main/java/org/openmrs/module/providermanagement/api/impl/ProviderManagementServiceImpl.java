@@ -32,6 +32,7 @@ import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
+import org.openmrs.module.providermanagement.comparator.PersonByFirstNameComparator;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
 import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
@@ -183,6 +184,33 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         return new ArrayList<RelationshipType>(relationshipTypes);
+    }
+
+    @Override
+    public List<Person> getProviders(String query, List<ProviderRole> providerRoles, Boolean includeRetired) {
+
+        // return empty list if no query
+        if (query == null || query.length() == 0) {
+            return new ArrayList<Person>();
+        }
+
+        List<Person> nameMatches = getProviders(query, null, providerRoles, includeRetired);
+        List<Person> identifierMatches = getProviders(null, query, providerRoles, includeRetired);
+
+        if (identifierMatches == null || identifierMatches.size() == 0) {
+            return nameMatches;
+        }
+        else if (nameMatches == null || nameMatches.size() == 0) {
+            return identifierMatches;
+        }
+        else {
+            // do a union
+            // TODO: how is the performance of this?
+            nameMatches.removeAll(identifierMatches);
+            identifierMatches.addAll(nameMatches);
+            Collections.sort(identifierMatches, new PersonByFirstNameComparator());
+            return identifierMatches;
+        }
     }
 
     @Override

@@ -31,11 +31,11 @@
     <!-- a binome supervisor -->
     <provider provider_id="1006" provider_role_id="1002" person_id="8" identifier="2a8" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cca9-11e0-9572-0800200c9a66" />
     <!-- an accompagnateur-->
-    <provider provider_id="1007" provider_role_id="1011" person_id="9" identifier="2a9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-11e0-9572-0800200c9a66" />
+    <provider provider_id="1007" provider_role_id="1011" person_id="9" identifier="b7" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-11e0-9572-0800200c9a66" />
     <!-- a community health nurse-->
-    <provider provider_id="1008" provider_role_id="1005" person_id="501" identifier="2b9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-12e0-9572-0800200c9a66" />
+    <provider provider_id="1008" provider_role_id="1005" person_id="501" identifier="b9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523e-cca9-12e0-9572-0800200c9a66" />
     <!-- another community heath nurse, associated with the same person as provider 1003 -->
-    <provider provider_id="1009" provider_role_id="1005" person_id="2" identifier="2b9" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cda9-12e0-9572-0800200c9a66" />
+    <provider provider_id="1009" provider_role_id="1005" person_id="2" identifier="b8" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="da7d523f-cda9-12e0-9572-0800200c9a66" />
 
     <!-- assign relationship types to provider roles -->
     <providermanagement_provider_role_relationship_type provider_role_id="1001" relationship_type_id="1001" />

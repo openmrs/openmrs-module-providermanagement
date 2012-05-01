@@ -2429,7 +2429,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
         // try a partial match
         providers = providerManagementService.getProviders(null,"2a",null, false);
-        Assert.assertEquals(6, providers.size());
+        Assert.assertEquals(5, providers.size());
 
         // double-check to make sure the are the correct providers
         // be iterating through and removing those that SHOULD be there
@@ -2438,7 +2438,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         while (i.hasNext()) {
             Person p = i.next();
 
-            if (p.getId() == 1 || p.getId() == 2 || p.getId() == 6 || p.getId() == 7 || p.getId() == 8 || p.getId() == 9) {
+            if (p.getId() == 1 || p.getId() == 2 || p.getId() == 6 || p.getId() == 7 || p.getId() == 8) {
                 i.remove();
             }
         }
@@ -2624,6 +2624,21 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
         List<Person> providers = providerManagementService.getProviders("jimmy", null, null, false);
         Assert.assertTrue(providers == null || providers.size() == 0);
+    }
+
+    @Test
+    public void getProvidersQuery_shouldReturnNullIfNoQuery() throws Exception {
+        List<Person> providers = providerManagementService.getProviders(null, null, false);
+        Assert.assertTrue(providers == null || providers.size() == 0);
+    }
+
+    @Test
+    public void getProvidersQuery_shouldFetchByIdentifierAndNameAndOrderByName()  throws Exception {
+        List<Person> providers = providerManagementService.getProviders("b", null, false);
+        Assert.assertEquals(3, providers.size());
+        Assert.assertEquals(new Integer(501), providers.get(0).getId());
+        Assert.assertEquals(new Integer(2), providers.get(1).getId());
+        Assert.assertEquals(new Integer(9), providers.get(2).getId());
     }
 }
 

@@ -90,7 +90,8 @@ public interface ProviderManagementDAO {
     public void deleteProviderRole(ProviderRole role);
 
     /**
-     * Gets the list of providers that match the specified parameters
+     * Gets the list of providers that match the specified name, identifier, and provider roles
+     * (If any field is null it is ignored)
      *
      * @param name name to search on
      * @param identifier provider identifier

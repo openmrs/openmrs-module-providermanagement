@@ -34,6 +34,11 @@ public class ProviderSearchFragmentController {
                                           @RequestParam(value="resultFields", required=false) String[] resultFields,
                                           UiUtils ui) {
 
+        // NOTE that by default we return an empty list if the searchValue size < 2
+        if (searchValue == null || searchValue.length() < 2) {
+            return new ArrayList<SimpleObject>();
+        }
+
         if (resultFields == null || resultFields.length == 0) {
             resultFields = new String[] {"personName"};
         }
@@ -54,7 +59,7 @@ public class ProviderSearchFragmentController {
         // TODO: we will have to hack in a way to display provider parameters here?
 
         // now fetch the results
-        List<Person> providers = Context.getService(ProviderManagementService.class).getProviders(searchValue, null, providerRoles, false);
+        List<Person> providers = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles, false);
         return SimpleObject.fromCollection(providers, ui, resultFields);
     }
 
