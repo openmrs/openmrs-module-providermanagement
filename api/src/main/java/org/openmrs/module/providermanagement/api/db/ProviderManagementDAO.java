@@ -14,6 +14,8 @@
 package org.openmrs.module.providermanagement.api.db;
 
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
@@ -99,7 +101,7 @@ public interface ProviderManagementDAO {
      * @param includeRetired whether or not to include retired providers
      * @return result list of providers
      */
-    public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired);
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Gets all providers associated with the current person

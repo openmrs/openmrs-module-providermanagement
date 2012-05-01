@@ -15,6 +15,8 @@ package org.openmrs.module.providermanagement.api;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.OpenmrsService;
@@ -157,13 +159,27 @@ public interface ProviderManagementService extends OpenmrsService {
      * Gets the list of providers that match the specified name, identifier, and provider roles
      * (If any field is null it is ignored)
      *
-     * @param name name to search on (does a like 'name%' search against name fields)
-     * @param identifier provider identifier (does a like 'identifier%' search)
+     * @param name name to search on (does an ilike 'name%' search against name fields)
+     * @param identifier provider identifier (does a ilike 'identifier%' search)
      * @param providerRoles restrict results to providers with at least one of these roles
      * @param includeRetired whether or not to include retired providers
      * @return result list of providers
      */
     public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired);
+
+    /**
+     * Gets the list of providers that match the specified name, identifier, and provider roles
+     * (If any field is null it is ignored)
+     *
+     * @param name name to search on (does an ilike 'name%' search against name fields)
+     * @param identifier provider identifier (does an ilike 'identifier%' search)
+     * @param personAddress address to match on (does an ilike 'addressField%' search against each field that is not null)
+     * @param personAttribute person attributes to match on
+     * @param providerRoles restrict results to providers with at least one of these roles
+     * @param includeRetired whether or not to include retired providers
+     * @return result list of providers
+     */
+     public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Returns the provider roles associated with the specified provider

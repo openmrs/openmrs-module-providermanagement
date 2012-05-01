@@ -20,6 +20,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.Relationship;
@@ -2624,6 +2625,65 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
         List<Person> providers = providerManagementService.getProviders("jimmy", null, null, false);
         Assert.assertTrue(providers == null || providers.size() == 0);
+    }
+
+    @Test
+    public void getProviders_shouldGetPersonsByAddress() throws Exception {
+        PersonAddress personAddress = new PersonAddress();
+        personAddress.setAddress1("wishard");
+
+        List<Person> providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(2), providers.get(0).getId());
+
+        personAddress = new PersonAddress();
+        personAddress.setCityVillage("kapi");
+        providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(7), providers.get(0).getId());
+    }
+
+    @Test
+    public void getProviders_shouldGetPersonsByAddressWithTwoFields() throws Exception {
+        PersonAddress personAddress = new PersonAddress();
+        personAddress.setAddress1("wishard");
+        personAddress.setCityVillage("ind");
+
+        List<Person> providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(2), providers.get(0).getId());
+    }
+
+    @Test
+    public void getProviders_shouldGetPersonsByAddressBothFieldsMustMatch() throws Exception {
+        PersonAddress personAddress = new PersonAddress();
+        personAddress.setAddress1("wishard");
+        personAddress.setCityVillage("boston");
+
+        List<Person> providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProviders_shouldGetPersonsByAddressAndName() throws Exception {
+        PersonAddress personAddress = new PersonAddress();
+        personAddress.setAddress1("wishard");
+        personAddress.setCityVillage("ind");
+
+        List<Person> providers = providerManagementService.getProviders("horatio", null, personAddress, null, null, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(2), providers.get(0).getId());
+    }
+
+    @Test
+    public void getProviders_shouldIntersectAddressAndNameSearch() throws Exception {
+        PersonAddress personAddress = new PersonAddress();
+        personAddress.setAddress1("wishard");
+        personAddress.setCityVillage("ind");
+
+        // search for a valid person name, but not the name of the person with the above address
+        List<Person> providers = providerManagementService.getProviders("jimmy", null, personAddress, null, null, false);
+        Assert.assertEquals(0, providers.size());
     }
 
     @Test

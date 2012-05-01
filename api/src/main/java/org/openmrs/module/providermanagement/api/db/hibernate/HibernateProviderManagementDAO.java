@@ -22,6 +22,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
@@ -102,7 +104,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired) {
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
 
         // first, create the provider criteria
          Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
@@ -134,13 +136,13 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         // ignore voided people
         criteria.add(Restrictions.eq("personVoided", false));
 
-        // create the person name query on top of the person query
-        criteria = criteria.createCriteria("names");
+        // create the join to the person table
+        criteria.createAlias("names", "name");
 
         // order by name
-        criteria.addOrder(Order.asc("givenName"));
-        criteria.addOrder(Order.asc("middleName"));
-        criteria.addOrder(Order.asc("familyName"));
+        criteria.addOrder(Order.asc("name.givenName"));
+        criteria.addOrder(Order.asc("name.middleName"));
+        criteria.addOrder(Order.asc("name.familyName"));
 
         // handle restricting by name if any names have been specified
         if (name != null && name.length() > 0) {
@@ -149,14 +151,20 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
             for (String n : names) {
                 if (n != null && n.length() > 0) {
-                    criteria.add(Restrictions.or(Restrictions.ilike("givenName", n, MatchMode.START), Restrictions.or(Restrictions
-                            .ilike("familyName", n, MatchMode.START), Restrictions.or(Restrictions.ilike("middleName", n,
-                            MatchMode.START), Restrictions.ilike("familyName2", n, MatchMode.START)))));
+                    criteria.add(Restrictions.or(Restrictions.ilike("name.givenName", n, MatchMode.START), Restrictions.or(Restrictions
+                            .ilike("name.familyName", n, MatchMode.START), Restrictions.or(Restrictions.ilike("name.middleName", n,
+                            MatchMode.START), Restrictions.ilike("name.familyName2", n, MatchMode.START)))));
                 }
             }
         }
 
+        // handle querying by address if an address has been specified
+        if (personAddress != null) {
+            addAddressCriteria(criteria, personAddress);
+        }
+
         // we only want distinct people
+        // TODO: duplicate--can I remove one of these?
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (List<Person>) criteria.list();
 
@@ -253,5 +261,44 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     @Override
     public void deleteSupervisionSuggestion(SupervisionSuggestion suggestion) {
         sessionFactory.getCurrentSession().delete(suggestion);
+    }
+
+    private void addAddressCriteria(Criteria criteria, PersonAddress personAddress) {
+        criteria.createAlias("addresses", "address");
+
+        // check all the address fields, and add restrictions if necessary
+        if (personAddress.getAddress1() != null) {
+            criteria.add(Restrictions.ilike("address.address1", personAddress.getAddress1(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getAddress2() != null) {
+            criteria.add(Restrictions.ilike("address.address2", personAddress.getAddress2(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getAddress3() != null) {
+            criteria.add(Restrictions.ilike("address.address3", personAddress.getAddress3(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getAddress4() != null) {
+            criteria.add(Restrictions.ilike("address.address4", personAddress.getAddress4(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getAddress5() != null) {
+            criteria.add(Restrictions.ilike("address.address5", personAddress.getAddress5(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getAddress6() != null) {
+            criteria.add(Restrictions.ilike("address.address6", personAddress.getAddress6(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getCityVillage() != null) {
+            criteria.add(Restrictions.ilike("address.cityVillage", personAddress.getCityVillage(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getCountry() != null) {
+            criteria.add(Restrictions.ilike("address.country", personAddress.getCountry(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getCountyDistrict() != null) {
+            criteria.add(Restrictions.ilike("address.countyDistrict", personAddress.getCountyDistrict(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getStateProvince() != null) {
+            criteria.add(Restrictions.ilike("address.stateProvince", personAddress.getStateProvince(), MatchMode.ANYWHERE));
+        }
+        if (personAddress.getPostalCode() != null) {
+            criteria.add(Restrictions.ilike("address.postalCode", personAddress.getPostalCode(), MatchMode.ANYWHERE));
+        }
     }
 }

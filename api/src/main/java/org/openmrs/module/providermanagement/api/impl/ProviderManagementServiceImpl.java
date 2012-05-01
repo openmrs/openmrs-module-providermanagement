@@ -21,6 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
@@ -224,7 +226,12 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new RuntimeException("include retired must be specified when searching for providers");
         }
 
-        return dao.getProviders(name, identifier, providerRoles, includeRetired);
+        return getProviders(name, identifier, null, null, providerRoles, includeRetired);
+    }
+
+    @Override
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
+        return dao.getProviders(name, identifier, personAddress, personAttribute, providerRoles, includeRetired);
     }
 
     @Override
