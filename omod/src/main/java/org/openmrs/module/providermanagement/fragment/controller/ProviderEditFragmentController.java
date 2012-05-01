@@ -20,6 +20,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -29,6 +30,11 @@ import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.validator.PersonValidator;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProviderEditFragmentController {
 
@@ -64,7 +70,8 @@ public class ProviderEditFragmentController {
     }
 
     public void saveProvider(@RequestParam("personId") @BindParams() Person person,
-                             @RequestParam("provider.identifier") String identifier)
+                             @RequestParam("provider.identifier") String identifier,
+                             @RequestParam("provider.providerRole") ProviderRole providerRole)
             throws PersonIsNotProviderException {
 
         // TODO: add validation via annotation when it works
@@ -76,6 +83,7 @@ public class ProviderEditFragmentController {
 
         // need to manually bind the provider attributes
         provider.setIdentifier(identifier);
+        provider.setProviderRole(providerRole);
 
         // TODO: add provider validation?  should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
         // TODO: think about validation issues here... if we simply trap person validation and it fails, we would still want to be able to roll back provider information

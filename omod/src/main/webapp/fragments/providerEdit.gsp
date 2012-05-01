@@ -11,8 +11,8 @@
 
             <tr>
                 <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
-                <td> ${ ui.includeFragment("widget/selectList", [ field: "provider.providerRole",
-                        value: provider.providerRole.id, options: providerRoles, optionsKeyField: 'name',
+                <td> ${ ui.includeFragment("widget/selectList", [ formFieldName: "provider.providerRole",
+                        selected: [provider.providerRole.id], options: providerRoles, optionsDisplayField: 'name',
                         optionsValueField: 'id'] ) }</td>
             </tr>
         </table>
@@ -35,18 +35,17 @@
 
             <tr>
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
-                <td>${ ui.format(person.birthdate) }</td>
+                <td></td>
             </tr>
 
             <% personAttributeTypes?.each { %>
             <tr>
                 <td><span class="label">${ it.name }:</span></td>
-                <td>${ person.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
-            </tr>
+                 <td><%=  ui.includeFragment("widget/attributeField", [type: "person", attributeType: it, value:person.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '']) %></td>
+             </tr>
             <% } %>
 
             <!-- TODO: assumption here is that there is only one attribute of any type? -->
-            <!-- TODO: change this so that it supports non-text attributes?? -->
             <% provider.providerRole?.providerAttributeTypes?.each { %>
             <tr>
                 <td><span class="label">${ it.name }:</span></td>

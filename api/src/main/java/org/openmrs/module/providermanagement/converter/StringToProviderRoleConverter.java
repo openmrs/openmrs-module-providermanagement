@@ -19,7 +19,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class StringToProviderRoleConverter implements Converter<String, ProviderRole> {
 
     /**

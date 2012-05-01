@@ -29,8 +29,7 @@ import java.util.List;
 
 public class ProviderSearchFragmentController {
 
-    public List<SimpleObject> getProviders(
-            HttpServletRequest request, @RequestParam(value="searchValue", required=true) String searchValue,
+    public List<SimpleObject> getProviders(@RequestParam(value="searchValue", required=true) String searchValue,
                                           @RequestParam(value="providerRoleIds", required=false) Integer[] providerRoleIds,
                                           @RequestParam(value="resultFields", required=false) String[] resultFields,
                                           UiUtils ui) {

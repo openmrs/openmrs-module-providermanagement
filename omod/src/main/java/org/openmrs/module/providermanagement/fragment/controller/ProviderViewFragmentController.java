@@ -40,8 +40,6 @@ public class ProviderViewFragmentController {
         model.addAttribute("person", person);
         model.addAttribute("provider", provider);
 
-        System.out.println("types = " + ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES());
-
         // also add the person attribute types we want to display
         model.addAttribute("personAttributeTypes", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES());
     }
