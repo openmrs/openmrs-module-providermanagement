@@ -32,7 +32,7 @@ import java.util.Map;
 public class ProviderSearchFragmentController {
 
     public List<SimpleObject> getProviders(@RequestParam(value="searchValue", required=true) String searchValue,
-                                          @RequestParam(value="providerRoleIds", required=false) Integer[] providerRoleIds,
+                                          @RequestParam(value="providerRoleIds[]", required=false) Integer[] providerRoleIds,
                                           @RequestParam(value="resultFields[]", required=false) String[] resultFields,
                                           UiUtils ui)
                 throws PersonIsNotProviderException {
@@ -46,28 +46,9 @@ public class ProviderSearchFragmentController {
             resultFields = new String[] {"personName"};
         }
 
-        // separate the person object fields from the provider object fields
-        List<String> personResultFields = new ArrayList<String>();
-        List<String> providerResultFields = new ArrayList<String>();
-
-        for (String resultField : resultFields) {
-            if (resultField.startsWith("provider.")) {
-                StringBuilder builder = new StringBuilder(resultField);
-                builder.delete(0,9); // delete the "provider" prefix
-                providerResultFields.add(builder.toString());
-            }
-            else {
-                personResultFields.add(resultField);
-            }
-        }
-
-        // always want to return the id of the result objects
-        personResultFields.add("id");
-
         // build the list of roles from the request params
         List<ProviderRole> providerRoles = new ArrayList<ProviderRole>();
 
-        // TODO: may need to set providerRoleId back to a String if this doesn't work correctly once binding is fixed
         if (providerRoleIds != null && providerRoleIds.length > 0) {
             for (Integer providerRoleId : providerRoleIds) {
                 providerRoles.add(Context.getService(ProviderManagementService.class).getProviderRole(providerRoleId));
@@ -77,23 +58,8 @@ public class ProviderSearchFragmentController {
         // now fetch the results
         List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles, false);
 
-        List<SimpleObject> simpleProviders;
-
-       // if any provider fields have been requested, we must manually add them to the simpleObject we are returning
-       if (providerResultFields.size() > 0) {
-           simpleProviders = new ArrayList<SimpleObject>();
-           for (Person person : persons) {
-               SimpleObject simpleProvider = SimpleObject.fromObject(person, ui,  personResultFields.toArray(new String[0]));
-               simpleProvider.put("provider", SimpleObject.fromObject(ProviderManagementWebUtil.getProvider(person), ui, providerResultFields.toArray(new String[0])));
-               simpleProviders.add(simpleProvider);
-           }
-       }
-       // otherwise, just create the simpleProviders from the persons object
-       else {
-           simpleProviders = SimpleObject.fromCollection(persons, ui, personResultFields.toArray(new String[0]));
-       }
-
-        return simpleProviders;
+        // convert to a simple object list
+        return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, resultFields);
     }
 
 }

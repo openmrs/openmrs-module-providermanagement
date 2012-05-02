@@ -28,10 +28,9 @@ import java.util.List;
 public class PatientSearchFragmentController {
 
     public List<SimpleObject> getPatients(@RequestParam(value="searchValue", required=true) String searchValue,
-                                          @RequestParam(value="resultFields", required=false) String[] resultFields,
+                                          @RequestParam(value="resultFields[]", required=true) String[] resultFields,
                                            UiUtils ui) {
 
-        // TODO: set resultFields required=true and remove this default once binding problem is fixed
         if (resultFields == null || resultFields.length == 0) {
             resultFields = new String[] {"personName"};
         }
@@ -39,7 +38,7 @@ public class PatientSearchFragmentController {
         // always want to return the id of the result objects
         resultFields = ArrayUtils.add(resultFields, "id");
 
-        // TODO: add searching by identifier
+        // TODO: add searching by patient identifier
 
         // now fetch the results
         List<Patient> patients = Context.getPatientService().getPatients(searchValue, null, null, false);

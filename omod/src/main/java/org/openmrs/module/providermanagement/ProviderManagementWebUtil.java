@@ -17,7 +17,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.Model;
+import org.openmrs.ui.framework.SimpleObject;
+import org.openmrs.ui.framework.UiUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProviderManagementWebUtil {
@@ -88,5 +91,56 @@ public class ProviderManagementWebUtil {
         }
 
         return providers.get(0);
+    }
+
+    /**
+     * Converts a list of persons to a SimpleObject with the specified result fields
+     * The key thing this method handles that the SimpleObject.fromCollection does
+     * not is the ability reference fields of the provider associated with the person
+     *
+     * @param persons
+     * @param resultFields
+     * @param ui
+     * @return
+     * @throws PersonIsNotProviderException
+     */
+    public static List<SimpleObject> convertPersonListToSimpleObjectList(List<Person> persons, UiUtils ui, String [] resultFields)
+            throws PersonIsNotProviderException {
+
+        // separate the person object fields from the provider object fields
+        List<String> personResultFields = new ArrayList<String>();
+        List<String> providerResultFields = new ArrayList<String>();
+
+        for (String resultField : resultFields) {
+            if (resultField.startsWith("provider.")) {
+                StringBuilder builder = new StringBuilder(resultField);
+                builder.delete(0,9); // delete the "provider" prefix
+                providerResultFields.add(builder.toString());
+            }
+            else {
+                personResultFields.add(resultField);
+            }
+        }
+
+        // always want to return the id of the result objects
+        personResultFields.add("id");
+
+        List<SimpleObject> simpleProviders;
+
+        // if any provider fields have been requested, we must manually add them to the simpleObject we are returning
+        if (providerResultFields.size() > 0) {
+            simpleProviders = new ArrayList<SimpleObject>();
+            for (Person person : persons) {
+                SimpleObject simpleProvider = SimpleObject.fromObject(person, ui,  personResultFields.toArray(new String[0]));
+                simpleProvider.put("provider", SimpleObject.fromObject(getProvider(person), ui, providerResultFields.toArray(new String[0])));
+                simpleProviders.add(simpleProvider);
+            }
+        }
+        // otherwise, just create the simpleProviders from the persons object
+        else {
+            simpleProviders = SimpleObject.fromCollection(persons, ui, personResultFields.toArray(new String[0]));
+        }
+
+        return simpleProviders;
     }
 }

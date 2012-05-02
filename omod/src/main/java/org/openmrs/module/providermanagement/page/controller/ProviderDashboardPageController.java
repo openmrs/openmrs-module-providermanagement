@@ -24,6 +24,8 @@ import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.ui.framework.SimpleObject;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -38,7 +40,8 @@ public class ProviderDashboardPageController {
 
     public void controller (PageModel pageModel,
                             @RequestParam(value = "person", required = false) Person personParam,
-                            @RequestParam(value = "personId", required = false) Integer personId)
+                            @RequestParam(value = "personId", required = false) Integer personId,
+                            UiUtils ui)
                 throws PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         ProviderManagementService pmService = Context.getService(ProviderManagementService.class);
@@ -67,12 +70,16 @@ public class ProviderDashboardPageController {
 
        pageModel.addAttribute("patients", patients);
 
-       // TODO: add some sort of check here so to that the supervising box can be hidden for roles that don't allow supervising
+       List<Person> supervisors = pmService.getSupervisorsForProvider(person);
+       pageModel.addAttribute("supervisors", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisors, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0]) ));
 
        List<Person> supervisees = pmService.getSuperviseesForSupervisor(person);
-       pageModel.addAttribute("supervisees", supervisees);
+       pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0]) ));
 
-        // add the global property that specifies the fields to display in the provider search results
+        // add the global properties that specifies the fields to display in the provider and patient field and search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
+        pageModel.addAttribute("providerListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS());
+        pageModel.addAttribute("patientSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS());
+        pageModel.addAttribute("patientListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PATIENT_LIST_DISPLAY_FIELDS());
     }
 }

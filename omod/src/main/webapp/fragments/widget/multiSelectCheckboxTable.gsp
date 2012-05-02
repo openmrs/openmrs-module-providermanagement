@@ -35,7 +35,7 @@
                             <% if (config.selectAction) { %>
                                 <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
                              <% } %>
-                                ${ item[it] }
+                                    ${ item[it] }
                              <% if (config.selectAction) { %>
                                 </a>
                              <% } %>

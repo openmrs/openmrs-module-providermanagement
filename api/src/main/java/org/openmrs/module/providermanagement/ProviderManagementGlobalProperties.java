@@ -52,4 +52,43 @@ public class ProviderManagementGlobalProperties {
         }
         return l;
     }
+
+    public static final List<String> GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS() {
+        String propertyValue = Context.getAdministrationService().getGlobalProperty("providermanagement.providerListDisplayFields");
+        List<String> l = new ArrayList<String>();
+        if (StringUtils.isNotBlank(propertyValue)) {
+            for (String s: propertyValue.split("\\|"))  {
+                if (StringUtils.isNotBlank(s))  {
+                    l.add(s);
+                }
+            }
+        }
+        return l;
+    }
+
+    public static final List<String> GLOBAL_PROPERTY_PATIENT_LIST_DISPLAY_FIELDS() {
+        String propertyValue = Context.getAdministrationService().getGlobalProperty("providermanagement.patientListDisplayFields");
+        List<String> l = new ArrayList<String>();
+        if (StringUtils.isNotBlank(propertyValue)) {
+            for (String s: propertyValue.split("\\|"))  {
+                if (StringUtils.isNotBlank(s))  {
+                    l.add(s);
+                }
+            }
+        }
+        return l;
+    }
+
+    public static final List<String> GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS() {
+        String propertyValue = Context.getAdministrationService().getGlobalProperty("providermanagement.patientSearchDisplayFields");
+        List<String> l = new ArrayList<String>();
+        if (StringUtils.isNotBlank(propertyValue)) {
+            for (String s: propertyValue.split("\\|"))  {
+                if (StringUtils.isNotBlank(s))  {
+                    l.add(s);
+                }
+            }
+        }
+        return l;
+    }
 }
