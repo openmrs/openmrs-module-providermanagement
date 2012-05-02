@@ -17,22 +17,25 @@ package org.openmrs.module.providermanagement.fragment.controller;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ProviderSearchFragmentController {
 
     public List<SimpleObject> getProviders(@RequestParam(value="searchValue", required=true) String searchValue,
                                           @RequestParam(value="providerRoleIds", required=false) Integer[] providerRoleIds,
-                                          @RequestParam(value="resultFields", required=false) String[] resultFields,
-                                          UiUtils ui) {
+                                          @RequestParam(value="resultFields[]", required=false) String[] resultFields,
+                                          UiUtils ui)
+                throws PersonIsNotProviderException {
 
         // NOTE that by default we return an empty list if the searchValue size < 2
         if (searchValue == null || searchValue.length() < 2) {
@@ -43,8 +46,23 @@ public class ProviderSearchFragmentController {
             resultFields = new String[] {"personName"};
         }
 
+        // separate the person object fields from the provider object fields
+        List<String> personResultFields = new ArrayList<String>();
+        List<String> providerResultFields = new ArrayList<String>();
+
+        for (String resultField : resultFields) {
+            if (resultField.startsWith("provider.")) {
+                StringBuilder builder = new StringBuilder(resultField);
+                builder.delete(0,9); // delete the "provider" prefix
+                providerResultFields.add(builder.toString());
+            }
+            else {
+                personResultFields.add(resultField);
+            }
+        }
+
         // always want to return the id of the result objects
-         resultFields = ArrayUtils.add(resultFields, "id");
+        personResultFields.add("id");
 
         // build the list of roles from the request params
         List<ProviderRole> providerRoles = new ArrayList<ProviderRole>();
@@ -56,11 +74,26 @@ public class ProviderSearchFragmentController {
             }
         }
 
-        // TODO: we will have to hack in a way to display provider parameters here?
-
         // now fetch the results
-        List<Person> providers = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles, false);
-        return SimpleObject.fromCollection(providers, ui, resultFields);
+        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles, false);
+
+        List<SimpleObject> simpleProviders;
+
+       // if any provider fields have been requested, we must manually add them to the simpleObject we are returning
+       if (providerResultFields.size() > 0) {
+           simpleProviders = new ArrayList<SimpleObject>();
+           for (Person person : persons) {
+               SimpleObject simpleProvider = SimpleObject.fromObject(person, ui,  personResultFields.toArray(new String[0]));
+               simpleProvider.put("provider", SimpleObject.fromObject(ProviderManagementWebUtil.getProvider(person), ui, providerResultFields.toArray(new String[0])));
+               simpleProviders.add(simpleProvider);
+           }
+       }
+       // otherwise, just create the simpleProviders from the persons object
+       else {
+           simpleProviders = SimpleObject.fromCollection(persons, ui, personResultFields.toArray(new String[0]));
+       }
+
+        return simpleProviders;
     }
 
 }

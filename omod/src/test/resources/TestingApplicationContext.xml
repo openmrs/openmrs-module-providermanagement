@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ The contents of this file are subject to the OpenMRS Public License
-  ~ Version 1.0 (the "License"); you may not use this file except in
-  ~ compliance with the License. You may obtain a copy of the License at
-  ~ http://license.openmrs.org
-  ~
-  ~ Software distributed under the License is distributed on an "AS IS"
-  ~ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-  ~ License for the specific language governing rights and limitations
-  ~ under the License.
-  ~
-  ~ Copyright (C) OpenMRS, LLC.  All Rights Reserved.
-  -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -35,54 +22,5 @@
         <!--  default properties must be set in the hibernate.default.properties -->
     </bean>
 
-
-    <!-- copy the sync module application context here so that it loads -->
-    <bean id="synchronizationInterceptor" class="org.openmrs.module.sync.api.db.hibernate.HibernateSyncInterceptor" primary="true"/>
-
-    <bean id="syncDAO" class="org.openmrs.module.sync.api.db.hibernate.HibernateSyncDAO">
-        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
-    </bean>
-
-    <bean parent="serviceContext">
-        <property name="moduleService">
-            <list>
-                <value>org.openmrs.module.sync.api.SyncService</value> <!-- service interface name -->
-                <bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-                    <property name="transactionManager"><ref bean="transactionManager"/></property>
-                    <property name="target">
-                        <bean class="org.openmrs.module.sync.api.impl.SyncServiceImpl" autowire="byType">
-                            <property name="serializedObjectDao"><ref bean="serializedObjectDAO"/></property>
-                        </bean>
-                    </property>
-                    <property name="preInterceptors">
-                        <ref bean="serviceInterceptors"/>
-                    </property>
-                    <property name="transactionAttributeSource">
-                        <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-                    </property>
-                </bean>
-            </list>
-        </property>
-    </bean>
-
-    <bean parent="serviceContext">
-        <property name="moduleService">
-            <list>
-                <value>org.openmrs.module.sync.api.SyncIngestService</value> <!-- service interface name -->
-                <bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-                    <property name="transactionManager"><ref bean="transactionManager"/></property>
-                    <property name="target">
-                        <bean class="org.openmrs.module.sync.api.impl.SyncIngestServiceImpl" autowire="byType" />
-                    </property>
-                    <property name="preInterceptors">
-                        <ref bean="serviceInterceptors"/>
-                    </property>
-                    <property name="transactionAttributeSource">
-                        <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-                    </property>
-                </bean>
-            </list>
-        </property>
-    </bean>
 
  </beans>
