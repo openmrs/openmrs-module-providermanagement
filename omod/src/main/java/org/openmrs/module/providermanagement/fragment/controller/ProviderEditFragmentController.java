@@ -97,13 +97,11 @@ public class ProviderEditFragmentController {
         Context.getPersonService().savePerson(person);
     }
 
-    public FragmentActionResult addSupervisee(@RequestParam(value = "supervisorId", required = true) Integer supervisorId,
-                                              @RequestParam(value="id", required=true) Integer superviseeId) {
+    public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
+                                              @RequestParam(value = "supervisee", required=true) Person supervisee) {
 
         // TODO: better handle error cases
         try {
-            Person supervisor = Context.getPersonService().getPerson(supervisorId);
-            Person supervisee = Context.getPersonService().getPerson(superviseeId);
             Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
             return new SuccessResult();
         }
@@ -115,10 +113,6 @@ public class ProviderEditFragmentController {
 
     public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                                   @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
-
-        System.out.println("got here!\n\n");
-
-        System.out.println(supervisor + " supervisees = " + supervisees.size());
 
         // TODO: better handle error cases
         try {
@@ -133,16 +127,12 @@ public class ProviderEditFragmentController {
 
     }
 
-    // TODO: change to use binding instead of doing it manually?
-    public FragmentActionResult addPatient(@RequestParam(value = "providerId", required = true) Integer providerId,
-                                           @RequestParam(value = "relationshipTypeId", required = true) Integer relationshipTypeId,
-                                           @RequestParam(value = "id", required = true) Integer patientId) {
+    public FragmentActionResult addPatient(@RequestParam(value = "provider", required = true) Person provider,
+                                           @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
+                                           @RequestParam(value = "patient", required = true) Patient patient) {
 
         // TODO: better handle error cases
         try {
-            Person provider = Context.getPersonService().getPerson(providerId);
-            Patient patient = Context.getPatientService().getPatient(patientId);
-            RelationshipType relationshipType = Context.getPersonService().getRelationshipType(relationshipTypeId);
             Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType);
             return new SuccessResult();
         }

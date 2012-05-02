@@ -60,7 +60,8 @@
                                                         searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
                                                         resultFields: providerSearchDisplayFields,
                                                         selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
-                                                        selectParams: [ [key: 'supervisorId', value: person.id] ] ]) %>
+                                                        selectIdParam: "supervisee",
+                                                        selectParams: [ [key: 'supervisor', value: person.id] ] ]) %>
     </div>
 <% } %>
 
@@ -75,7 +76,8 @@
                 searchAction: ui.actionLink("patientSearch", "getPatients"),
                 resultFields: patientSearchDisplayFields,
                 selectAction: ui.actionLink('providerEdit', 'addPatient'),
-                selectParams: [ [key: 'providerId', value: person.id],
-                        [key: 'relationshipTypeId', value: it.key.id ]] ])  %>
+                selectIdParam: "patient",
+                selectParams: [ [key: 'provider', value: person.id],
+                        [key: 'relationshipType', value: it.key.id ]] ])  %>
     <% } %>
 </div>
