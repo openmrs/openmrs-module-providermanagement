@@ -57,11 +57,11 @@
     <div id="addSupervisee">
         <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
                                                         searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                                        searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
+                                                        searchParams: [ providerRoleIds: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
                                                         resultFields: providerSearchDisplayFields,
                                                         selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
                                                         selectIdParam: "supervisee",
-                                                        selectParams: [ [key: 'supervisor', value: person.id] ] ]) %>
+                                                        selectParams: [ supervisor: person.id ]  ]) %>
     </div>
 <% } %>
 
@@ -81,6 +81,6 @@
                 resultFields: patientSearchDisplayFields,
                 selectAction: ui.actionLink('providerEdit', 'addPatient'),
                 selectIdParam: "patient",
-                selectParams: [ [key: 'provider', value: person.id], [key: 'relationshipType', value: it.key.id ]] ])  %>
+                selectParams: [ provider: person.id, relationshipType: it.key.id ] ])  %>
     <% } %>
 </div>
