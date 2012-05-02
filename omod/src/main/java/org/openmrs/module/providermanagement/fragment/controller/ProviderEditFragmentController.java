@@ -140,4 +140,25 @@ public class ProviderEditFragmentController {
             throw new RuntimeException(e);
         }
     }
+
+    public FragmentActionResult removePatients(@RequestParam(value = "provider", required = true) Person provider,
+                                                @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
+                                                @RequestParam(value = "patients", required = true) List<Patient> patients) {
+
+        System.out.println("provider = " + provider);
+        System.out.println("relationshipType = " + relationshipType);
+        System.out.println("patients = " + patients.size());
+
+        // TODO: better handle error cases
+        try {
+            for (Patient patient : patients) {
+                Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+

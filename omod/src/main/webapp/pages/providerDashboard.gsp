@@ -66,10 +66,14 @@
 <% } %>
 
 <div id="patients">
+    <!-- note that is cycling through the relationship type to patient map, not literally "patients" -->
     <% patients?.each { %>
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
                 title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
                 columns: patientListDisplayFields,
+                actionButtons: [[label: ui.message("general.remove"), type: "submit"]],
+                formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id ]),
+                formFieldName: "patients",
                 actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
 
         <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
@@ -77,7 +81,6 @@
                 resultFields: patientSearchDisplayFields,
                 selectAction: ui.actionLink('providerEdit', 'addPatient'),
                 selectIdParam: "patient",
-                selectParams: [ [key: 'provider', value: person.id],
-                        [key: 'relationshipType', value: it.key.id ]] ])  %>
+                selectParams: [ [key: 'provider', value: person.id], [key: 'relationshipType', value: it.key.id ]] ])  %>
     <% } %>
 </div>
