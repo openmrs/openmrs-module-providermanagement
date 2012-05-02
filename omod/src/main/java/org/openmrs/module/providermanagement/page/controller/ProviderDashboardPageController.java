@@ -55,26 +55,26 @@ public class ProviderDashboardPageController {
         pageModel.addAttribute("provider", provider);
 
         // add the patients of this provider, grouped by relationship type
-        Map<RelationshipType, List<Patient>> patients = new HashMap<RelationshipType,List<Patient>>();
+        Map<RelationshipType, List<Patient>> patientMap = new HashMap<RelationshipType,List<Patient>>();
         if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
             for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
                 if (!relationshipType.isRetired()) {
-                    patients.put(relationshipType, new ArrayList<Patient>());
+                    patientMap.put(relationshipType, new ArrayList<Patient>());
 
                     for (Patient patient : pmService.getPatientsOfProvider(person, relationshipType)) {
-                        patients.get(relationshipType).add(patient);
+                        patientMap.get(relationshipType).add(patient);
                     }
                 }
             }
         }
 
-       pageModel.addAttribute("patients", patients);
+       pageModel.addAttribute("patientMap", patientMap);
 
        List<Person> supervisors = pmService.getSupervisorsForProvider(person);
        pageModel.addAttribute("supervisors", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisors, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0]) ));
 
        List<Person> supervisees = pmService.getSuperviseesForSupervisor(person);
-       pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0]) ));
+       pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0])));
 
         // add the global properties that specifies the fields to display in the provider and patient field and search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());

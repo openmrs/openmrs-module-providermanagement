@@ -66,8 +66,8 @@
 <% } %>
 
 <div id="patients">
-    <!-- note that is cycling through the relationship type to patient map, not literally "patients" -->
-    <% patients?.each { %>
+    <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
+    <% patientMap?.each { %>
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
                 title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
                 columns: patientListDisplayFields,
