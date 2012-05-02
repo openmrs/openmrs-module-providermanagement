@@ -14,8 +14,10 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
@@ -27,6 +29,8 @@ import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.annotation.Validate;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.validator.PersonValidator;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -91,5 +95,38 @@ public class ProviderEditFragmentController {
         // save the provider and the person (may not need to save person, because it cascades?)
         Context.getProviderService().saveProvider(provider);
         Context.getPersonService().savePerson(person);
+    }
+
+    public FragmentActionResult addSupervisee(@RequestParam(value = "superviserId", required = true) Integer supervisorId,
+                                              @RequestParam(value="id", required=true) Integer superviseeId) {
+
+        // TODO: better handle error cases
+        try {
+            Person supervisor = Context.getPersonService().getPerson(supervisorId);
+            Person supervisee = Context.getPersonService().getPerson(superviseeId);
+            Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public FragmentActionResult addPatient(@RequestParam(value = "providerId", required = true) Integer providerId,
+                                           @RequestParam(value = "relationshipTypeId", required = true) Integer relationshipTypeId,
+                                           @RequestParam(value = "id", required = true) Integer patientId) {
+
+        // TODO: better handle error cases
+        try {
+            Person provider = Context.getPersonService().getPerson(providerId);
+            Patient patient = Context.getPatientService().getPatient(patientId);
+            RelationshipType relationshipType = Context.getPersonService().getRelationshipType(relationshipTypeId);
+            Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

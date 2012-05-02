@@ -57,7 +57,7 @@
                                                         searchAction: ui.actionLink("providerSearch", "getProviders"),
                                                         searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
                                                         resultFields: providerSearchDisplayFields,
-                                                        selectAction: ui.actionLink('providerUpdate', 'addSupervisee'),
+                                                        selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
                                                         selectParams: [ [key: 'superviserId', value: person.id] ] ]) %>
     </div>
 <% } %>
@@ -72,7 +72,7 @@
         <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
                 searchAction: ui.actionLink("patientSearch", "getPatients"),
                 resultFields: patientSearchDisplayFields,
-                selectAction: ui.actionLink('providerUpdate', 'addPatient'),
+                selectAction: ui.actionLink('providerEdit', 'addPatient'),
                 selectParams: [ [key: 'providerId', value: person.id],
                         [key: 'relationshipTypeId', value: it.key.id ]] ])  %>
     <% } %>
