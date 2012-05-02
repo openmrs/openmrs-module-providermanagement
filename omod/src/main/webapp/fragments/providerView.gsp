@@ -62,7 +62,7 @@
         <table class="providerActionButtons">
             <tr>
                 <td colspan="2">
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons])}
+                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
                 </td>
             </tr>
         </table>

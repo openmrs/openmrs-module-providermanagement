@@ -48,7 +48,9 @@
                                                                     columns: providerListDisplayFields,
                                                                     selectAction: ui.pageLink('providerDashboard'),
                                                                     selectIdParam: "personId",
-                                                                    actionButtons: [[label: ui.message("general.remove")]] ]) %>
+                                                                    formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
+                                                                    formFieldName: "supervisees",
+                                                                    actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
 
     </div>
 
@@ -58,7 +60,7 @@
                                                         searchParams: [ [key: "providerRoleIds", value: provider.providerRole?.superviseeProviderRoles.collect { it.id } ]],
                                                         resultFields: providerSearchDisplayFields,
                                                         selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
-                                                        selectParams: [ [key: 'superviserId', value: person.id] ] ]) %>
+                                                        selectParams: [ [key: 'supervisorId', value: person.id] ] ]) %>
     </div>
 <% } %>
 
@@ -67,7 +69,7 @@
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
                 title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
                 columns: patientListDisplayFields,
-                actionButtons: [[label: ui.message("general.remove")]] ]) %>
+                actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
 
         <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
                 searchAction: ui.actionLink("patientSearch", "getPatients"),

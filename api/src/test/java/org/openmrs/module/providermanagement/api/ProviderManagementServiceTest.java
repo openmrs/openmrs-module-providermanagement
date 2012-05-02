@@ -1721,13 +1721,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null);
         List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null);
 
-        // on the current date, both patients should be assigned to both patients
-        Assert.assertEquals(2, oldProviderPatients.size());
-        Assert.assertEquals(2, newProviderPatients.size());
-
-        // but, on some future date, the patients should no longer be associated with the old provider
-        oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null, FUTURE_DATE);
-        newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, FUTURE_DATE);
+        // on the current date, both patients should now be assigned to the new provider, but not the old provider
         Assert.assertEquals(0, oldProviderPatients.size());
         Assert.assertEquals(2, newProviderPatients.size());
 

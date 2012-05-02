@@ -710,7 +710,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         // get the specified relationships for the provider
         List<Relationship> relationships =
-                Context.getPersonService().getRelationships(provider, null, relationshipType, ProviderManagementUtils.clearTimeComponent(date));
+                Context.getPersonService().getRelationships(provider, null, relationshipType, date);
 
         // if a relationship type was not specified, we need to filter this list to only contain provider relationships
         if (relationshipType == null) {
@@ -764,7 +764,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
         
         // fetch the relationships
-        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, ProviderManagementUtils.clearTimeComponent(date));
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
 
         // if a relationship type was not specified, we need to filter this list to only contain provider relationships
         if (relationshipType == null) {
@@ -1066,7 +1066,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider + " is not a provider");
         }
 
-        return Context.getPersonService().getRelationships(null, provider, getSupervisorRelationshipType(),ProviderManagementUtils.clearTimeComponent(new Date()));
+        return Context.getPersonService().getRelationships(null, provider, getSupervisorRelationshipType(),new Date());
     }
 
     @Override
@@ -1118,7 +1118,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(supervisor + " is not a provider");
         }
 
-        return Context.getPersonService().getRelationships(supervisor, null, getSupervisorRelationshipType(),ProviderManagementUtils.clearTimeComponent(new Date()));
+        return Context.getPersonService().getRelationships(supervisor, null, getSupervisorRelationshipType(),new Date());
     }
 
     @Override

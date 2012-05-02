@@ -97,7 +97,7 @@ public class ProviderEditFragmentController {
         Context.getPersonService().savePerson(person);
     }
 
-    public FragmentActionResult addSupervisee(@RequestParam(value = "superviserId", required = true) Integer supervisorId,
+    public FragmentActionResult addSupervisee(@RequestParam(value = "supervisorId", required = true) Integer supervisorId,
                                               @RequestParam(value="id", required=true) Integer superviseeId) {
 
         // TODO: better handle error cases
@@ -113,6 +113,27 @@ public class ProviderEditFragmentController {
 
     }
 
+    public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
+                                                  @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
+
+        System.out.println("got here!\n\n");
+
+        System.out.println(supervisor + " supervisees = " + supervisees.size());
+
+        // TODO: better handle error cases
+        try {
+            for (Person supervisee : supervisees) {
+                Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(supervisee, supervisor);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    // TODO: change to use binding instead of doing it manually?
     public FragmentActionResult addPatient(@RequestParam(value = "providerId", required = true) Integer providerId,
                                            @RequestParam(value = "relationshipTypeId", required = true) Integer relationshipTypeId,
                                            @RequestParam(value = "id", required = true) Integer patientId) {

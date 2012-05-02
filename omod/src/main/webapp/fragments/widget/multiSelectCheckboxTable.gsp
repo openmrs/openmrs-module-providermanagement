@@ -20,41 +20,48 @@
 
 
 <div class="content multiSelectCheckboxTable">
-    <table id="multiSelectCheckboxTable_${ id }">
-        <thead>
-            <tr>
-                <th colspan="${ config.columns.size + 1 }">${ config.title }</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            <% config.items?.each { item -> %>
+    
+    <% if (config.formAction) { %>
+        <form method="post" action="${ config.formAction }" >
+    <% } %>
+    
+        <table id="multiSelectCheckboxTable_${ id }">
+            <thead>
                 <tr>
-                     <% config.columns.each { %>
-                        <td>
-                            <% if (config.selectAction) { %>
-                                <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
-                             <% } %>
-                                    ${ item[it] }
-                             <% if (config.selectAction) { %>
-                                </a>
-                             <% } %>
-                        </td>
-                     <% } %>
-                    <td class="checkboxCell"><input type="checkbox" value="${ item.id }"/></td>
+                    <th colspan="${ config.columns.size + 1 }">${ config.title }</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% config.items?.each { item -> %>
+                    <tr>
+                         <% config.columns.each { %>
+                            <td>
+                                <% if (config.selectAction) { %>
+                                    <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
+                                 <% } %>
+                                        ${ item[it] }
+                                 <% if (config.selectAction) { %>
+                                    </a>
+                                 <% } %>
+                            </td>
+                         <% } %>
+                        <td class="checkboxCell"><input name="${config.formFieldName ?: ''}" type="checkbox" value="${ item.id }"/></td>
+                    </tr>
+                <% } %>
+            </tbody>
+
+            <% if (config.actionButtons) { %>
+                <tr class="multiSelectActionButtons">
+                    <td colspan="${ config.columns.size + 1 }">
+                        ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
+                    </td>
                 </tr>
             <% } %>
-        </tbody>
+        </table>
 
-        <% if (config.actionButtons) { %>
-            <tr class="multiSelectActionButtons">
-                <td colspan="${ config.columns.size + 1 }">
-                    <% config.actionButtons.each { %>
-                    <a href="${ it.link }"><button>${ it.label }</button></a>
-                    <% } %>
-                </td>
-            </tr>
-        <% } %>
-    </table>
+    <% if (config.formAction) { %>
+        </form>
+     <% } %>
 </div>
 

@@ -79,8 +79,6 @@ public class GlobalPropertyUpdaterFragmentController {
             updatedValue = StringUtils.join(value.split("\\s+"),"|");
         }
 
-        System.out.println("updated value = " + updatedValue);
-
         property.setPropertyValue(updatedValue);
         Context.getAdministrationService().saveGlobalProperty(property);
     }
