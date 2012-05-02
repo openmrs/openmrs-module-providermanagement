@@ -40,7 +40,16 @@
                                 <% if (config.selectAction) { %>
                                     <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
                                  <% } %>
-                                        ${ item[it] }
+
+                                  <%
+                                    // allows for displaying nested fields
+                                    def display = item
+                                     it.split("\\.").each { field ->
+                                         display = display[field]
+                                     }
+                                     print display
+                                  %>
+
                                  <% if (config.selectAction) { %>
                                     </a>
                                  <% } %>
