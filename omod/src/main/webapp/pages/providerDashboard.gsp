@@ -57,7 +57,7 @@
     <div id="addSupervisee">
         <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
                                                         searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                                        searchParams: [ providerRoleIds: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
+                                                        searchParams: [ providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
                                                         resultFields: providerSearchDisplayFields,
                                                         selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
                                                         selectIdParam: "supervisee",

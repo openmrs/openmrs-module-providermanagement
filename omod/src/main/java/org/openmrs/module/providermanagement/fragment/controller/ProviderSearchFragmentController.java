@@ -26,13 +26,14 @@ import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class ProviderSearchFragmentController {
 
     public List<SimpleObject> getProviders(@RequestParam(value="searchValue", required=true) String searchValue,
-                                          @RequestParam(value="providerRoleIds[]", required=false) Integer[] providerRoleIds,
+                                          @RequestParam(value="providerRoles[]", required=false) ProviderRole[] providerRoles,
                                           @RequestParam(value="resultFields[]", required=false) String[] resultFields,
                                           UiUtils ui)
                 throws PersonIsNotProviderException {
@@ -46,17 +47,8 @@ public class ProviderSearchFragmentController {
             resultFields = new String[] {"personName"};
         }
 
-        // build the list of roles from the request params
-        List<ProviderRole> providerRoles = new ArrayList<ProviderRole>();
-
-        if (providerRoleIds != null && providerRoleIds.length > 0) {
-            for (Integer providerRoleId : providerRoleIds) {
-                providerRoles.add(Context.getService(ProviderManagementService.class).getProviderRole(providerRoleId));
-            }
-        }
-
         // now fetch the results
-        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles, false);
+        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles != null ? Arrays.asList(providerRoles) : null, false);
 
         // convert to a simple object list
         return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, resultFields);
