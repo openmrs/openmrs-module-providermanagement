@@ -17,8 +17,11 @@ package org.openmrs.module.providermanagement.fragment.controller;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,8 +31,11 @@ import java.util.List;
 public class PatientSearchFragmentController {
 
     public List<SimpleObject> getPatients(@RequestParam(value="searchValue", required=true) String searchValue,
+                                          @RequestParam(value="excludePatientsOf", required=false) Person excludePatientsOf,
+                                          @RequestParam(value="existingRelationshipTypeToExclude", required=false) RelationshipType existingRelationshipTypeToExclude,
                                           @RequestParam(value="resultFields[]", required=true) String[] resultFields,
-                                           UiUtils ui) {
+                                           UiUtils ui)
+               throws PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         if (resultFields == null || resultFields.length == 0) {
             resultFields = new String[] {"personName"};
@@ -42,6 +48,13 @@ public class PatientSearchFragmentController {
 
         // now fetch the results
         List<Patient> patients = Context.getPatientService().getPatients(searchValue, null, null, false);
+
+        // exclude any patients if specified
+        if (excludePatientsOf != null && existingRelationshipTypeToExclude != null) {
+            List<Patient> patientsToExclude = Context.getService(ProviderManagementService.class).getPatientsOfProvider(excludePatientsOf, existingRelationshipTypeToExclude);
+            patients.removeAll(patientsToExclude);
+        }
+
         return SimpleObject.fromCollection(patients, ui, resultFields);
     }
 

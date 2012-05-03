@@ -33,6 +33,7 @@ import java.util.Map;
 public class ProviderSearchFragmentController {
 
     public List<SimpleObject> getProviders(@RequestParam(value="searchValue", required=true) String searchValue,
+                                          @RequestParam(value="excludeSuperviseesOf", required=false) Person excludeSuperviseesOf,
                                           @RequestParam(value="providerRoles[]", required=false) ProviderRole[] providerRoles,
                                           @RequestParam(value="resultFields[]", required=false) String[] resultFields,
                                           UiUtils ui)
@@ -49,6 +50,12 @@ public class ProviderSearchFragmentController {
 
         // now fetch the results
         List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles != null ? Arrays.asList(providerRoles) : null, false);
+
+        // exclude supervisees of a provider if needed
+        if (excludeSuperviseesOf != null) {
+            List<Person> supervisees = Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(excludeSuperviseesOf);
+            persons.removeAll(supervisees);
+        }
 
         // convert to a simple object list
         return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, resultFields);

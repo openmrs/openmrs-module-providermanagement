@@ -50,7 +50,7 @@ public class ProviderSearchFragmentControllerTest extends BaseModuleContextSensi
         ProviderSearchFragmentController controller = new ProviderSearchFragmentController();
         String [] resultFields = new String[] {"gender", "personName.givenName", "personAddress.cityVillage"};
 
-        List<SimpleObject> results = controller.getProviders("2a7", null, resultFields, ui);
+        List<SimpleObject> results = controller.getProviders("2a7", null, null, resultFields, ui);
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("F", results.get(0).get("gender"));
         Assert.assertEquals("Collet", ((Map<String,Object>) results.get(0).get("personName")).get("givenName"));
@@ -62,7 +62,7 @@ public class ProviderSearchFragmentControllerTest extends BaseModuleContextSensi
         ProviderSearchFragmentController controller = new ProviderSearchFragmentController();
         String [] resultFields = new String[] {"provider.identifier", "provider.providerRole"};
 
-        List<SimpleObject> results = controller.getProviders("2a7", null, resultFields, ui);
+        List<SimpleObject> results = controller.getProviders("2a7", null, null, resultFields, ui);
         Assert.assertEquals("2a7", ((Map<String,Object>) results.get(0).get("provider")).get("identifier"));
         Assert.assertEquals("Binome", ((Map<String,Object>) results.get(0).get("provider")).get("providerRole"));
     }

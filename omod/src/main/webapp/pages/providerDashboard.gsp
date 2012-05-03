@@ -57,7 +57,7 @@
     <div id="addSupervisee">
         <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
                                                         searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                                        searchParams: [ providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
+                                                        searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
                                                         resultFields: providerSearchDisplayFields,
                                                         selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
                                                         selectIdParam: "supervisee",
@@ -78,6 +78,7 @@
 
         <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
                 searchAction: ui.actionLink("patientSearch", "getPatients"),
+                searchParams: [excludePatientsOf: person.id, existingRelationshipTypeToExclude: it.key.id ],
                 resultFields: patientSearchDisplayFields,
                 selectAction: ui.actionLink('providerEdit', 'addPatient'),
                 selectIdParam: "patient",
