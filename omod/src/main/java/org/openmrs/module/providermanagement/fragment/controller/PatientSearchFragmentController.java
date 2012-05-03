@@ -44,10 +44,8 @@ public class PatientSearchFragmentController {
         // always want to return the id of the result objects
         resultFields = ArrayUtils.add(resultFields, "id");
 
-        // TODO: add searching by patient identifier
-
         // now fetch the results
-        List<Patient> patients = Context.getPatientService().getPatients(searchValue, null, null, false);
+        List<Patient> patients = Context.getPatientService().getPatients(searchValue);
 
         // exclude any patients if specified
         if (excludePatientsOf != null && existingRelationshipTypeToExclude != null) {
