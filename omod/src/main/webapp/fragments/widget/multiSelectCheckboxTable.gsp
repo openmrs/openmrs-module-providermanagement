@@ -55,7 +55,13 @@
                                  <% } %>
                             </td>
                          <% } %>
-                        <td class="checkboxCell"><input name="${config.formFieldName ?: ''}" type="checkbox" value="${ item.id }"/></td>
+                        <td class="checkboxCell">
+                            <% if (config.formFieldName) { %>
+                                <input name="${config.formFieldName}" type="checkbox" value="${ item.id }"/>
+                            <% } else { %>
+                                 &nbsp;
+                            <% } %>
+                        </td>
                     </tr>
                 <% } %>
             </tbody>
