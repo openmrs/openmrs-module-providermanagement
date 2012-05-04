@@ -14,9 +14,12 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
@@ -37,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +77,8 @@ public class ProviderEditFragmentController {
 
     }
 
+    // TODO: need an init method here to properly initialize person address, person attributes, person name person object, etc...
+
     public void saveProvider(@RequestParam("personId") @BindParams() Person person,
                              @RequestParam("provider.identifier") String identifier,
                              @RequestParam("provider.providerRole") ProviderRole providerRole)
@@ -91,6 +97,13 @@ public class ProviderEditFragmentController {
 
         // TODO: add provider validation?  should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
         // TODO: think about validation issues here... if we simply trap person validation and it fails, we would still want to be able to roll back provider information
+
+        // need to manually remove and person attributes that have no value
+        for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
+            if (person.getAttribute(attributeType) != null  && StringUtils.isBlank(person.getAttribute(attributeType).getValue())) {
+                person.removeAttribute(person.getAttribute(attributeType));
+            }
+        }
 
         // save the provider and the person (may not need to save person, because it cascades?)
         Context.getProviderService().saveProvider(provider);

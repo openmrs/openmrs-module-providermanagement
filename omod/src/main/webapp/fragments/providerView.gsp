@@ -36,7 +36,7 @@
         <% personAttributeTypes?.each { %>
         <tr>
             <td><span class="label">${ it.name }:</span></td>
-            <td>${ person.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
+            <td>${ ui.format(person.attributes.find{ attribute -> attribute.attributeType == it }?.hydratedObject ?: '') }</td>
         </tr>
         <% } %>
 

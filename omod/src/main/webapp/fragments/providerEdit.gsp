@@ -33,15 +33,23 @@
                     <input name="gender" type="radio" value="F" ${ person.gender == 'F' ? 'checked' : '' }> ${ ui.message("Person.gender.female") }</td>
             </tr>
 
+
+            <!-- TODO: add widget that allows specifying birthdate via age? -->
             <tr>
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
-                <td></td>
+                <td>${ ui.includeFragment("widget/field", [ class: java.util.Date,
+                        formFieldName: "birthdate",
+                        initialValue: person.birthdate ]) }</td>
             </tr>
 
             <% personAttributeTypes?.each { %>
             <tr>
                 <td><span class="label">${ it.name }:</span></td>
-                 <td><%=  ui.includeFragment("widget/attributeField", [type: "person", attributeType: it, value:person.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '']) %></td>
+                <td>
+                    ${ ui.includeFragment("widget/field", [ class: it.format, includeEmptyOption: true,
+                        formFieldName: "attributeMap[" + it.name + "].value",
+                        initialValue: person.attributes.find{ attribute -> attribute.attributeType == it }?.hydratedObject ?: null] ) }
+                </td>
              </tr>
             <% } %>
 
