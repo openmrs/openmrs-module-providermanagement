@@ -82,4 +82,10 @@
     <!-- a voided relationship -->
     <relationship relationship_id="1001" person_a="6" relationship="1001" person_b="8" creator="1" date_created="2008-08-18 11:50:15.0" voided="true" uuid="c18717dd-5d78-4a0e-84fc-ef62c5f0676a"/>
 
+    <!-- add some additional person attributes to test person attribute searching -->
+    <person_attribute person_attribute_id="1001" person_id="6" value="test" person_attribute_type_id="1001" creator="1" date_created="2008-08-18 11:44:02.0" voided="false" uuid="6d9a58c3-61bd-493b-9287-27c624128712"/>
+    <person_attribute person_attribute_id="1003" person_id="8" value="test" person_attribute_type_id="1001" creator="1" date_created="2008-08-18 11:56:42.0" voided="false" uuid="09a7a35e-4fca-43bc-b0e1-9e05d8c68f99"/>
+    <person_attribute_type person_attribute_type_id="1001" name="Attribute type 1" description="test" format="java.lang.String" searchable="true" creator="1" date_created="2007-05-04 09:59:23.0" retired="false" uuid="b3b7d540-a32e-44c7-91b3-292d97667518" sort_weight="1"/>
+
+
 </dataset>

@@ -230,7 +230,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
         return dao.getProviders(name, identifier, personAddress, personAttribute, providerRoles, includeRetired);
     }
 

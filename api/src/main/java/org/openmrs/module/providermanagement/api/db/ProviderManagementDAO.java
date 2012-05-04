@@ -97,11 +97,13 @@ public interface ProviderManagementDAO {
      *
      * @param name name to search on
      * @param identifier provider identifier
+     * @param personAddress address to search on
+     * @param personAttribute person attribute to search
      * @param providerRoles restrict results to providers with at least one of these roles
      * @param includeRetired whether or not to include retired providers
      * @return result list of providers
      */
-    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Gets all providers associated with the current person

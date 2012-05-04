@@ -21,6 +21,8 @@ import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.Relationship;
@@ -2681,6 +2683,29 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
+    public void getProviders_shouldGetByPersonAttribute() throws Exception {
+        PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1001);
+        PersonAttribute attribute = new PersonAttribute(personAttributeType,"test");
+
+        List<Person> providers = providerManagementService.getProviders(null, null, null, attribute, null, false);
+
+        Assert.assertEquals(2, providers.size());
+        Assert.assertEquals(new Integer(8), providers.get(0).getId());
+        Assert.assertEquals(new Integer(6), providers.get(1).getId());
+    }
+
+    @Test
+    public void getProviders_shouldIntersectNameAndAttributeSearch() throws Exception {
+        PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1001);
+        PersonAttribute attribute = new PersonAttribute(personAttributeType,"test");;
+
+        // searches for a valid person name, but not the person with the above attribute
+        List<Person> providers = providerManagementService.getProviders("jimmy", null, null, attribute, null, false);
+
+        Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
     public void getProvidersQuery_shouldReturnNullIfNoQuery() throws Exception {
         List<Person> providers = providerManagementService.getProviders(null, null, false);
         Assert.assertTrue(providers == null || providers.size() == 0);
@@ -2694,5 +2719,6 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(new Integer(2), providers.get(1).getId());
         Assert.assertEquals(new Integer(9), providers.get(2).getId());
     }
+
 }
 

@@ -8,8 +8,8 @@
   		    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<!-- Add here beans related to the web context -->
+    <context:component-scan base-package="org.openmrs.module.providermanagement.web.controller" />
 
-	 
 	<!-- Annotation based controllers -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 
@@ -21,6 +21,19 @@
     <!-- add type converter for ProviderRole -->
     <bean class="org.openmrs.module.providermanagement.converter.StringToProviderRoleConverter"/>
 
-	<context:component-scan base-package="org.openmrs.module.providermanagement.web.controller" />
+    <!-- URL Mapping -->
+    <!-- override the PersonRelationshipsPortletController defined in core -->
+    <bean id="providerManagementUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="order"><value>50</value></property>
+        <property name="mappings">
+            <props>
+                <prop key="**/personRelationships.portlet">customPersonRelationshipsPortletController</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--  Controllers -->
+    <bean id="customPersonRelationshipsPortletController" class="org.openmrs.module.providermanagement.controller.CustomPersonRelationshipsPortletController"> </bean>
+
 
 </beans>

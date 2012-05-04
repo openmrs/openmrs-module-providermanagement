@@ -84,7 +84,13 @@
         </description>
     </globalProperty>
 
-	<!-- Internationalization -->
+    <!--  Extension Points -->
+     <extension>
+         <point>org.openmrs.patientDashboard.overviewBox</point>
+         <class>org.openmrs.module.providermanagement.extension.html.PatientDashboardOverviewExt</class>
+     </extension>
+
+    <!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->
 	<messages>
 		<lang>en</lang>

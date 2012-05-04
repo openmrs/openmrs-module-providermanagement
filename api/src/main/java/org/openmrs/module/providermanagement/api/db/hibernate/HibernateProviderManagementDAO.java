@@ -104,7 +104,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
 
         // first, create the provider criteria
          Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
@@ -146,16 +146,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
         // handle restricting by name if any names have been specified
         if (name != null && name.length() > 0) {
-            name = name.replace(", ", " ");
-            String[] names = name.split("\\s+");
-
-            for (String n : names) {
-                if (n != null && n.length() > 0) {
-                    criteria.add(Restrictions.or(Restrictions.ilike("name.givenName", n, MatchMode.START), Restrictions.or(Restrictions
-                            .ilike("name.familyName", n, MatchMode.START), Restrictions.or(Restrictions.ilike("name.middleName", n,
-                            MatchMode.START), Restrictions.ilike("name.familyName2", n, MatchMode.START)))));
-                }
-            }
+            addNameCrieteria(criteria, name);
         }
 
         // handle querying by address if an address has been specified
@@ -163,9 +154,14 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
             addAddressCriteria(criteria, personAddress);
         }
 
-        // we only want distinct people
-        // TODO: duplicate--can I remove one of these?
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        // handle querying by person attribute if an attribute has been specified
+        // TODO: create functionality to allow searching against multiple attributes (see Hibernate ticket https://hibernate.onjira.com/browse/HHH-879 for why this will take a little work)
+        if (personAttribute != null) {
+            criteria.createAlias("attributes", "attribute");
+            criteria.add(Restrictions.and(Restrictions.eq("attribute.attributeType", personAttribute.getAttributeType()),
+                    Restrictions.ilike("attribute.value", personAttribute.getValue(), MatchMode.EXACT)));
+        }
+
         return (List<Person>) criteria.list();
 
     }
@@ -261,6 +257,19 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     @Override
     public void deleteSupervisionSuggestion(SupervisionSuggestion suggestion) {
         sessionFactory.getCurrentSession().delete(suggestion);
+    }
+
+    private void addNameCrieteria(Criteria criteria, String name) {
+        name = name.replace(", ", " ");
+        String[] names = name.split("\\s+");
+
+        for (String n : names) {
+            if (n != null && n.length() > 0) {
+                criteria.add(Restrictions.or(Restrictions.ilike("name.givenName", n, MatchMode.START), Restrictions.or(Restrictions
+                        .ilike("name.familyName", n, MatchMode.START), Restrictions.or(Restrictions.ilike("name.middleName", n,
+                        MatchMode.START), Restrictions.ilike("name.familyName2", n, MatchMode.START)))));
+            }
+        }
     }
 
     private void addAddressCriteria(Criteria criteria, PersonAddress personAddress) {

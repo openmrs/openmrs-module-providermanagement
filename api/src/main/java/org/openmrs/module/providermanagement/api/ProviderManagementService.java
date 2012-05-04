@@ -174,12 +174,12 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param name name to search on (does an ilike 'name%' search against name fields)
      * @param identifier provider identifier (does an ilike 'identifier%' search)
      * @param personAddress address to match on (does an ilike 'addressField%' search against each field that is not null)
-     * @param personAttribute person attributes to match on
+     * @param personAttribute person attribute to match on
      * @param providerRoles restrict results to providers with at least one of these roles
      * @param includeRetired whether or not to include retired providers
      * @return result list of providers
      */
-     public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, List<PersonAttribute> personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
+     public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Returns the provider roles associated with the specified provider
