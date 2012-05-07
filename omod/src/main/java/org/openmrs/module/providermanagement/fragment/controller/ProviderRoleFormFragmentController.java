@@ -51,7 +51,7 @@ public class ProviderRoleFormFragmentController {
         model.addAttribute("providerRoles", providerRoles);
 
         // add possible provider attributes
-        List<ProviderAttributeType> providerAttributeTypes = Context.getProviderService().getAllProviderAttributeTypes(false);
+        List<ProviderAttributeType> providerAttributeTypes = Context.getProviderService().getAllProviderAttributeTypes(true);
         model.addAttribute("providerAttributeTypes", providerAttributeTypes);
     }
 

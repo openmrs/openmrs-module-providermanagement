@@ -12,6 +12,8 @@
             <th>&nbsp;</th>
         </tr>
 
+        <!-- TODO: add strikethrough formatting if a person attribute is retired? -->
+
         <% providerRoles.each { %>
         <tr>
             <td>${ it.name }</td>

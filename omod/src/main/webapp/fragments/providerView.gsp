@@ -41,12 +41,12 @@
         <% } %>
 
         <!-- display provider attribute types: assumption is only one attribute per provider per type -->
-        <% provider.providerRole?.providerAttributeTypes?.each { %>
+        <% provider.providerRole?.providerAttributeTypes?.each {  if (!it.retired) {%>
         <tr>
             <td><span class="label">${ it.name }:</span></td>
             <td>${ provider.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
         </tr>
-        <% } %>
+        <% } } %>
 
         <tr>
             <th colspan="2">${ ui.message("Person.address") }</th>

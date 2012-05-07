@@ -20,6 +20,8 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.ProviderAttribute;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
@@ -30,21 +32,52 @@ import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
-import org.openmrs.ui.framework.annotation.Validate;
+import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.ui.framework.page.PageModel;
-import org.openmrs.validator.PersonValidator;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class ProviderEditFragmentController {
+
+    // simple command object for provider
+    public class ProviderCommand {
+
+        private String identifier;
+
+        private ProviderRole providerRole;
+
+        private Map<String, String> attributeMap = new HashMap<String, String>();
+
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        public void setIdentifier(String identifier) {
+            this.identifier = identifier;
+        }
+
+        public ProviderRole getProviderRole() {
+            return providerRole;
+        }
+
+        public void setProviderRole(ProviderRole providerRole) {
+            this.providerRole = providerRole;
+        }
+
+        public Map<String, String> getAttributeMap() {
+            return attributeMap;
+        }
+
+        public void setAttributeMap(Map<String, String> attributeMap) {
+            this.attributeMap = attributeMap;
+        }
+    }
 
     public void controller(PageModel sharedPageModel, FragmentModel model,
                            @FragmentParam(value = "person", required = false) Person personParam,
@@ -77,28 +110,83 @@ public class ProviderEditFragmentController {
 
     }
 
-    // TODO: need an init method here to properly initialize person address, person attributes, person name person object, etc...
 
-    public void saveProvider(@RequestParam("personId") @BindParams() Person person,
-                             @RequestParam("provider.identifier") String identifier,
-                             @RequestParam("provider.providerRole") ProviderRole providerRole)
-            throws PersonIsNotProviderException {
+    /**
+     * Initializes a person object for binding by adding empty person attributes as needed
+     */
+    public Person initializePerson(@RequestParam("personId") Person person) {
+
+        for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
+            if (person.getAttribute(attributeType) == null) {
+                PersonAttribute attr = new PersonAttribute(attributeType, null);
+                attr.setPerson(person);
+                // we have to do this manually, don't use person.addAttribute(), because that method ignores null attributes
+                person.getAttributes().add(attr);
+            }
+        }
+
+        return person;
+    }
+
+    public ProviderCommand initializeProviderCommand()  {
+        return new ProviderCommand();
+    }
+
+    // TODO: unit test this!
+
+    public void saveProvider(@MethodParam("initializePerson") @BindParams() Person person,
+                             @MethodParam("initializeProviderCommand") @BindParams("provider") ProviderCommand providerCommand)
+                    throws PersonIsNotProviderException {
 
         // TODO: add validation via annotation when it works
+        // TODO: should automatically redisplay edit fragment when validation fails (how to do this?)
 
         // fetch the provider associated with this person
         Provider provider = ProviderManagementWebUtil.getProvider(person);
 
-        // TODO: could potentially create a custom personId to provider converter and then could bind directly here, using a @BindParams("provider") and namespacing all the provider fields with "provider"
-
         // need to manually bind the provider attributes
-        provider.setIdentifier(identifier);
-        provider.setProviderRole(providerRole);
+        provider.setIdentifier(providerCommand.getIdentifier());
+        provider.setProviderRole(providerCommand.getProviderRole());
+
+        // manually bind the provider attributes
+        // TODO: double-check that this is working correctly
+        // TODO: this currently only works for string attributes
+        // TODO: do we need to make this work for integers since households are numbers?
+        // TODO: note that when provider attributes are updated they are voided, but person attributes are overwritten?
+        if (providerCommand.attributeMap != null) {
+            for (Map.Entry entry : providerCommand.attributeMap.entrySet()) {
+
+                if (StringUtils.isNotBlank(entry.getValue().toString())) {
+                    ProviderAttributeType type = Context.getProviderService().getProviderAttributeType(Integer.valueOf(entry.getKey().toString()));
+
+                    // NOTE: note that this currently allows only one active attribute of each type--and retires any others
+                    boolean foundMatch = false;
+                    for (ProviderAttribute attr : provider.getActiveAttributes(type)) {
+                        if (attr.getValueReference().equals(entry.getValue())) {
+                            foundMatch = true;
+                        }
+                        else {
+                            attr.setVoided(true);
+                            attr.setVoidReason("voided during provider management module provider update");
+                        }
+                    }
+
+                    // sets the attribute if no existing match found
+                    if (!foundMatch) {
+                        ProviderAttribute attr = new ProviderAttribute();
+                        attr.setAttributeType(type);
+                        attr.setValueReferenceInternal(entry.getValue().toString());   // TODO: only works with string attributes
+                        provider.addAttribute(attr);
+                    }
+                }
+            }
+        }
+
 
         // TODO: add provider validation?  should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
         // TODO: think about validation issues here... if we simply trap person validation and it fails, we would still want to be able to roll back provider information
 
-        // need to manually remove and person attributes that have no value
+        // need to manually remove any person attributes that have no value
         for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
             if (person.getAttribute(attributeType) != null  && StringUtils.isBlank(person.getAttribute(attributeType).getValue())) {
                 person.removeAttribute(person.getAttribute(attributeType));
@@ -157,10 +245,6 @@ public class ProviderEditFragmentController {
     public FragmentActionResult removePatients(@RequestParam(value = "provider", required = true) Person provider,
                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
                                                 @RequestParam(value = "patients", required = true) List<Patient> patients) {
-
-        System.out.println("provider = " + provider);
-        System.out.println("relationshipType = " + relationshipType);
-        System.out.println("patients = " + patients.size());
 
         // TODO: better handle error cases
         try {

@@ -46,20 +46,25 @@
             <tr>
                 <td><span class="label">${ it.name }:</span></td>
                 <td>
-                    ${ ui.includeFragment("widget/field", [ class: it.format, includeEmptyOption: true,
+                    ${ ui.includeFragment("widget/field", [ class: it.format,
                         formFieldName: "attributeMap[" + it.name + "].value",
                         initialValue: person.attributes.find{ attribute -> attribute.attributeType == it }?.hydratedObject ?: null] ) }
                 </td>
              </tr>
             <% } %>
 
-            <!-- TODO: assumption here is that there is only one attribute of any type? -->
-            <% provider.providerRole?.providerAttributeTypes?.each { %>
+            <!-- TODO: NOTE THAT, FOR NOW, THIS ONLY ALLOWS ONE ATTRIBUTE OF EACH TYPE -->
+            <!-- TODO: NOTE THAT RIGHT NOW THIS ONLY WORKS FOR STRINGS! -->
+            <% provider.providerRole?.providerAttributeTypes?.each { if (!it.retired) { %>
             <tr>
                 <td><span class="label">${ it.name }:</span></td>
-                <td>${ provider.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: '' }</td>
+                <td>
+                    ${ ui.includeFragment("widget/field", [ class: "java.lang.String",
+                            formFieldName: "provider.attributeMap['" + it.id + "']",
+                            initialValue: provider.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: null ] ) }
+                </td>
             </tr>
-            <% } %>
+            <% } } %>
 
             <tr>
                 <th colspan="2">${ ui.message("Person.address") }</th>

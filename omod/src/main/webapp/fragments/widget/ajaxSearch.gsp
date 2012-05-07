@@ -4,7 +4,6 @@
     def selectIdParam = config.selectIdParam ?: 'id' %>
 
 <!-- TODO: will need to tweak this so that it doesn't reload on every keystroke? -->
-<!-- TODO: add support for searching by identifier -->
 
 <script>
     jq(function() {
