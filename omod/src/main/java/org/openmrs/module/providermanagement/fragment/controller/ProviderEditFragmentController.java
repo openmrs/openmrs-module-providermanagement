@@ -20,6 +20,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.RelationshipType;
@@ -81,21 +82,19 @@ public class ProviderEditFragmentController {
 
     public void controller(PageModel sharedPageModel, FragmentModel model,
                            @FragmentParam(value = "person", required = false) Person personParam,
-                           @FragmentParam(value = "personId", required = false) Integer personId)
-            throws PersonIsNotProviderException {
+                           @FragmentParam(value = "personId", required = false) Integer personId) {
 
-        // TODO: fix this so that it does't need to fetch the provider?
-
-        // utility methods fetch the person and provider, throwing exceptions if needed
+        // fetch the person and provider
         Person person = ProviderManagementWebUtil.getPerson(sharedPageModel, personParam, personId);
-        Provider provider = ProviderManagementWebUtil.getProvider(person);
+        Provider provider = null;
 
-        // TODO: this is a bit of a hack
-        // TODO: should I remove this person address field if not used?
-        // make sure the provider has an address (so we can bind to it)
-        if (person.getPersonAddress() == null) {
-            person.addAddress(new PersonAddress());
-            Context.getPersonService().savePerson(person);
+        if (person != null) {
+            try {
+                provider = ProviderManagementWebUtil.getProvider(person);
+            }
+            catch (PersonIsNotProviderException e) {
+                // we are allowed to have persons who are not providers when in the "add" mode
+            }
         }
 
         // add the person and the provider to the module
@@ -114,7 +113,19 @@ public class ProviderEditFragmentController {
     /**
      * Initializes a person object for binding by adding empty person attributes as needed
      */
-    public Person initializePerson(@RequestParam("personId") Person person) {
+    public Person initializePerson(@RequestParam(value = "personId", required = false) Person person) {
+
+        if (person == null) {
+            person = new Person();
+        }
+
+        if (person.getPersonName() == null) {
+            person.addName(new PersonName());
+        }
+
+        if (person.getPersonAddress() == null) {
+            person.addAddress(new PersonAddress());
+        }
 
         for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
             if (person.getAttribute(attributeType) == null) {
@@ -135,14 +146,27 @@ public class ProviderEditFragmentController {
     // TODO: unit test this!
 
     public void saveProvider(@MethodParam("initializePerson") @BindParams() Person person,
-                             @MethodParam("initializeProviderCommand") @BindParams("provider") ProviderCommand providerCommand)
-                    throws PersonIsNotProviderException {
+                             @MethodParam("initializeProviderCommand") @BindParams("provider") ProviderCommand providerCommand) {
 
         // TODO: add validation via annotation when it works
         // TODO: should automatically redisplay edit fragment when validation fails (how to do this?)
 
         // fetch the provider associated with this person
-        Provider provider = ProviderManagementWebUtil.getProvider(person);
+        Provider provider;
+
+        if (person.getId() != null) {     // make sure this isn't transient person we have just created
+            try {
+                provider = ProviderManagementWebUtil.getProvider(person);
+            }
+            catch (PersonIsNotProviderException e) {
+                // we will get here if we are upgrading an existing person to a provider
+                provider = new Provider();
+            }
+        }
+        else {
+            // we will get here if the creating an entirely new person from scratch
+            provider = new Provider();
+        }
 
         // need to manually bind the provider attributes
         provider.setIdentifier(providerCommand.getIdentifier());
@@ -186,6 +210,8 @@ public class ProviderEditFragmentController {
         // TODO: add provider validation?  should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
         // TODO: think about validation issues here... if we simply trap person validation and it fails, we would still want to be able to roll back provider information
 
+        // TODO: should we remove the person address field if it is not used?
+
         // need to manually remove any person attributes that have no value
         for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
             if (person.getAttribute(attributeType) != null  && StringUtils.isBlank(person.getAttribute(attributeType).getValue())) {
@@ -193,9 +219,12 @@ public class ProviderEditFragmentController {
             }
         }
 
-        // save the provider and the person (may not need to save person, because it cascades?)
-        Context.getProviderService().saveProvider(provider);
+        // save the person and the provider
         Context.getPersonService().savePerson(person);
+
+        // if this is new person & provider, we may not set have set the person on the provider
+        provider.setPerson(person);
+        Context.getProviderService().saveProvider(provider);
     }
 
     public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,

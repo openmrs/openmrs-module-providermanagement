@@ -14,15 +14,20 @@
 
 package org.openmrs.module.providermanagement.page.controller;
 
-import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
+import org.openmrs.Person;
+import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
+import org.springframework.web.bind.annotation.RequestParam;
 
-public class ProviderHomePageController {
+public class ProviderCreatePageController {
 
-    public void controller(PageModel pageModel) {
-        // add the global properties that specify the fields to display in the provider and person search results
-        pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
-        pageModel.addAttribute("personSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_SEARCH_DISPLAY_FIELDS());
+    public void controller (PageModel pageModel,
+                            @RequestParam(value = "person", required = false) Person personParam,
+                            @RequestParam(value = "personId", required = false) Integer personId,
+                            UiUtils ui) {
 
+        Person person = ProviderManagementWebUtil.getPerson(personParam, personId);
+        pageModel.addAttribute("person", person);
     }
 }

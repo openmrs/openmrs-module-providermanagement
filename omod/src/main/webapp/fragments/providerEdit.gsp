@@ -3,16 +3,16 @@
 <div class="content providerEdit">
 
 
-    ${ ui.startForm("saveProvider", [personId: person.id]) }
+    ${ ui.startForm("saveProvider", [personId: person?.id]) }
         <table class="providerHeader">
 
             <!-- include the name fragment -->
-            ${ ui.includeFragment("personName", [personName: person.personName, mode: 'edit']) }
+            ${ ui.includeFragment("personName", [personName: person?.personName, mode: 'edit']) }
 
             <tr>
                 <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
                 <td> ${ ui.includeFragment("widget/selectList", [ formFieldName: "provider.providerRole",
-                        selected: [provider.providerRole.id], options: providerRoles, optionsDisplayField: 'name',
+                        selected: [provider?.providerRole?.id], options: providerRoles, optionsDisplayField: 'name',
                         optionsValueField: 'id'] ) }</td>
             </tr>
         </table>
@@ -24,13 +24,13 @@
 
             <tr>
                 <td><span class="label">${ ui.message("providermanagement.identifier") }:</span></td>
-                <td><input type="text" id="provider.identifier" name="provider.identifier" size="20" value="${ provider.identifier ?: ''}"/></td>
+                <td><input type="text" id="provider.identifier" name="provider.identifier" size="20" value="${ provider?.identifier ?: ''}"/></td>
             </tr>
 
             <tr>
                 <td><span class="label">${ ui.message("Person.gender") }:</span></td>
-                <td><input name="gender" type="radio" value="M" ${ person.gender == 'M' ? 'checked' : '' }> ${ ui.message("Person.gender.male") }
-                    <input name="gender" type="radio" value="F" ${ person.gender == 'F' ? 'checked' : '' }> ${ ui.message("Person.gender.female") }</td>
+                <td><input name="gender" type="radio" value="M" ${ person?.gender == 'M' ? 'checked' : '' }> ${ ui.message("Person.gender.male") }
+                    <input name="gender" type="radio" value="F" ${ person?.gender == 'F' ? 'checked' : '' }> ${ ui.message("Person.gender.female") }</td>
             </tr>
 
 
@@ -39,7 +39,7 @@
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
                 <td>${ ui.includeFragment("widget/field", [ class: java.util.Date,
                         formFieldName: "birthdate",
-                        initialValue: person.birthdate ]) }</td>
+                        initialValue: person?.birthdate ]) }</td>
             </tr>
 
             <% personAttributeTypes?.each { %>
@@ -48,20 +48,20 @@
                 <td>
                     ${ ui.includeFragment("widget/field", [ class: it.format,
                         formFieldName: "attributeMap[" + it.name + "].value",
-                        initialValue: person.attributes.find{ attribute -> attribute.attributeType == it }?.hydratedObject ?: null] ) }
+                        initialValue: person?.attributes.find{ attribute -> attribute.attributeType == it }?.hydratedObject ?: null] ) }
                 </td>
              </tr>
             <% } %>
 
             <!-- TODO: NOTE THAT, FOR NOW, THIS ONLY ALLOWS ONE ATTRIBUTE OF EACH TYPE -->
             <!-- TODO: NOTE THAT RIGHT NOW THIS ONLY WORKS FOR STRINGS! -->
-            <% provider.providerRole?.providerAttributeTypes?.each { if (!it.retired) { %>
+            <% provider?.providerRole?.providerAttributeTypes?.each { if (!it.retired) { %>
             <tr>
                 <td><span class="label">${ it.name }:</span></td>
                 <td>
                     ${ ui.includeFragment("widget/field", [ class: "java.lang.String",
                             formFieldName: "provider.attributeMap['" + it.id + "']",
-                            initialValue: provider.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: null ] ) }
+                            initialValue: provider?.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: null ] ) }
                 </td>
             </tr>
             <% } } %>
@@ -71,7 +71,7 @@
             </tr>
 
             <!-- include the address fragment -->
-            ${ ui.includeFragment("personAddress", [personAddress: person.personAddress, mode: 'edit']) }
+            ${ ui.includeFragment("personAddress", [personAddress: person?.personAddress, mode: 'edit']) }
 
         </table>
 

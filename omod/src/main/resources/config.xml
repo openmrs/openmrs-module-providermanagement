@@ -84,6 +84,22 @@
         </description>
     </globalProperty>
 
+    <globalProperty>
+        <property>providermanagement.patientSearchDisplayFields</property>
+        <defaultValue>personName</defaultValue>
+        <description>
+            Fields to display in the patient search box; specified as a pipe-delimited list of patient fields
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>providermanagement.personSearchDisplayFields</property>
+        <defaultValue>personName</defaultValue>
+        <description>
+            Fields to display in the person searches; specified as a pipe-delimited list of person fields
+        </description>
+    </globalProperty>
+
     <!--  Extension Points -->
      <extension>
          <point>org.openmrs.patientDashboard.overviewBox</point>

@@ -54,11 +54,6 @@ public class ProviderManagementWebUtil {
         person = (personParam != null) ? personParam : person;
         person = (personId != null) ? Context.getPersonService().getPerson(personId) : person;
 
-        // if we still haven't managed to find a person, throw an error
-        if (person == null) {
-            throw new RuntimeException("No valid person passed to provider view fragment");
-        }
-
         return person;
     }
 

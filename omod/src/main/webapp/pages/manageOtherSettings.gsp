@@ -33,6 +33,12 @@
         <td>${ ui.includeFragment("globalPropertyUpdater", [propertyName: "providermanagement.patientSearchDisplayFields", type: "text"] ) }
         </td>
     </tr>
+
+    <tr>
+        <td>${ ui.message("providermanagement.setPersonSearchDisplayFields")}</td>
+        <td>${ ui.includeFragment("globalPropertyUpdater", [propertyName: "providermanagement.personSearchDisplayFields", type: "text"] ) }
+        </td>
+    </tr>
 </table>
 
 

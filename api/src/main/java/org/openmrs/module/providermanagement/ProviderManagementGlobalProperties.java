@@ -91,4 +91,17 @@ public class ProviderManagementGlobalProperties {
         }
         return l;
     }
+
+    public static final List<String> GLOBAL_PROPERTY_PERSON_SEARCH_DISPLAY_FIELDS() {
+        String propertyValue = Context.getAdministrationService().getGlobalProperty("providermanagement.personSearchDisplayFields");
+        List<String> l = new ArrayList<String>();
+        if (StringUtils.isNotBlank(propertyValue)) {
+            for (String s: propertyValue.split("\\|"))  {
+                if (StringUtils.isNotBlank(s))  {
+                    l.add(s);
+                }
+            }
+        }
+        return l;
+    }
 }
