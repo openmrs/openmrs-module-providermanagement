@@ -39,6 +39,15 @@
         <td>${ ui.includeFragment("globalPropertyUpdater", [propertyName: "providermanagement.personSearchDisplayFields", type: "text"] ) }
         </td>
     </tr>
+
+    <tr>
+        <td>${ ui.message("providermanagement.setAdvancedSearchPersonAttributeType")}</td>
+        <td>${ ui.includeFragment("globalPropertyUpdater", [propertyName: "providermanagement.advancedSearchPersonAttributeType", type: "selectList",
+                options: context.getPersonService().getAllPersonAttributeTypes(false),
+                optionsKey: "name", optionsValue: "uuid", multiple: false] ) }
+        </td>
+    </tr>
+
 </table>
 
 

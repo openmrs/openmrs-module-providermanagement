@@ -104,4 +104,15 @@ public class ProviderManagementGlobalProperties {
         }
         return l;
     }
+
+    public static final PersonAttributeType GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE() {
+        String propertyValue = Context.getAdministrationService().getGlobalProperty("providermanagement.advancedSearchPersonAttributeType");
+
+        if (StringUtils.isNotBlank(propertyValue)) {
+            return Context.getPersonService().getPersonAttributeTypeByUuid(propertyValue);
+        }
+        else {
+            return null;
+        }
+    }
 }

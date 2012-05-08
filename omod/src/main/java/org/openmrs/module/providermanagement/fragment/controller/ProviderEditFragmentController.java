@@ -148,6 +148,7 @@ public class ProviderEditFragmentController {
     public void saveProvider(@MethodParam("initializePerson") @BindParams() Person person,
                              @MethodParam("initializeProviderCommand") @BindParams("provider") ProviderCommand providerCommand) {
 
+        // TODO: also needs to hold state on validation failures
         // TODO: add validation via annotation when it works
         // TODO: should automatically redisplay edit fragment when validation fails (how to do this?)
 

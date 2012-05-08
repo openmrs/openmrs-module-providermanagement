@@ -2,7 +2,6 @@
 
 <div class="content providerEdit">
 
-
     ${ ui.startForm("saveProvider", [personId: person?.id]) }
         <table class="providerHeader">
 
