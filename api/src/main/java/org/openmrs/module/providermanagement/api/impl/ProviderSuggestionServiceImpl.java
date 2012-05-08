@@ -35,6 +35,7 @@ import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionTyp
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -140,7 +141,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersByRelationshipType(relationshipType));
 
         // finally, remove any providers that are already assigned to this patient
-        suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getProvidersForPatient(patient, relationshipType));
+        suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getProvidersForPatient(patient, relationshipType, new Date()));
 
         return new ArrayList<Person>(suggestedProviders);
     }
@@ -270,10 +271,10 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
         // finally, remove any providers that this provider is already supervising or being supervised by
         if (type.equals(SupervisionSuggestionType.SUPERVISEE_SUGGESTION)) {
-            suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(provider));
+            suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(provider,new Date()));
         }
         else {
-            suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSupervisorsForProvider(provider));
+            suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getSupervisorsForProvider(provider, new Date()));
         }
 
         // return the result set

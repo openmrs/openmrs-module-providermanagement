@@ -703,11 +703,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
-        // use current date if no date specified
-        if (date == null) {
-            date = new Date();
-        }
-
         // get the specified relationships for the provider
         List<Relationship> relationships =
                 Context.getPersonService().getRelationships(provider, null, relationshipType, date);
@@ -738,7 +733,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional(readOnly = true)
     public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {
-        return getPatientsOfProvider(provider, relationshipType, new Date());
+        return getPatientsOfProvider(provider, relationshipType, null);
     }
 
     @Override
@@ -757,12 +752,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
             throw new InvalidRelationshipTypeException(relationshipType + " is not a patient/provider relationship");
         }
-        
-        // default to today's date if no date specified
-        if (date == null) {
-            date = new Date();
-        }
-        
+
         // fetch the relationships
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
 
@@ -778,7 +768,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional(readOnly = true)
     public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {
-        return getProviderRelationshipsForPatient(patient, provider, relationshipType, new Date());
+        return getProviderRelationshipsForPatient(patient, provider, relationshipType, null);
     }
 
     @Override
@@ -816,7 +806,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional(readOnly = true)
     public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException {
-        return getProvidersForPatient(patient, relationshipType, new Date());
+        return getProvidersForPatient(patient, relationshipType, null);
     }
 
     @Override
@@ -850,7 +840,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
         
        // first get all the patients of the source provider
-       List<Patient> patients = getPatientsOfProvider(sourceProvider, relationshipType);
+       List<Patient> patients = getPatientsOfProvider(sourceProvider, relationshipType, new Date());
 
        // assign these patients to the new provider, unassign them from the old provider
         for (Patient patient : patients) {
@@ -1066,14 +1056,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider + " is not a provider");
         }
 
-        return Context.getPersonService().getRelationships(null, provider, getSupervisorRelationshipType(),new Date());
+        return Context.getPersonService().getRelationships(null, provider, getSupervisorRelationshipType(), date);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Relationship> getSupervisorRelationshipsForProvider(Person provider)
             throws PersonIsNotProviderException{
-        return getSupervisorRelationshipsForProvider(provider, new Date());
+        return getSupervisorRelationshipsForProvider(provider, null);
     }
 
     @Override
@@ -1102,7 +1092,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional(readOnly = true)
     public List<Person> getSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException {
-        return getSupervisorsForProvider(provider, new Date());
+        return getSupervisorsForProvider(provider, null);
     }
 
     @Override
@@ -1118,14 +1108,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(supervisor + " is not a provider");
         }
 
-        return Context.getPersonService().getRelationships(supervisor, null, getSupervisorRelationshipType(),new Date());
+        return Context.getPersonService().getRelationships(supervisor, null, getSupervisorRelationshipType(), date);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor)
             throws PersonIsNotProviderException {
-        return getSuperviseeRelationshipsForSupervisor(supervisor, new Date());
+        return getSuperviseeRelationshipsForSupervisor(supervisor, null);
     }
 
     @Override
@@ -1154,7 +1144,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional(readOnly = true)
     public List<Person> getSuperviseesForSupervisor(Person supervisor)
             throws PersonIsNotProviderException {
-        return getSuperviseesForSupervisor(supervisor, new Date());
+        return getSuperviseesForSupervisor(supervisor, null);
     }
 
     /**

@@ -26,6 +26,7 @@ import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
 import java.util.List;
 
 public class PatientSearchFragmentController {
@@ -49,7 +50,7 @@ public class PatientSearchFragmentController {
 
         // exclude any patients if specified
         if (excludePatientsOf != null && existingRelationshipTypeToExclude != null) {
-            List<Patient> patientsToExclude = Context.getService(ProviderManagementService.class).getPatientsOfProvider(excludePatientsOf, existingRelationshipTypeToExclude);
+            List<Patient> patientsToExclude = Context.getService(ProviderManagementService.class).getPatientsOfProvider(excludePatientsOf, existingRelationshipTypeToExclude, new Date());
             patients.removeAll(patientsToExclude);
         }
 

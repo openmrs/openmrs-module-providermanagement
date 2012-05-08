@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class ProviderSearchFragmentController {
 
         // exclude supervisees of a provider if needed
         if (excludeSuperviseesOf != null) {
-            List<Person> supervisees = Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(excludeSuperviseesOf);
+            List<Person> supervisees = Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(excludeSuperviseesOf, new Date());
             persons.removeAll(supervisees);
         }
 

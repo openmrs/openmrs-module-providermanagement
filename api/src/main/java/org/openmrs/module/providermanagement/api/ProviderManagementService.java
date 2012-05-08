@@ -428,11 +428,11 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
-     * Gets all patients that are patients of the specified provider with the specified relationship type on the current date
+     * Gets all patients that are patients (current and historical) of the specified provider with the specified relationship type
      *
      * @param provider
      * @param relationshipType limits returned patients to those related to the provider by a specific relationship type (if null, returns all patients linked by any provider relationships)
-     * @return list of patients associated with the specified provider via the specified relationship type, on the specified date
+     * @return list of patients associated with the specified provider via the specified relationship type
      * @should ignore voided patients
      * @should fail if provider is null
      * @should fail if relationship type is null
@@ -460,7 +460,7 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
-     * Returns all the provider relationships associated with the given patient on the current date
+     * Returns all the provider relationships (current and historical) associated with the given patient
      *
      * @param patient
      * @param provider limits returned relationships to those with the specified provider (if null, returns relationships with all providers)
@@ -487,11 +487,11 @@ public interface ProviderManagementService extends OpenmrsService {
             throws InvalidRelationshipTypeException;
 
     /**
-     * Returns all providers associated with the given patient on the specified date
+     * Returns all providers (current and historical) associated with the given patient
      *
      * @param patient
      * @param relationshipType limits returned providers to those linked by a specific type (if null, returns all providers)
-     * @return all providers associated with the given patient non the current date
+     * @return all providers associated with the given patient
      * @throws InvalidRelationshipTypeException
      */
     
@@ -647,10 +647,10 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException;
 
     /**
-     * Returns all the relationships this provider has with supervisors on the current date
+     * Returns all the relationships (current and historical) this provider has with supervisors
      *
      * @param provider
-     * @return all the relationships this provider has with supervisors on the current date
+     * @return all the relationships this provider has with supervisors
      * @throws PersonIsNotProviderException
      * @should fail if provider is null
      * @should fail if provider is not a provider
@@ -673,10 +673,10 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException;
 
     /**
-     * Returns all the providers that that given provider supervises on the current date
+     * Returns all the providers (current and historical) that that given provider supervises
      *
      * @param provider
-     * @return all the providers that that given provider supervises on the current date
+     * @return all the providers that that given provider supervises
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
@@ -699,10 +699,10 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException;
 
     /**
-     * Returns all the relationships this supervisor has with supervisees on the current date
+     * Returns all the relationships (current and historical) this supervisor has with supervisees
      *
      * @param supervisor
-     * @return all the relationships this supervisor has with supervisees on the cuirrent date
+     * @return all the relationships this supervisor has with supervisees
      * @throws PersonIsNotProviderException
      * @should fail if provider is null
      * @should fail if provider is not a provider
@@ -726,10 +726,10 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException;
 
     /**
-     * Returns all the persons this supervisor supervises on the current date
+     * Returns all the persons (current and historical) this supervisor supervises
      *
      * @param supervisor
-     * @return all the persons this supervisor supervises on the current date
+     * @return all the persons this supervisor supervises
      * @throws PersonIsNotProviderException
      * @should fail if provider is null
      * @should fail if provider is not a provider

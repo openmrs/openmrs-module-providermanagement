@@ -30,6 +30,7 @@ import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class ProviderDashboardPageController {
                 if (!relationshipType.isRetired()) {
                     patientMap.put(relationshipType, new ArrayList<Patient>());
 
-                    for (Patient patient : pmService.getPatientsOfProvider(person, relationshipType)) {
+                    for (Patient patient : pmService.getPatientsOfProvider(person, relationshipType, new Date())) {
                         patientMap.get(relationshipType).add(patient);
                     }
                 }
@@ -70,10 +71,10 @@ public class ProviderDashboardPageController {
 
        pageModel.addAttribute("patientMap", patientMap);
 
-       List<Person> supervisors = pmService.getSupervisorsForProvider(person);
+       List<Person> supervisors = pmService.getSupervisorsForProvider(person, new Date());
        pageModel.addAttribute("supervisors", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisors, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0]) ));
 
-       List<Person> supervisees = pmService.getSuperviseesForSupervisor(person);
+       List<Person> supervisees = pmService.getSuperviseesForSupervisor(person, new Date());
        pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0])));
 
         // add the global properties that specifies the fields to display in the provider and patient field and search results
