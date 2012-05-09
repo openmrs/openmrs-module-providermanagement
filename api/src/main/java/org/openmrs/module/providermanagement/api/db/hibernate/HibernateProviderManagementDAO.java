@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.providermanagement.api.db.hibernate;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -156,7 +157,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
         // handle querying by person attribute if an attribute has been specified
         // TODO: create functionality to allow searching against multiple attributes (see Hibernate ticket https://hibernate.onjira.com/browse/HHH-879 for why this will take a little work)
-        if (personAttribute != null) {
+        if (personAttribute != null && StringUtils.isNotBlank(personAttribute.getValue())) {
             criteria.createAlias("attributes", "attribute");
             criteria.add(Restrictions.and(Restrictions.eq("attribute.attributeType", personAttribute.getAttributeType()),
                     Restrictions.ilike("attribute.value", personAttribute.getValue(), MatchMode.EXACT)));
@@ -273,41 +274,47 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     private void addAddressCriteria(Criteria criteria, PersonAddress personAddress) {
-        criteria.createAlias("addresses", "address");
 
-        // check all the address fields, and add restrictions if necessary
-        if (personAddress.getAddress1() != null) {
-            criteria.add(Restrictions.ilike("address.address1", personAddress.getAddress1(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getAddress2() != null) {
-            criteria.add(Restrictions.ilike("address.address2", personAddress.getAddress2(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getAddress3() != null) {
-            criteria.add(Restrictions.ilike("address.address3", personAddress.getAddress3(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getAddress4() != null) {
-            criteria.add(Restrictions.ilike("address.address4", personAddress.getAddress4(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getAddress5() != null) {
-            criteria.add(Restrictions.ilike("address.address5", personAddress.getAddress5(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getAddress6() != null) {
-            criteria.add(Restrictions.ilike("address.address6", personAddress.getAddress6(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getCityVillage() != null) {
-            criteria.add(Restrictions.ilike("address.cityVillage", personAddress.getCityVillage(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getCountry() != null) {
-            criteria.add(Restrictions.ilike("address.country", personAddress.getCountry(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getCountyDistrict() != null) {
-            criteria.add(Restrictions.ilike("address.countyDistrict", personAddress.getCountyDistrict(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getStateProvince() != null) {
-            criteria.add(Restrictions.ilike("address.stateProvince", personAddress.getStateProvince(), MatchMode.ANYWHERE));
-        }
-        if (personAddress.getPostalCode() != null) {
-            criteria.add(Restrictions.ilike("address.postalCode", personAddress.getPostalCode(), MatchMode.ANYWHERE));
+        // some persons may not have an associated address at all; therefore if the personAddress variable is empty
+        // we need to make sure we don't even create the join
+        if (!personAddress.isBlank()) {
+
+            criteria.createAlias("addresses", "address");
+
+            // check all the address fields, and add restrictions if necessary
+            if (StringUtils.isNotBlank(personAddress.getAddress1())) {
+                criteria.add(Restrictions.ilike("address.address1", personAddress.getAddress1(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress2())) {
+                criteria.add(Restrictions.ilike("address.address2", personAddress.getAddress2(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress3())) {
+                criteria.add(Restrictions.ilike("address.address3", personAddress.getAddress3(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress4())) {
+                criteria.add(Restrictions.ilike("address.address4", personAddress.getAddress4(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress5())) {
+                criteria.add(Restrictions.ilike("address.address5", personAddress.getAddress5(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress6())) {
+                criteria.add(Restrictions.ilike("address.address6", personAddress.getAddress6(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getCityVillage())) {
+                criteria.add(Restrictions.ilike("address.cityVillage", personAddress.getCityVillage(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getCountry())) {
+                criteria.add(Restrictions.ilike("address.country", personAddress.getCountry(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getCountyDistrict())) {
+                criteria.add(Restrictions.ilike("address.countyDistrict", personAddress.getCountyDistrict(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getStateProvince())) {
+                criteria.add(Restrictions.ilike("address.stateProvince", personAddress.getStateProvince(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getPostalCode())) {
+                criteria.add(Restrictions.ilike("address.postalCode", personAddress.getPostalCode(), MatchMode.ANYWHERE));
+            }
         }
     }
 }

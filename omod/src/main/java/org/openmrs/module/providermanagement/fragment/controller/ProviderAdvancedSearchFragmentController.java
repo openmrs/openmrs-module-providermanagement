@@ -14,18 +14,31 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
+import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.ui.framework.SimpleObject;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class ProviderAdvancedSearchFragmentController {
 
@@ -40,6 +53,8 @@ public class ProviderAdvancedSearchFragmentController {
         private ProviderRole providerRole;
 
         private PersonAttribute attribute = new PersonAttribute();
+
+        private String [] resultFields;
 
         public String getName() {
             return name;
@@ -80,6 +95,14 @@ public class ProviderAdvancedSearchFragmentController {
         public void setProviderRole(ProviderRole providerRole) {
             this.providerRole = providerRole;
         }
+
+        public String[] getResultFields() {
+            return resultFields;
+        }
+
+        public void setResultFields(String[] resultFields) {
+            this.resultFields = resultFields;
+        }
     }
 
 
@@ -93,8 +116,23 @@ public class ProviderAdvancedSearchFragmentController {
         return command;
     }
 
-    public FragmentActionResult getProviders(@MethodParam("initializeCommand") @BindParams() AdvancedSearchCommand command) {
-        return new SuccessResult();
+    public List<SimpleObject> getProviders(@MethodParam("initializeCommand") @BindParams() AdvancedSearchCommand command,
+                                             UiUtils ui)
+                    throws PersonIsNotProviderException {
+
+        if (command.getResultFields() == null || command.getResultFields().length == 0) {
+            command.setResultFields(new String[] {"personName"});
+        }
+
+        // now fetch the results
+        List<ProviderRole> roles = new ArrayList<ProviderRole>();
+        if (command.getProviderRole() != null) {
+            roles.add(command.getProviderRole());
+        }
+        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(command.getName(), command.getIdentifier(), command.getPersonAddress(), command.getAttribute(), roles, false);
+
+         // convert to a simple object list
+        return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, command.getResultFields());
     }
 
     public void controller(FragmentModel model) {

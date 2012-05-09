@@ -40,3 +40,10 @@
 
 </div>
 
+<div id="advancedSearch" class="content">
+
+    ${ ui.includeFragment("providerAdvancedSearch", [selectIdParam: "personId",
+                                                     selectAction: ui.pageLink('providerDashboard'),
+                                                     resultFields: providerSearchDisplayFields]) }
+
+</div>

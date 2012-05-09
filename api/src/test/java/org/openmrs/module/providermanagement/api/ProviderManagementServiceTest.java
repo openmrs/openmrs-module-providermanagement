@@ -23,6 +23,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.Relationship;
@@ -2944,12 +2945,35 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test
     public void getProviders_shouldIntersectNameAndAttributeSearch() throws Exception {
         PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1001);
-        PersonAttribute attribute = new PersonAttribute(personAttributeType,"test");;
+        PersonAttribute attribute = new PersonAttribute(personAttributeType,"test");
 
         // searches for a valid person name, but not the person with the above attribute
         List<Person> providers = providerManagementService.getProviders("jimmy", null, null, attribute, null, false);
 
         Assert.assertEquals(0, providers.size());
+    }
+
+    @Test
+    public void getProviders_shouldIgnoreBlankFields() throws Exception {
+
+        // verify that if some of the parameters are empty strings/blank they are ignored (instead of requiring the field to be blank/empty
+
+        PersonAddress emptyAddress = new PersonAddress();
+        emptyAddress.setAddress1("");
+        emptyAddress.setCityVillage("");
+
+        List<ProviderRole> emptyList = new ArrayList<ProviderRole>();
+
+        PersonAttribute emptyAttribute = new PersonAttribute();
+        emptyAttribute.setValue("");
+
+        List<Person> providers = providerManagementService.getProviders("jimmy", "", emptyAddress, emptyAttribute, emptyList, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(9), providers.get(0).getId());
+
+        providers = providerManagementService.getProviders("", "2a6", emptyAddress, emptyAttribute, emptyList, false);
+        Assert.assertEquals(1, providers.size());
+        Assert.assertEquals(new Integer(6), providers.get(0).getId());
     }
 
     @Test

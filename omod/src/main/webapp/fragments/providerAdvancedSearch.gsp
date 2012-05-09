@@ -1,23 +1,26 @@
 
-<%  def id = config.id ?: ui.randomId() %>
+<%  ui.includeCss("providermanagement", "providerAdvancedSearch.css")
+    def id = config.id ?: ui.randomId()
+    def selectIdParam = config.selectIdParam ?: 'id'%>
 
 
 <script>
     jq(function() {
-        jq('#advancedSearch').submit(function(e) {
+        jq('#advancedSearchForm_${ id }').submit(function(e) {
             e.preventDefault();
             var form = jq(this);
             var data = form.serialize();
+
             jq.ajax({
                 type: "POST",
-                url: form.attr('action'),
+                url: "${ ui.actionLink('getProviders') }",
                 data: data,
                 dataType: "json"
             })
                     .success(function(data) {
 
                         jq('#advancedSearchTable_${ id } > tbody > tr').remove();
-                        var tbody = jq('#searchTable_${ id } > tbody');
+                        var tbody = jq('#advancedSearchTable_${ id } > tbody');
                         for (index in data) {
                             var item = data[index];
                             var row = '<tr><input type="hidden" value="' + item.id + '"/>';
@@ -29,7 +32,7 @@
                         }
 
                         // configure the action that occurs on a row click
-                        jq('#searchTable_${ id } > tbody > tr').click(function() {
+                        jq('#advancedSearchTable_${ id } > tbody > tr').click(function() {
                             window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\' + ' }
                                     <% if (config.selectParams) { %>
                                     '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
@@ -38,10 +41,10 @@
                         });
 
                         // configure highlighting
-                        jq('#searchTable_${ id } > tbody > tr').mouseover(function() {
+                        jq('#advancedSearchTable_${ id } > tbody > tr').mouseover(function() {
                             jq(this).addClass('highlighted');
                         });
-                        jq('#searchTable_${ id } > tbody > tr').mouseout(function() {
+                        jq('#advancedSearchTable_${ id } > tbody > tr').mouseout(function() {
                             jq(this).removeClass('highlighted');
                         });
                     })
@@ -53,69 +56,77 @@
     });
 </script>
 
-<form id="advancedSearch" action="${ ui.actionLink('getProviders') }"/>
-    <table id="advancedSearchTable_${ id }">
-        <thead>
-        <th colspan="2" class="label">
-            ${ ui.message("providermanagement.findProviderAdvanced") }
-        </th>
-        </thead>
+<div class="advancedSearch content">
+    <form id="advancedSearchForm_${ id }" name="fubar"/>
+        <table id="advancedSearchTable_${ id }">
+            <thead>
+            <th colspan="2" class="label">
+                ${ ui.message("providermanagement.findProviderAdvanced") }
+            </th>
 
-        <tbody>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td><span class="label">${ ui.message("general.name") }:</span></td>
+                            <td><input type="text" id="name" name="name" size="20" value="${ command?.name ?: ''}"/></td>
+                        </tr>
 
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <td><span class="label">${ ui.message("general.name") }:</span></td>
-                        <td><input type="text" id="name" name="name" size="20" value="${ command?.name ?: ''}"/></td>
-                    </tr>
+                        <tr>
+                            <td><span class="label">${ ui.message("providermanagement.identifier") }:</span></td>
+                            <td><input type="text" id="identifier" name="identifier" size="20" value="${ command.identifier ?: ''}"/></td>
+                        </tr>
 
-                    <tr>
-                        <td><span class="label">${ ui.message("providermanagement.identifier") }:</span></td>
-                        <td><input type="text" id="identifier" name="provider.identifier" size="20" value="${ command.identifier ?: ''}"/></td>
-                    </tr>
+                        <tr>
+                            <td colspan="2">&nbsp;</td>
+                        </tr>
 
-                    <tr>
-                        <td colspan="2">&nbsp;</td>
-                    </tr>
+                        <!-- include the address fragment -->
+                        ${ ui.includeFragment("personAddress", [personAddress: command?.personAddress, mode: 'edit']) }
 
-                    <!-- include the address fragment -->
-                    ${ ui.includeFragment("personAddress", [personAddress: command?.personAddress, mode: 'edit']) }
+                    </table>
+                </td>
 
-                </table>
-            </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
+                            <td> ${ ui.includeFragment("widget/selectList", [ formFieldName: "providerRole",
+                                    selected: [command?.providerRole?.id], options: providerRoles, optionsDisplayField: 'name',
+                                    optionsValueField: 'id', includeEmptyOption: true] ) }</td>
+                        </tr>
 
-            <td>
-                <table>
-                    <tr>
-                        <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
-                        <td> ${ ui.includeFragment("widget/selectList", [ formFieldName: "provider.providerRole",
-                                selected: [command?.providerRole?.id], options: providerRoles, optionsDisplayField: 'name',
-                                optionsValueField: 'id'] ) }</td>
-                    </tr>
+                        <% if (advancedSearchPersonAttributeType) { %>
+                        <tr>
+                            <td><span class="label">${ advancedSearchPersonAttributeType.name }:</span></td>
+                            <td>
+                                ${ ui.includeFragment("widget/field", [ class: advancedSearchPersonAttributeType.format,
+                                        formFieldName: "attribute.value", initialValue: command?.attribute?.hydratedObject ] ) }
+                            </td>
+                        </tr>
+                        <% } %>
 
-                    <% if (advancedSearchPersonAttributeType) { %>
-                    <tr>
-                        <td><span class="label">${ advancedSearchPersonAttributeType.name }:</span></td>
-                        <td>
-                            ${ ui.includeFragment("widget/field", [ class: advancedSearchPersonAttributeType.format,
-                                    formFieldName: "attribute.value", initialValue: command?.attribute?.hydratedObject ] ) }
-                        </td>
-                    </tr>
-                    <% } %>
+                        <!-- TODO: add these directly to the data object instead of having to apply them here? -->
+                        <% if (config.resultFields) { config.resultFields.each { %>
+                            <input name="resultFields" type="hidden" value="${ it }"/>
+                        <% } } %>
 
-                </table>
-            </td>
-        </tr>
+                    </table>
+                </td>
+            </tr>
 
-        <tr>
-            <td colspan="2">
-                ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [type: "submit", label: ui.message("general.search")] ]]) }
-            </td>
-        </tr>
+            <tr>
+                <td colspan="2">
+                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [type: "submit", label: ui.message("general.search")] ]]) }
+                </td>
+            </tr>
 
-        </tbody>
+            </thead>
 
-    </table>
-</form>
+            <tbody>
+
+            </tbody>
+
+        </table>
+    </form>
+</div>
