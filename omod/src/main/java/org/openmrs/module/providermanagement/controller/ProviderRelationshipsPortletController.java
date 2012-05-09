@@ -14,20 +14,38 @@
 
 package org.openmrs.module.providermanagement.controller;
 
+import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.web.controller.PortletController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ProviderRelationshipsPortletController extends PortletController {
 
     protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
+
+        // add the possible provider relationship types
         List<RelationshipType> providerRoleRelationshipType = Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(false);
-        model.put("relationshipTypes", providerRoleRelationshipType);
+        model.put("providerRelationshipTypes", providerRoleRelationshipType);
+
+        // add the existing provider relationships
+        Integer patientId = (Integer) model.get("patientId");
+        Patient patient = Context.getPatientService().getPatient(patientId);
+
+        try {
+            model.put("providerRelationships", Context.getService(ProviderManagementService.class).getProviderRelationshipsForPatient(patient, null, null));
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

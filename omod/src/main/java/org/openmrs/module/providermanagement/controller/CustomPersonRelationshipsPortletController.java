@@ -14,6 +14,8 @@
 
 package org.openmrs.module.providermanagement.controller;
 
+import org.openmrs.Patient;
+import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
@@ -22,6 +24,7 @@ import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.web.controller.PortletController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +36,28 @@ public class CustomPersonRelationshipsPortletController extends PortletControlle
 
     protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 
+        // relationship types to display are all the relationship types MINUS the provider relationship types
         List<RelationshipType> relationshipTypes = Context.getPersonService().getAllRelationshipTypes(false);
-        List<RelationshipType> providerRoleRelationshipType = Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(false);
-        relationshipTypes.removeAll(providerRoleRelationshipType);
-        relationshipTypes.remove(Context.getPersonService().getRelationshipTypeByUuid(ProviderManagementConstants.SUPERVISOR_RELATIONSHIP_TYPE_UUID));
-
+        List<RelationshipType> providerRoleRelationshipTypes = Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(false);
+        RelationshipType supervisorRelationshipType = Context.getPersonService().getRelationshipTypeByUuid(ProviderManagementConstants.SUPERVISOR_RELATIONSHIP_TYPE_UUID);
+        relationshipTypes.removeAll(providerRoleRelationshipTypes);
+        relationshipTypes.remove(supervisorRelationshipType);
         model.put("relationshipTypes", relationshipTypes);
+
+        // relationships to display are all relationships MINUS the provider relationships
+        // first fetch the relationships currently in the model (which the relationship portlet would display by default)
+        List<Relationship> personRelationships = (List<Relationship>) model.get("personRelationships");
+
+        // iterate through all these relationships and remove any of the provider role type
+        Iterator<Relationship> i = personRelationships.iterator();
+        while (i.hasNext()) {
+            Relationship relationship = i.next();
+            if (providerRoleRelationshipTypes.contains(relationship.getRelationshipType()) || supervisorRelationshipType.equals(relationship.getRelationshipType())) {
+                i.remove();
+            }
+        }
+
+        // overwrite the relationship types in the model with the new types
+        model.put("personRelationships", personRelationships);
     }
 }

@@ -28,11 +28,13 @@
         <property name="mappings">
             <props>
                 <prop key="**/personRelationships.portlet">customPersonRelationshipsPortletController</prop>
+                <prop key="**/providerRelationships.portlet">providerRelationshipsPortletController</prop>
             </props>
         </property>
     </bean>
 
     <!--  Controllers -->
+    <bean id="providerRelationshipsPortletController" class="org.openmrs.module.providermanagement.controller.ProviderRelationshipsPortletController"> </bean>
     <bean id="customPersonRelationshipsPortletController" class="org.openmrs.module.providermanagement.controller.CustomPersonRelationshipsPortletController"> </bean>
 
 
