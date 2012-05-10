@@ -498,6 +498,11 @@ public interface ProviderManagementService extends OpenmrsService {
     public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException;
 
+
+    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, InvalidRelationshipTypeException;
+
     /**
      * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider
      * (ie., unassigns all patients with the specified relationship type from the source provider and assigns them to the destination provider)

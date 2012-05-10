@@ -22,7 +22,7 @@
 <div class="content multiSelectCheckboxTable">
     
     <% if (config.formAction) { %>
-        <form method="post" action="${ config.formAction }" >
+        <form id="multiSelectCheckboxForm_${ id }" method="post" action="${ config.formAction }" >
     <% } %>
     
         <table id="multiSelectCheckboxTable_${ id }">

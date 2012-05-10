@@ -300,5 +300,21 @@ public class ProviderEditFragmentController {
             throw new RuntimeException(e);
         }
     }
+
+    public FragmentActionResult transferPatients(@RequestParam(value = "oldProvider", required = true) Person oldProvider,
+                                                 @RequestParam(value = "newProvider", required = true) Person newProvider,
+                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
+                                                 @RequestParam(value = "patients", required = true) List<Patient> patients) {
+
+        // TODO: better handle error cases
+        try {
+            Context.getService(ProviderManagementService.class).transferPatients(patients,oldProvider, newProvider, relationshipType);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
 

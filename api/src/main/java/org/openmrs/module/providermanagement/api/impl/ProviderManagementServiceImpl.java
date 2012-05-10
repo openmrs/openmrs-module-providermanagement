@@ -810,10 +810,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
-        throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-        PersonIsNotProviderException, InvalidRelationshipTypeException {
+    @Transactional
+    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         if (sourceProvider == null) {
             throw new APIException("Source provider cannot be null");
@@ -838,11 +838,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         if (relationshipType == null) {
             throw new APIException("Relationship type cannot be null");
         }
-        
-       // first get all the patients of the source provider
-       List<Patient> patients = getPatientsOfProvider(sourceProvider, relationshipType, new Date());
 
-       // assign these patients to the new provider, unassign them from the old provider
+        // assign these patients to the new provider, unassign them from the old provider
         for (Patient patient : patients) {
             try {
                 assignPatientToProvider(patient, destinationProvider, relationshipType);
@@ -859,6 +856,15 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 throw new APIException("All patients here should be assigned to provider,", e);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+        throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+        PersonIsNotProviderException, InvalidRelationshipTypeException {
+
+        transferPatients(getPatientsOfProvider(sourceProvider, relationshipType, new Date()), sourceProvider, destinationProvider, relationshipType);
     }
     
     @Override

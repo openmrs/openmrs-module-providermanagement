@@ -67,14 +67,25 @@
 
 <div id="patients">
     <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
-    <% patientMap?.each { %>
+    <% patientMap?.each {
+         def id = ui.randomId()   %>
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
+                id: id,
                 title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
                 columns: patientListDisplayFields,
                 actionButtons: [[label: ui.message("general.remove"), type: "submit"]],
                 formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id ]),
                 formFieldName: "patients",
                 actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
+
+        <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferPatients"),
+                searchAction: ui.actionLink("providerSearch", "getProviders"),
+                searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
+                resultFields: providerSearchDisplayFields,
+                selectAction: ui.actionLink('providerEdit', 'transferPatients'),
+                selectIdParam: "newProvider",
+                selectParams: [ oldProvider: person.id, relationshipType: it.key.id ],
+                selectForm: "multiSelectCheckboxForm_" + id])  %>
 
         <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
                 searchAction: ui.actionLink("patientSearch", "getPatients"),

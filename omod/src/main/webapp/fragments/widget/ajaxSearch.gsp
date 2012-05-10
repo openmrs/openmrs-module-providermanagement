@@ -38,6 +38,9 @@
                                         <% if (config.selectParams) { %>
                                             '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
                                         <% } %>
+                                        <% if (config.selectForm) { %>
+                                            '&' + jq('#${ config.selectForm }').serialize() +
+                                        <% } %>
                                         '&${ selectIdParam }=' + jq(this).children('input').val();
                             });
 
