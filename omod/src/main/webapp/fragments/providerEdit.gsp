@@ -1,12 +1,59 @@
-<% ui.includeCss("providermanagement", "providerEdit.css") %>
+<% ui.includeCss("providermanagement", "providerEdit.css")
+    def id = config.id ?: ui.randomId() %>
+
+<script>
+    jq(function() {
+        jq('#editProvider_${ id }').submit(function(e) {
+            e.preventDefault();
+            var form = jq(this);
+            var data = form.serialize();
+
+            jq.ajax({
+                type: "POST",
+                url: "${ ui.actionLink('saveProvider') }",
+                data: data,
+                dataType: "json"
+            })
+                    .success(function(data) {
+                        location.reload();
+                    })
+                    .error(function(xhr, status, err) {
+                        var errors = jq.parseJSON(xhr.responseText);
+
+                        // first hide and clear the error div
+                        jq('#editProvider_${ id }-globalerror').html('').hide();
+
+                        // concatenate the list of messages to display
+                        var messages = "";
+
+                        // TODO: confirm that this works right; don't currently have any global errors to test
+                        for (globalError in errors.globalErrors) {
+                            messages = messages + globalError + "<br/>"
+                        }
+
+                        for (key in errors.fieldErrors) {
+                            messages = messages + errors.fieldErrors[key] + "<br/>"
+                        }
+
+                        // now set the div to the new messages and display
+                        jq('#editProvider_${ id }-globalerror').html(messages).show();
+                    })
+
+        });
+    });
+</script>
 
 <div class="content providerEdit">
 
-    ${ ui.startForm("saveProvider", [personId: person?.id]) }
+    <div style="display: none" id="editProvider_${ id }-globalerror" class="error"></div>
+
+    <form id="editProvider_${ id }">
+        <input type="hidden" name="personId" value="${person?.id ?: ''}"/>
+
         <table class="providerHeader">
 
             <!-- include the name fragment -->
-            ${ ui.includeFragment("personName", [personName: person?.personName, mode: 'edit']) }
+            ${ ui.includeFragment("personName", [personName: person?.personName, mode: 'edit', id: id]) }
 
             <tr>
                 <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
@@ -29,7 +76,8 @@
             <tr>
                 <td><span class="label">${ ui.message("Person.gender") }:</span></td>
                 <td><input name="gender" type="radio" value="M" ${ person?.gender == 'M' ? 'checked' : '' }> ${ ui.message("Person.gender.male") }
-                    <input name="gender" type="radio" value="F" ${ person?.gender == 'F' ? 'checked' : '' }> ${ ui.message("Person.gender.female") }</td>
+                    <input name="gender" type="radio" value="F" ${ person?.gender == 'F' ? 'checked' : '' }> ${ ui.message("Person.gender.female") }
+                </td>
             </tr>
 
 
@@ -84,5 +132,5 @@
             </tr>
         </table>
         <% } %>
-    ${ ui.endForm() }
+    </form>
 </div>

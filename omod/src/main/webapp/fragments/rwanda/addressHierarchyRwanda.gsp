@@ -138,7 +138,7 @@
                 .children("tr")
                 .children("td");
         //alert("returning " + jq(td).children("."+className).val());
-        return jq(td).children("."+className).val().trim();
+        return jq(td).children("."+className).val() != undefined ? jq(td).children("."+className).val().trim() : undefined;
     }
 
     function getSiblingWithinTableFromClass(someElement,className){

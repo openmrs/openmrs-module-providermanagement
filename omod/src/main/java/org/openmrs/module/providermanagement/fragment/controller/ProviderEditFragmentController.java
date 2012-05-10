@@ -34,10 +34,16 @@ import org.openmrs.module.providermanagement.exception.PersonIsNotProviderExcept
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.annotation.MethodParam;
+import org.openmrs.ui.framework.annotation.Validate;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.util.HandlerUtil;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
@@ -145,12 +151,8 @@ public class ProviderEditFragmentController {
 
     // TODO: unit test this!
 
-    public void saveProvider(@MethodParam("initializePerson") @BindParams() Person person,
-                             @MethodParam("initializeProviderCommand") @BindParams("provider") ProviderCommand providerCommand) {
-
-        // TODO: also needs to hold state on validation failures
-        // TODO: add validation via annotation when it works
-        // TODO: should automatically redisplay edit fragment when validation fails (how to do this?)
+    public FragmentActionResult saveProvider(@MethodParam("initializePerson") @BindParams() @Validate Person person,
+                                                @MethodParam("initializeProviderCommand") @BindParams("provider") ProviderCommand providerCommand) {
 
         // fetch the provider associated with this person
         Provider provider;
@@ -172,6 +174,9 @@ public class ProviderEditFragmentController {
         // need to manually bind the provider attributes
         provider.setIdentifier(providerCommand.getIdentifier());
         provider.setProviderRole(providerCommand.getProviderRole());
+
+        // if this is new person & provider, we may not set have set the person on the provider
+        provider.setPerson(person);
 
         // manually bind the provider attributes
         // TODO: double-check that this is working correctly
@@ -207,11 +212,18 @@ public class ProviderEditFragmentController {
             }
         }
 
-
-        // TODO: add provider validation?  should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
+        // TODO: should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
         // TODO: think about validation issues here... if we simply trap person validation and it fails, we would still want to be able to roll back provider information
-
         // TODO: should we remove the person address field if it is not used?
+
+        // we need to manually validate the provider
+        Validator providerValidator = HandlerUtil.getPreferredHandler(Validator.class, Provider.class);
+        BindingResult providerErrors = new BeanPropertyBindingResult(provider, "provider");  // TODO: is this the correct nomenclature?
+        providerValidator.validate(provider,providerErrors);
+
+        if (providerErrors.hasErrors()) {
+            return new FailureResult(providerErrors);
+        }
 
         // need to manually remove any person attributes that have no value
         for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
@@ -222,14 +234,15 @@ public class ProviderEditFragmentController {
 
         // save the person and the provider
         Context.getPersonService().savePerson(person);
-
-        // if this is new person & provider, we may not set have set the person on the provider
-        provider.setPerson(person);
         Context.getProviderService().saveProvider(provider);
+
+        return new SuccessResult();
     }
 
     public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                               @RequestParam(value = "supervisee", required=true) Person supervisee) {
+
+        // TODO: should we be returing a fragment action result in all these cases?  does it matter? -->
 
         // TODO: better handle error cases
         try {
