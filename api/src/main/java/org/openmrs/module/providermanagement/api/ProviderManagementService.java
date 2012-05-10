@@ -499,12 +499,25 @@ public interface ProviderManagementService extends OpenmrsService {
             throws InvalidRelationshipTypeException;
 
 
+    /**
+     * Transfers the selected patients from the source provider to the destination provider for the specified relationship type (on the current date)
+     * (ie., unassigns patients with the specified relationship type from the source provider and assigns them to the destination provider)
+     *
+     * @param patients
+     * @param sourceProvider
+     * @param destinationProvider
+     * @param relationshipType
+     * @throws ProviderDoesNotSupportRelationshipTypeException
+     * @throws SourceProviderSameAsDestinationProviderException
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     */
     public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-            PersonIsNotProviderException, InvalidRelationshipTypeException;
+            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException;
 
     /**
-     * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider
+     * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider (on the current date)
      * (ie., unassigns all patients with the specified relationship type from the source provider and assigns them to the destination provider)
      *
      * @param sourceProvider
@@ -522,7 +535,7 @@ public interface ProviderManagementService extends OpenmrsService {
             PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
-     * Transfers all patients (of any relationship type) currently assigned to the source provider to the destination provider
+     * Transfers all patients (of any relationship type) currently assigned to the source provider to the destination provider (on the current date)
      * (ie., unassigns all patients from the source provider and assigns them to the destination provider)
      *
      * @param sourceProvider
@@ -743,6 +756,26 @@ public interface ProviderManagementService extends OpenmrsService {
     public List<Person> getSuperviseesForSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
+
+    /**
+     * Transfers the specified supervises from the source supervisor to the destination supervisor (on the current date)
+     *
+     * @param supervisees
+     * @param sourceSupervisor
+     * @param destinationSupervisor
+     */
+    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            ProviderNotAssignedToSupervisorException;
+
+    /**
+     * Transfers all supervisees from the source supervisor to the destination supervisor (on the current date)
+     *
+     * @param sourceSupervisor
+     * @param destinationSupervisor
+     */
+    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException;
 
     /**
      * Replacement for ProviderService.getProvidersByPerson to fetch new expanded provider model

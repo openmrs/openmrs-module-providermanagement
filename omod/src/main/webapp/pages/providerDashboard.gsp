@@ -43,7 +43,10 @@
 
 <% if (provider.providerRole?.superviseeProviderRoles) { %>
     <div id="supervisees">
+
+        <%  def superviseeTableId = ui.randomId() %>
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
+                                                                    id: superviseeTableId,
                                                                     title: ui.message("providermanagement.supervising"),
                                                                     columns: providerListDisplayFields,
                                                                     selectAction: ui.pageLink('providerDashboard'),
@@ -53,6 +56,18 @@
                                                                     actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
 
     </div>
+
+    <div id="transferSupervisees">
+        <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
+                searchAction: ui.actionLink("providerSearch", "getProviders"),
+                searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
+                resultFields: providerSearchDisplayFields,
+                selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
+                selectIdParam: "newSupervisor",
+                selectParams: [ oldSupervisor: person.id ],
+                selectForm: "multiSelectCheckboxForm_" + superviseeTableId])  %>
+    </div>
+
 
     <div id="addSupervisee">
         <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),

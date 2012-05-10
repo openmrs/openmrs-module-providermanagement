@@ -813,7 +813,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional
     public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-            PersonIsNotProviderException, InvalidRelationshipTypeException {
+            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException {
 
         if (sourceProvider == null) {
             throw new APIException("Source provider cannot be null");
@@ -847,14 +847,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             catch (PatientAlreadyAssignedToProviderException e) {
                 // we can ignore this exception; no need to assign patient if already assigned
             }
-            try {
-                unassignPatientFromProvider(patient, sourceProvider, relationshipType);
-            }
-            catch (PatientNotAssignedToProviderException e) {
-                // we should fail hard here, because getPatientsOfProvider should only return patients of the provider,
-                // so if this exception has been thrown, something has gone really wrong
-                throw new APIException("All patients here should be assigned to provider,", e);
-            }
+
+            unassignPatientFromProvider(patient, sourceProvider, relationshipType);
         }
     }
 
@@ -864,7 +858,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
         PersonIsNotProviderException, InvalidRelationshipTypeException {
 
-        transferPatients(getPatientsOfProvider(sourceProvider, relationshipType, new Date()), sourceProvider, destinationProvider, relationshipType);
+        try {
+            transferPatients(getPatientsOfProvider(sourceProvider, relationshipType, new Date()), sourceProvider, destinationProvider, relationshipType);
+        }
+        catch (PatientNotAssignedToProviderException e) {
+            // we should fail hard here, because getPatientsOfProvider should only return patients of the provider,
+            // so if this exception has been thrown, something has gone really wrong
+            throw new APIException("All patients here should be assigned to provider,", e);
+        }
     }
     
     @Override
@@ -1151,6 +1152,59 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public List<Person> getSuperviseesForSupervisor(Person supervisor)
             throws PersonIsNotProviderException {
         return getSuperviseesForSupervisor(supervisor, null);
+    }
+
+    @Override
+    @Transactional
+    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            ProviderNotAssignedToSupervisorException {
+
+        if (sourceSupervisor == null) {
+            throw new APIException("Source supervisor cannot be null");
+        }
+
+        if (destinationSupervisor == null) {
+            throw new APIException("Destination supervisor cannot be null");
+        }
+
+        if (!isProvider(sourceSupervisor)) {
+            throw new PersonIsNotProviderException(sourceSupervisor + " is not a provider");
+        }
+
+        if (!isProvider(destinationSupervisor)) {
+            throw new PersonIsNotProviderException(destinationSupervisor + " is not a provider");
+        }
+
+        if (sourceSupervisor.equals(destinationSupervisor)) {
+            throw new SourceProviderSameAsDestinationProviderException("Provider " + sourceSupervisor + " is the same as provider " + destinationSupervisor);
+        }
+
+        for (Person supervisee : supervisees) {
+            // first assign the supervisee to the new superviser
+            try {
+                assignProviderToSupervisor(supervisee, destinationSupervisor);
+            }
+            catch (ProviderAlreadyAssignedToSupervisorException e) {
+                // don't worry about doing anything here, no need to worry about assigning if already assigned
+                // however, note that we don't trap the invalid supervisor exception that could occur here
+            }
+
+            // now unassign the supervisee from the old supervisor
+            unassignProviderFromSupervisor(supervisee, sourceSupervisor);
+        }
+    }
+
+    @Override
+    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException {
+        try {
+            transferSupervisees(getSuperviseesForSupervisor(sourceSupervisor), sourceSupervisor, destinationSupervisor);
+        }
+        catch (ProviderNotAssignedToSupervisorException e) {
+            // we can fail hard here because getSuperviseesForSupervisor should never return providers who aren't supervisees of sourceSupervisor
+            throw new RuntimeException(e);
+        }
     }
 
     /**

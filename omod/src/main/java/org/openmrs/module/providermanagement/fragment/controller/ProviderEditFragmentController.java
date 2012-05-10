@@ -316,5 +316,20 @@ public class ProviderEditFragmentController {
         }
 
     }
+
+    public FragmentActionResult transferSupervisees(@RequestParam(value = "oldSupervisor", required = true) Person oldSupervisor,
+                                                    @RequestParam(value = "newSupervisor", required = true) Person newSupervisor,
+                                                    @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
+
+        // TODO: better handle error cases
+        try {
+            Context.getService(ProviderManagementService.class).transferSupervisees(supervisees, oldSupervisor, newSupervisor);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
 

@@ -2470,6 +2470,76 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(0, supervisees.size());
     }
 
+    @Test
+    public void transferSupervisees_shouldTransferSupervisees() throws Exception {
+
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person oldSupervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person newSupervisor = Context.getPersonService().getPerson(501); // a community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, oldSupervisor);
+        providerManagementService.assignProviderToSupervisor(provider2, oldSupervisor);
+
+        // now transfer only one of the supervisees to the new supervisor
+        List<Person> superviseesToTransfer = new ArrayList<Person>();
+        superviseesToTransfer.add(provider1);
+        providerManagementService.transferSupervisees(superviseesToTransfer,oldSupervisor, newSupervisor);
+
+        // confirm that the old supervisor still is supervising a single supervisee
+        List<Person> supervisees = providerManagementService.getSuperviseesForSupervisor(oldSupervisor, new Date());
+        Assert.assertEquals(1, supervisees.size());
+        Assert.assertEquals(new Integer(7), supervisees.get(0).getId());
+
+        // confirm that the new supervisor is supervising the supervisee who was moved
+        supervisees = providerManagementService.getSuperviseesForSupervisor(newSupervisor, new Date());
+        Assert.assertEquals(1, supervisees.size());
+        Assert.assertEquals(new Integer(6), supervisees.get(0).getId());
+    }
+
+
+    @Test
+    public void transferAllSupervisees_shouldTransferAllSupervisees() throws Exception {
+
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person oldSupervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person newSupervisor = Context.getPersonService().getPerson(501); // a community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, oldSupervisor);
+        providerManagementService.assignProviderToSupervisor(provider2, oldSupervisor);
+
+        // now transfer the supervisees to the new supervisor
+        providerManagementService.transferAllSupervisees(oldSupervisor, newSupervisor);
+
+        // confirm that the old supervisor now doesn't have any supervisees
+        Assert.assertEquals(0, providerManagementService.getSuperviseesForSupervisor(oldSupervisor, new Date()).size());
+
+        // confirm that the new supervisor now has both the supervisees assigned to them
+        List<Person> supervisees = providerManagementService.getSuperviseesForSupervisor(newSupervisor, new Date());
+
+        Assert.assertEquals(2, supervisees.size());
+
+        // double-check to make sure the are the correct relationships
+        // be iterating through and removing the two that SHOULD be there
+        Iterator<Person> i = supervisees.iterator();
+
+        while (i.hasNext()) {
+            Person p = i.next();
+
+            if (p.getId() == 6 || p.getId() == 7) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, supervisees.size());
+
+    }
 
     @Test
     public void getSupervisorRelationships_shouldGetAllSupervisorRelationshipsForProvider() throws Exception {
