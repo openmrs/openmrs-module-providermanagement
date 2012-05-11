@@ -32,6 +32,7 @@ import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SuggestionEvaluator;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,16 +56,19 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProviderSuggestion getProviderSuggestion(Integer id) {
         return dao.getProviderSuggestion(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProviderSuggestion getProviderSuggestionByUuid(String uuid) {
        return dao.getProviderSuggestionByUuid(uuid);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType) {
 
         if (relationshipType == null) {
@@ -76,28 +80,39 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ProviderSuggestion> getAllProviderSuggestions(Boolean includeRetired) {
+        return dao.getAllProviderSuggestions(includeRetired);
+    }
+
+    @Override
+    @Transactional
     public void saveProviderSuggestion(ProviderSuggestion suggestion) {
         dao.saveProviderSuggestion(suggestion);
     }
 
     @Override
+    @Transactional
     public void retireProviderSuggestion(ProviderSuggestion suggestion, String reason) {
         // BaseRetireHandler handles retiring the object
         dao.saveProviderSuggestion(suggestion);
     }
 
     @Override
+    @Transactional
     public void unretireProviderSuggestion(ProviderSuggestion suggestion) {
         // BaseRetireHandler handles retiring the object
         dao.saveProviderSuggestion(suggestion);
     }
 
     @Override
+    @Transactional
     public void purgeProviderSuggestion(ProviderSuggestion suggestion) {
         dao.deleteProviderSuggestion(suggestion);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Person> suggestProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException, SuggestionEvaluationException {
 
@@ -147,16 +162,19 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SupervisionSuggestion getSupervisionSuggestion(Integer id) {
         return dao.getSupervisionSuggestion(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SupervisionSuggestion getSupervisionSuggestionByUuid(String uuid) {
         return dao.getSupervisionSuggestionByUuid(uuid);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType) {
 
         if (providerRole == null) {
@@ -167,39 +185,52 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ProviderRole providerRole) {
         return getSupervisionSuggestionsByProviderRoleAndSuggestionType(providerRole, null);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<SupervisionSuggestion> getAllSupervisionSuggestions(Boolean includeRetired) {
+        return dao.getAllSupervisionSuggestions(includeRetired);
+    }
+
+    @Override
+    @Transactional
     public void saveSupervisionSuggestion(SupervisionSuggestion suggestion) {
         dao.saveSupervisionSuggestion(suggestion);
     }
 
     @Override
+    @Transactional
     public void retireSupervisionSuggestion(SupervisionSuggestion suggestion, String reason) {
         // BaseRetireHandler handles retiring the object
         dao.saveSupervisionSuggestion(suggestion);
     }
 
     @Override
+    @Transactional
     public void unretireSupervisionSuggestion(SupervisionSuggestion suggestion) {
         // BaseRetireHandler handles retiring the object
         dao.saveSupervisionSuggestion(suggestion);
     }
 
     @Override
+    @Transactional
     public void purgeSupervisionSuggestion(SupervisionSuggestion suggestion) {
         dao.deleteSupervisionSuggestion(suggestion);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Person> suggestSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException {
         return suggestSupervisionForProviderHelper(provider, SupervisionSuggestionType.SUPERVISOR_SUGGESTION);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Person> suggestSuperviseesForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException {
         return suggestSupervisionForProviderHelper(provider, SupervisionSuggestionType.SUPERVISEE_SUGGESTION);

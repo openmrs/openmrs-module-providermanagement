@@ -18,13 +18,13 @@
         <tr>
             <td>${ it.name }</td>
             <td>
-                <% it.superviseeProviderRoles?.each { %> ${ it.name }<% } %>
+                ${ it.superviseeProviderRoles?.collect { it.name }.join(', ') }
             </td>
             <td>
-                <% it.relationshipTypes?.each { %> ${ it.aIsToB }<% } %>
+                ${ it.relationshipTypes?.collect { it.aIsToB }.join(', ') }
             </td>
             <td>
-                <% it.providerAttributeTypes?.each { %> ${ it.name }<% } %>
+                ${ it.providerAttributeTypes?.collect { it.name }.join(', ') }
             </td>
             <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
             <td><a href="${ ui.pageLink("editProviderRole", [providerRoleId: it.id]) }">${ ui.message("general.edit") }</a></td>

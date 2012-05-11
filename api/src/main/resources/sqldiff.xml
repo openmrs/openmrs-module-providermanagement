@@ -60,7 +60,7 @@
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             CREATE TABLE providermanagement_provider_suggestion (
-                provider_suggestion_id int(11) NOT NULL,
+                provider_suggestion_id int(11) NOT NULL auto_increment,
                 criteria varchar(5000) NOT NULL,
                 evaluator varchar(255) NOT NULL,
                 relationship_type_id int(11) NOT NULL,
@@ -81,7 +81,7 @@
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             CREATE TABLE providermanagement_supervision_suggestion (
-                supervision_suggestion_id int(11) NOT NULL,
+                supervision_suggestion_id int(11) NOT NULL auto_increment,
                 criteria varchar(5000) NOT NULL,
                 evaluator varchar(255) NOT NULL,
                 provider_role_id int(11) NOT NULL,

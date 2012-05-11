@@ -149,6 +149,14 @@ public interface ProviderManagementDAO {
     public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType);
 
     /**
+     * Gets all the provider suggestions
+     *
+     * @param includeRetired
+     * @return
+     */
+    public List<ProviderSuggestion> getAllProviderSuggestions(Boolean includeRetired);
+
+    /**
      * Saves the specified provider suggestion
      *
      * @param suggestion
@@ -187,6 +195,15 @@ public interface ProviderManagementDAO {
      * @return ist of provider suggestions for the specified relationship type
      */
     public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+
+
+    /**
+     * Gets all the supervision suggestions
+     *
+     * @param includeRetired
+     * @return
+     */
+    public List<SupervisionSuggestion> getAllSupervisionSuggestions(Boolean includeRetired);
 
     /**
      * Saves the specified supervision suggestion

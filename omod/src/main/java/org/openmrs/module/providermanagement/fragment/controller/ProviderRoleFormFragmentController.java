@@ -55,7 +55,7 @@ public class ProviderRoleFormFragmentController {
         model.addAttribute("providerAttributeTypes", providerAttributeTypes);
     }
 
-    public void deleteProviderRole(@RequestParam(value = "providerRoleId", required = false) Integer providerRoleId) {
+    public void deleteProviderRole(@RequestParam(value = "providerRoleId", required = true) Integer providerRoleId) {
 
         // TODO: add some validation/sanity check here
 
@@ -69,7 +69,7 @@ public class ProviderRoleFormFragmentController {
         }
     }
 
-    public void retireProviderRole(@RequestParam(value = "providerRoleId", required = false) Integer providerRoleId) {
+    public void retireProviderRole(@RequestParam(value = "providerRoleId", required = true) Integer providerRoleId) {
 
         // TODO: add some validation/sanity check here
 

@@ -108,6 +108,27 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
     }
 
     @Test
+    public void getAllProviderSuggestions_shouldGetAllProviderSuggestions() {
+        List<ProviderSuggestion> suggestions = providerSuggestionService.getAllProviderSuggestions(true);
+
+        Assert.assertEquals(3, suggestions.size());
+
+        Iterator<ProviderSuggestion> i = suggestions.iterator();
+
+        while (i.hasNext()) {
+            ProviderSuggestion providerSuggestion = i.next();
+            int id = providerSuggestion.getId();
+
+            if (id == 1 || id == 2 || id == 3) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, suggestions.size());
+    }
+
+    @Test
     public void saveProviderSuggestion_shouldSaveProviderSuggestion() {
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1002);
         ProviderSuggestion suggestion = new ProviderSuggestion();
@@ -387,6 +408,28 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
         Assert.assertTrue(suggestions == null || suggestions.size() == 0);
     }
+
+    @Test
+    public void getAllSupervisionSuggestions_shouldGetAllSupervisionSuggestions() {
+        List<SupervisionSuggestion> suggestions = providerSuggestionService.getAllSupervisionSuggestions(true);
+
+        Assert.assertEquals(4, suggestions.size());
+
+        Iterator<SupervisionSuggestion> i = suggestions.iterator();
+
+        while (i.hasNext()) {
+            SupervisionSuggestion supervisionSuggestion = i.next();
+            int id = supervisionSuggestion.getId();
+
+            if (id == 1 || id == 2 || id == 3 || id == 4) {
+                i.remove();
+            }
+        }
+
+        // list should now be empty
+        Assert.assertEquals(0, suggestions.size());
+    }
+
 
     @Test
     public void saveSupervisionSuggestion_shouldSaveSupervisionSuggestion() {

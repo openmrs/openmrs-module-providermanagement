@@ -56,6 +56,14 @@ public interface ProviderSuggestionService {
     public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType);
 
     /**
+     * Gets all the provider suggestions
+     *
+     * @param includeRetired
+     * @return
+     */
+    public List<ProviderSuggestion> getAllProviderSuggestions(Boolean includeRetired);
+
+    /**
      * Saves the specified provider suggestion
      *
      * @param suggestion
@@ -139,6 +147,14 @@ public interface ProviderSuggestionService {
      * @return  all Supervision Suggestions for the specified provider role
      */
     public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ProviderRole providerRole);
+
+    /**
+     * Gets all the supervision suggestions
+     *
+     * @param includeRetired
+     * @return
+     */
+    public List<SupervisionSuggestion> getAllSupervisionSuggestions(Boolean includeRetired);
 
     /**
      * Saves the specified supervision suggestion

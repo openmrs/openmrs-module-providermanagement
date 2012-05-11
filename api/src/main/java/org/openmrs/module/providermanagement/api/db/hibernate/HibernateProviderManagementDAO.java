@@ -216,6 +216,17 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
+    public List<ProviderSuggestion> getAllProviderSuggestions(Boolean includeRetired) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ProviderSuggestion.class);
+
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
+        }
+
+        return (List<ProviderSuggestion>) criteria.list();
+    }
+
+    @Override
     public void saveProviderSuggestion(ProviderSuggestion suggestion) {
         sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
     }
@@ -245,6 +256,17 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
         if (suggestionType != null) {
             criteria.add(Restrictions.eq("suggestionType", suggestionType));
+        }
+
+        return (List<SupervisionSuggestion>) criteria.list();
+    }
+
+    @Override
+    public List<SupervisionSuggestion> getAllSupervisionSuggestions(Boolean includeRetired) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SupervisionSuggestion.class);
+
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
         }
 
         return (List<SupervisionSuggestion>) criteria.list();
