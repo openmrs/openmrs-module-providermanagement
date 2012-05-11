@@ -331,5 +331,27 @@ public class ProviderEditFragmentController {
         }
 
     }
+
+    public FragmentActionResult retireProvider(@RequestParam(value = "provider", required = true) Person provider) {
+
+        // TODO: better handle error cases
+
+        try {
+            Provider p = ProviderManagementWebUtil.getProvider(provider);   // get actual provider object associated with this provider
+
+            // unassign all patients, supervisors, and supervisees from the provider
+            Context.getService(ProviderManagementService.class).unassignAllPatientsFromProvider(provider);
+            Context.getService(ProviderManagementService.class).unassignAllProvidersFromSupervisor(provider);
+            Context.getService(ProviderManagementService.class).unassignAllSupervisorsFromProvider(provider);
+
+            // now retire the provider
+            Context.getProviderService().retireProvider(p, "retired via Provider Management UI");
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return new SuccessResult();
+    }
 }
 

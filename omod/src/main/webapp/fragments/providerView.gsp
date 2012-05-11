@@ -5,7 +5,7 @@
 
     <table class="providerHeader">
         <tr>
-            <td colspan="2" class="label">${ person.personName }</td>
+            <td colspan="2" class="label">${ person.personName } ${ provider.retired ? '(' + ui.message("general.retired") + ')' : '' }</td>
         </tr>
         <tr>
             <td colspan="2"> ${ provider.providerRole?.name ?: '' }</td>

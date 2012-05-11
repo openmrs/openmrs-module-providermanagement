@@ -19,12 +19,14 @@
             jq('#providerEdit').hide();
             jq('#providerView').show();
         });
+
     });
 </script>
 
 <div id="providerView">
     ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEdit"],
-                                                             [label: ui.message("general.retire")]] ]) }
+                                                             [label: ui.message("general.retire"),id: "retire", confirm: ui.message("providermanagement.confirmRetire"),
+                                                              link: ui.actionLink("providerEdit", "retireProvider", [provider: person.id]) ] ] ]) }
 </div>
 
 <div id="providerEdit">
