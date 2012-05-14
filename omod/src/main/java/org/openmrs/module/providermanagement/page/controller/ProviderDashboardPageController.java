@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO: fields of multi-select widgets should be customizable
-
 public class ProviderDashboardPageController {
 
     public void controller (PageModel pageModel,

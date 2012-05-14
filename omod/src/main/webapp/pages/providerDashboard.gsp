@@ -105,7 +105,6 @@
                 id: id,
                 title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
                 columns: patientListDisplayFields,
-                actionButtons: [[label: ui.message("general.remove"), type: "submit"]],
                 formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id ]),
                 formFieldName: "patients",
                 actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
