@@ -22,8 +22,12 @@ import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
+import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
+import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
@@ -43,7 +47,7 @@ public class ProviderDashboardPageController {
                             @RequestParam(value = "person", required = false) Person personParam,
                             @RequestParam(value = "personId", required = false) Integer personId,
                             UiUtils ui)
-                throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+                throws PersonIsNotProviderException, InvalidRelationshipTypeException, SuggestionEvaluationException {
 
         ProviderManagementService pmService = Context.getService(ProviderManagementService.class);
 
@@ -76,6 +80,18 @@ public class ProviderDashboardPageController {
 
        List<Person> supervisees = pmService.getSuperviseesForSupervisor(person, new Date());
        pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0])));
+
+        // calculate suggested supervisees
+        // by default, we only suggest supervisees if no supervisees are found
+        // TODO: add a flag to force suggestion of  supervisees (or do this via AJAX?)
+        if (provider.getProviderRole().isSupervisorRole() && (supervisees == null || supervisees.size() == 0)) {
+            List<Person> suggestedSupervisees = Context.getService(ProviderSuggestionService.class).suggestSuperviseesForProvider(person);
+            pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0])));
+        }
+        else {
+            pageModel.addAttribute("suggestedSupervisees", null);
+        }
+
 
         // add the global properties that specifies the fields to display in the provider and patient field and search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());

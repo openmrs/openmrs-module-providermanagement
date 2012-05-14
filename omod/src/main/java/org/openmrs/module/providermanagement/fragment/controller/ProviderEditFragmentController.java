@@ -255,6 +255,24 @@ public class ProviderEditFragmentController {
 
     }
 
+    public FragmentActionResult addSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
+                                              @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
+
+        // TODO: should we be returing a fragment action result in all these cases?  does it matter? -->
+
+        // TODO: better handle error cases
+        try {
+            for (Person supervisee : supervisees) {
+                Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                                   @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
 

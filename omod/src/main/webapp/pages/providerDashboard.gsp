@@ -43,7 +43,7 @@
 
 </div>
 
-<% if (provider.providerRole?.superviseeProviderRoles) { %>
+<% if (provider.providerRole?.isSupervisorRole()) { %>
     <div id="supervisees">
 
         <%  def superviseeTableId = ui.randomId() %>
@@ -80,6 +80,21 @@
                                                         selectIdParam: "supervisee",
                                                         selectParams: [ supervisor: person.id ]  ]) %>
     </div>
+
+    <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
+        <div id="suggestedSupervisees">
+            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
+                    title: ui.message("providermanagement.suggestedSupervisees"),
+                    columns: providerListDisplayFields,
+                    selectAction: ui.pageLink('providerDashboard'),
+                    selectIdParam: "personId",
+                    formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
+                    formFieldName: "supervisees",
+                    actionButtons: [[label: ui.message("general.add"), type: "submit"]] ]) %>
+        </div>
+    <% } %>
+
+
 <% } %>
 
 <div id="patients">

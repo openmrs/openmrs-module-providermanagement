@@ -360,7 +360,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // TODO: figure out if we want to sort results here -- could use PersonByNameComparator (or could just use this comparator in the web layer as needed?)
 
         List<Provider> providers = dao.getProvidersByProviderRoles(roles, false);
-
         return providersToPersons(providers);
     }
 
@@ -1227,9 +1226,16 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
         
         Set<Person> persons = new HashSet<Person>();
-        
+
+        // note that simply ignores providers that are not persons
+        // TODO: is this the correct behavior
         for (Provider provider : providers) {
-            persons.add(provider.getPerson());
+            if (provider.getPerson() != null) {
+                persons.add(provider.getPerson());
+            }
+            else {
+                log.warn("Ignoring provider " + provider.getId() + " because they are not a person");
+            }
         }
 
         return new ArrayList<Person>(persons);
