@@ -21,6 +21,15 @@
 
                         jq('#advancedSearchResults_${ id } > tbody > tr').remove();
                         var tbody = jq('#advancedSearchResults_${ id } > tbody');
+
+                        // first, add the header row
+                        var headerRow = '<tr>';
+                        <% config.resultFieldLabels.each { %>
+                        headerRow += '<th> ${ it }</th>';
+                        <% } %>
+                        headerRow += '</tr>';
+                        tbody.append(headerRow);
+
                         for (index in data) {
                             var item = data[index];
                             var row = '<tr><input type="hidden" value="' + item.id + '"/>';

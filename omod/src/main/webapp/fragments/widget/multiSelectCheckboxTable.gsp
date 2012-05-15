@@ -28,7 +28,7 @@
         <table id="multiSelectCheckboxTable_${ id }">
             <thead>
                 <tr>
-                    <th colspan="${ config.columns.size + 1 }">${ config.title }</th>
+                    <th colspan="${ config.columns.size() + 1 }">${ config.title }</th>
                 </tr>
             </thead>
 
@@ -68,7 +68,7 @@
 
             <% if (config.actionButtons) { %>
                 <tr class="multiSelectActionButtons">
-                    <td colspan="${ config.columns.size + 1 }">
+                    <td colspan="${ config.columns.size() + 1 }">
                         ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
                     </td>
                 </tr>

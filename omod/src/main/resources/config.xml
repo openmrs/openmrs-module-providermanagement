@@ -54,23 +54,23 @@
 
     <globalProperty>
         <property>providermanagement.providerSearchDisplayFields</property>
-        <defaultValue>personName|provider.identifier|provider.providerRole</defaultValue>
+        <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
         <description>
-            Fields to display in the provider search box; specified as a pipe-delimited list of person or provider fields
+            Fields to display in the provider search box; specified as a pipe-delimited list of key/value pairs
         </description>
     </globalProperty>
 
     <globalProperty>
         <property>providermanagement.providerListDisplayFields</property>
-        <defaultValue>personName</defaultValue>
+        <defaultValue>Name:personName</defaultValue>
         <description>
-            Fields to display in the provider lists; specified as a pipe-delimited list of person or provider fields
+            Fields to display in the provider lists; specified as a pipe-delimited list of key/value pairs
         </description>
     </globalProperty>
 
     <globalProperty>
         <property>providermanagement.patientSearchDisplayFields</property>
-        <defaultValue>personName</defaultValue>
+        <defaultValue>Name:personName</defaultValue>
         <description>
             Fields to display in the patient search box; specified as a pipe-delimited list of patient fields
         </description>
@@ -78,25 +78,17 @@
 
     <globalProperty>
         <property>providermanagement.patientListDisplayFields</property>
-        <defaultValue>personName</defaultValue>
+        <defaultValue>Name:personName</defaultValue>
         <description>
-            Fields to display in the patient lists; specified as a pipe-delimited list of patient fields
-        </description>
-    </globalProperty>
-
-    <globalProperty>
-        <property>providermanagement.patientSearchDisplayFields</property>
-        <defaultValue>personName</defaultValue>
-        <description>
-            Fields to display in the patient search box; specified as a pipe-delimited list of patient fields
+            Fields to display in the patient lists; specified as a pipe-delimited list of key/value pairs
         </description>
     </globalProperty>
 
     <globalProperty>
         <property>providermanagement.personSearchDisplayFields</property>
-        <defaultValue>personName</defaultValue>
+        <defaultValue>Name:personName</defaultValue>
         <description>
-            Fields to display in the person searches; specified as a pipe-delimited list of person fields
+            Fields to display in the person searches; specified as a pipe-delimited list of key/value pairs
         </description>
     </globalProperty>
 

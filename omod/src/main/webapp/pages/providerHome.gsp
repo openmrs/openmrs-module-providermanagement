@@ -52,7 +52,8 @@
     <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.findProvider"),
             id: providerSearchId,
             searchAction: ui.actionLink("providerSearch", "getProviders"),
-            resultFields: providerSearchDisplayFields,
+            resultFields: providerSearchDisplayFields.values(),
+            resultFieldLabels: providerSearchDisplayFields.keySet(),
             selectIdParam: "personId",
             selectAction: ui.pageLink('providerDashboard'),
             actionButtons: [ [label: ui.message("providermanagement.advancedSearch"),
@@ -74,7 +75,8 @@
     ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.selectPerson"),
                                                 id: personSearchId,
                                                 searchAction: ui.actionLink("personSearch", "getPeople"),
-                                                resultFields: personSearchDisplayFields,
+                                                resultFields: personSearchDisplayFields.values(),
+                                                resultFieldLabels: personSearchDisplayFields.keySet(),
                                                 selectAction: ui.pageLink("providerCreate"),
                                                 selectIdParam: "person",
                                                 actionButtons: [ [label: ui.message("general.cancel"), id: "personSearchCancelButton"] ] ] ) }
@@ -86,6 +88,7 @@
     ${ ui.includeFragment("providerAdvancedSearch", [selectIdParam: "personId",
                                                      id: advancedSearchId,
                                                      selectAction: ui.pageLink('providerDashboard'),
-                                                     resultFields: providerSearchDisplayFields]) }
+                                                     resultFields: providerSearchDisplayFields.values(),
+                                                     resultFieldLabels: providerSearchDisplayFields.keySet()]) }
 
 </div>

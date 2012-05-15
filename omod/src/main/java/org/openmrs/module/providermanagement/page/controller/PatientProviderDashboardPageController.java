@@ -54,7 +54,7 @@ public class PatientProviderDashboardPageController {
 
             // if we have existing providers, add them to the results list
             if (p != null && p.size() > 0) {
-                providerMap.put(relationshipType, ProviderManagementWebUtil.convertPersonListToSimpleObjectList(p, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0])));
+                providerMap.put(relationshipType, ProviderManagementWebUtil.convertPersonListToSimpleObjectList(p, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
             }
             // otherwise, get suggestions for this relationship type
             else {
@@ -65,7 +65,7 @@ public class PatientProviderDashboardPageController {
                 providerSuggestionMap.put(relationshipType,
                         ProviderManagementWebUtil.convertPersonListToSimpleObjectList(
                                 Context.getService(ProviderSuggestionService.class).suggestProvidersForPatient(patient, relationshipType),
-                                ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().toArray(new String[0])));
+                                ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
             }
         }
 

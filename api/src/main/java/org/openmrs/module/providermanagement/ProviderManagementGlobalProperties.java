@@ -19,7 +19,9 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProviderManagementGlobalProperties {
 
@@ -40,24 +42,24 @@ public class ProviderManagementGlobalProperties {
         return l;
     }
 
-    public static final List<String> GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS() {
-        return globalPropertyToListOfStrings("providermanagement.providerSearchDisplayFields");
+    public static final Map<String,String> GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS() {
+        return globalPropertyToMap("providermanagement.providerSearchDisplayFields");
     }
 
-    public static final List<String> GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS() {
-        return globalPropertyToListOfStrings("providermanagement.providerListDisplayFields");
+    public static final Map<String,String> GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS() {
+        return globalPropertyToMap("providermanagement.providerListDisplayFields");
     }
 
-    public static final List<String> GLOBAL_PROPERTY_PATIENT_LIST_DISPLAY_FIELDS() {
-        return globalPropertyToListOfStrings("providermanagement.patientListDisplayFields");
+    public static final Map<String,String> GLOBAL_PROPERTY_PATIENT_LIST_DISPLAY_FIELDS() {
+        return globalPropertyToMap("providermanagement.patientListDisplayFields");
     }
 
-    public static final List<String> GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS() {
-        return globalPropertyToListOfStrings("providermanagement.patientSearchDisplayFields");
+    public static final Map<String,String> GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS() {
+        return globalPropertyToMap("providermanagement.patientSearchDisplayFields");
     }
 
-    public static final List<String> GLOBAL_PROPERTY_PERSON_SEARCH_DISPLAY_FIELDS() {
-        return globalPropertyToListOfStrings("providermanagement.personSearchDisplayFields");
+    public static final Map<String,String> GLOBAL_PROPERTY_PERSON_SEARCH_DISPLAY_FIELDS() {
+        return globalPropertyToMap("providermanagement.personSearchDisplayFields");
     }
 
     public static final PersonAttributeType GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE() {
@@ -71,16 +73,35 @@ public class ProviderManagementGlobalProperties {
         }
     }
 
-    public static final List<String> globalPropertyToListOfStrings(String globalPropertyName) {
+    public static final Map<String,String> globalPropertyToMap(String globalPropertyName) {
+
+        // load the appropriate global property
         String propertyValue = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-        List<String> l = new ArrayList<String>();
+
+        Map<String,String> map = new HashMap<String,String>();
         if (StringUtils.isNotBlank(propertyValue)) {
+
+            // split the global property on the pipe symbol
             for (String s: propertyValue.split("\\|"))  {
                 if (StringUtils.isNotBlank(s))  {
-                    l.add(s);
+
+                    // now split on : for each key-value pair
+                    String [] field = s.split(":");
+
+                    // ignore any malformed entries
+                    if (field != null && field.length == 2) {
+                        map.put(field[0], field[1]);
+                    }
                 }
             }
         }
-        return l;
+
+        // TODO: need to change this if this method is used for any other kind of global property
+        // if for some reason we have no entries, add name as a default
+        if (map.size() == 0) {
+            map.put("Name","personName");
+        }
+
+        return map;
     }
 }
