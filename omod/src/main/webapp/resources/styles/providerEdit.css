@@ -1,9 +1,19 @@
 
+
 .providerEdit table {
-    width: 100%
+    width: 100%;
 }
 
-.providerEdit .providerActionButtons td {
+.providerEdit .providerHeaderTable {
+    background-color: #BAD6D2;
+}
+
+.providerEdit .providerInfoTable {
+    background-color: #E7F7F4;
+}
+
+.providerEdit .providerActionButtonsTable {
+    background-color: #BAD6D2;
     text-align: center;
 }
 

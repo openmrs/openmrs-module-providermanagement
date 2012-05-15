@@ -1,8 +1,19 @@
 
 .providerView table {
-    width: 100%
+    width: 100%;
 }
 
-.providerView .providerActionButtons td {
+.providerView .providerHeaderTable {
+    background-color: #BAD6D2;
+}
+
+.providerView .providerInfoTable {
+    background-color: #E7F7F4;
+}
+
+.providerView .providerActionButtonsTable {
+    background-color: #BAD6D2;
     text-align: center;
 }
+
+

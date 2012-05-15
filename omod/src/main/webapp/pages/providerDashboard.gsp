@@ -47,58 +47,59 @@
 <% if (provider.providerRole?.isSupervisorRole()) { %>
     <div id="supervisees">
 
-        <%  def superviseeTableId = ui.randomId() %>
-        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
-                                                                    id: superviseeTableId,
-                                                                    title: ui.message("providermanagement.supervising"),
-                                                                    columns: providerListDisplayFields.values(),
-                                                                    columnLabels: providerListDisplayFields.ketSet(),
-                                                                    selectAction: ui.pageLink('providerDashboard'),
-                                                                    selectIdParam: "personId",
-                                                                    formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
-                                                                    formFieldName: "supervisees",
-                                                                    actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
+        <div id="listSupervisees">
+            <%  def superviseeTableId = ui.randomId() %>
+            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
+                                                                        id: superviseeTableId,
+                                                                        title: ui.message("providermanagement.supervising"),
+                                                                        columns: providerListDisplayFields.values(),
+                                                                        columnLabels: providerListDisplayFields.keySet(),
+                                                                        selectAction: ui.pageLink('providerDashboard'),
+                                                                        selectIdParam: "personId",
+                                                                        formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
+                                                                        formFieldName: "supervisees",
+                                                                        actionButtons: [[label: ui.message("general.remove"), type: "submit"]] ]) %>
 
-    </div>
-
-    <div id="transferSupervisees">
-        <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
-                searchAction: ui.actionLink("providerSearch", "getProviders"),
-                searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
-                resultFields: providerSearchDisplayFields.values(),
-                resultFieldLabels: providerSearchDisplayFields.keySet(),
-                selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
-                selectIdParam: "newSupervisor",
-                selectParams: [ oldSupervisor: person.id ],
-                selectForm: "multiSelectCheckboxForm_" + superviseeTableId])  %>
-    </div>
-
-
-    <div id="addSupervisee">
-        <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
-                                                        searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                                        searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
-                                                        resultFields: providerSearchDisplayFields.values(),
-                                                        resultFields: providerSearchDisplayFields.keySet(),
-                                                        selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
-                                                        selectIdParam: "supervisee",
-                                                        selectParams: [ supervisor: person.id ]  ]) %>
-    </div>
-
-    <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
-        <div id="suggestedSupervisees">
-            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
-                    title: ui.message("providermanagement.suggestedSupervisees"),
-                    columns: providerListDisplayFields.values(),
-                    columnLabels: providerListDisplayFields.keySet(),
-                    selectAction: ui.pageLink('providerDashboard'),
-                    selectIdParam: "personId",
-                    formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
-                    formFieldName: "supervisees",
-                    actionButtons: [[label: ui.message("general.add"), type: "submit"]] ]) %>
         </div>
-    <% } %>
 
+        <div id="transferSupervisees">
+            <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
+                    searchAction: ui.actionLink("providerSearch", "getProviders"),
+                    searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
+                    resultFields: providerSearchDisplayFields.values(),
+                    resultFieldLabels: providerSearchDisplayFields.keySet(),
+                    selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
+                    selectIdParam: "newSupervisor",
+                    selectParams: [ oldSupervisor: person.id ],
+                    selectForm: "multiSelectCheckboxForm_" + superviseeTableId])  %>
+        </div>
+
+
+        <div id="addSupervisee">
+            <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
+                                                            searchAction: ui.actionLink("providerSearch", "getProviders"),
+                                                            searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
+                                                            resultFields: providerSearchDisplayFields.values(),
+                                                            resultFields: providerSearchDisplayFields.keySet(),
+                                                            selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
+                                                            selectIdParam: "supervisee",
+                                                            selectParams: [ supervisor: person.id ]  ]) %>
+        </div>
+
+        <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
+            <div id="suggestedSupervisees">
+                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
+                        title: ui.message("providermanagement.suggestedSupervisees"),
+                        columns: providerListDisplayFields.values(),
+                        columnLabels: providerListDisplayFields.keySet(),
+                        selectAction: ui.pageLink('providerDashboard'),
+                        selectIdParam: "personId",
+                        formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
+                        formFieldName: "supervisees",
+                        actionButtons: [[label: ui.message("general.add"), type: "submit"]] ]) %>
+            </div>
+        <% } %>
+    </div>
 
 <% } %>
 

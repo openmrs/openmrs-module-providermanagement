@@ -50,7 +50,16 @@
     <form id="editProvider_${ id }">
         <input type="hidden" name="personId" value="${person?.id ?: ''}"/>
 
-        <table class="providerHeader">
+        <table class="providerHeaderTable">
+            <tr>
+                <td colspan="2" class="label">${ person.personName } ${ provider.retired ? '(' + ui.message("general.retired") + ')' : '' }</td>
+            </tr>
+            <tr>
+                <td colspan="2"> ${ provider.providerRole?.name ?: '' }</td>
+            </tr>
+        </table>
+
+        <table class="providerInfoTable">
 
             <!-- include the name fragment -->
             ${ ui.includeFragment("personName", [personName: person?.personName, mode: 'edit', id: id]) }
@@ -61,9 +70,7 @@
                         selected: [provider?.providerRole?.id], options: providerRoles, optionsDisplayField: 'name',
                         optionsValueField: 'id'] ) }</td>
             </tr>
-        </table>
 
-        <table class="providerInfo">
             <tr>
                 <th colspan="2">${ ui.message("providermanagement.general") }</th>
             </tr>
@@ -84,9 +91,7 @@
             <!-- TODO: add widget that allows specifying birthdate via age? -->
             <tr>
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
-                <td>${ ui.includeFragment("widget/field", [ class: java.util.Date,
-                        formFieldName: "birthdate",
-                        initialValue: person?.birthdate ]) }</td>
+                <td></td>
             </tr>
 
             <% personAttributeTypes?.each { %>
@@ -124,7 +129,7 @@
 
 
         <% if (config.actionButtons) { %>
-        <table class="providerActionButtons">
+        <table class="providerActionButtonsTable">
             <tr>
                 <td colspan="2">
                     ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons])}

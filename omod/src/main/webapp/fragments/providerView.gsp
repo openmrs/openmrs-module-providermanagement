@@ -3,7 +3,7 @@
 
 <div class="content providerView">
 
-    <table class="providerHeader">
+    <table class="providerHeaderTable">
         <tr>
             <td colspan="2" class="label">${ person.personName } ${ provider.retired ? '(' + ui.message("general.retired") + ')' : '' }</td>
         </tr>
@@ -12,7 +12,7 @@
         </tr>
     </table>
 
-    <table class="providerInfo">
+    <table class="providerInfoTable">
         <tr>
             <th colspan="2">${ ui.message("providermanagement.general") }</th>
         </tr>
@@ -59,7 +59,7 @@
 
 
     <% if (config.actionButtons) { %>
-        <table class="providerActionButtons">
+        <table class="providerActionButtonsTable">
             <tr>
                 <td colspan="2">
                     ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
