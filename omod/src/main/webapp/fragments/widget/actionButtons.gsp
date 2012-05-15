@@ -6,7 +6,7 @@
           <% } %>
         />
     <% } %>
-            <button id="${ it.id ?: ''}" type="${ it.type ?: ''}">${ it.label }</button>
+            <button id="${ it.id ?: ''}" class="${ it.class ?: ''}" type="${ it.type ?: ''}">${ it.label }</button>
     <% if (it.link) { %>
         </a>
     <% } %>

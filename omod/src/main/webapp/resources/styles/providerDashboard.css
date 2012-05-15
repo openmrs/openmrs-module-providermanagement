@@ -17,7 +17,15 @@
     top: 200px;
     left: 700px;
     width: 900px;
-    display: none;
+}
+
+#patients .multiSelectTitle th {
+    background-color: #BAD6D2;
+}
+
+#patients .multiSelectActionButtons td {
+    background-color: #00A391;
+    text-align: right;
 }
 
 #supervisors {
@@ -33,6 +41,30 @@
     top: 200px;
     left: 700px;
     width: 900px;
+    display: none;
 }
 
+#supervisees .multiSelectActionButtons td {
+    background-color: #00A391;
+    text-align: right;
+}
 
+#transferSupervisees {
+    display: none;
+}
+
+#addSupervisee {
+    display: none;
+}
+
+#suggestSupervisees {
+    display: none;
+}
+
+.transferPatients {
+    display: none;
+}
+
+.addPatient {
+    display: none;
+}

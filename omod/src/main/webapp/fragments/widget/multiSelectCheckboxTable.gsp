@@ -27,8 +27,14 @@
     
         <table id="multiSelectCheckboxTable_${ id }">
             <thead>
-                <tr>
+                <tr class="multiSelectTitle">
                     <th colspan="${ config.columns.size() + 1 }">${ config.title }</th>
+                </tr>
+                <tr class="multiSelectColumnLabels">
+                    <% config.columnLabels.each { %>
+                        <th>${ it }</th>
+                    <% } %>
+                    <th>&nbsp;</th>
                 </tr>
             </thead>
 
