@@ -75,6 +75,18 @@
             <tr>
                 <td colspan="${ config.resultFields.size }"><input id="searchField_${ id }" type="text" size="40"/></td>
             </tr>
+
+            <% if (config.actionButtons) { %>
+            <tr>
+                <td colspan="${ config.resultFields.size }">
+                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
+                </td>
+            </tr>
+            <% } %>
+
+            <tr>
+                <%
+            </tr>
         </thead>
 
         <tbody>

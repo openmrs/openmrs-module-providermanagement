@@ -1,6 +1,6 @@
 <% config.actionButtons.each { %>
     <% if (it.link) { %>
-        <a href="${ it.link }"
+        <a class="buttonLink" href="${ it.link }"
           <% if (it.confirm) { %>
             onclick="return confirm('${ it.confirm }')"
           <% } %>

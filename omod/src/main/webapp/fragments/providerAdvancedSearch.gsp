@@ -19,8 +19,8 @@
             })
                     .success(function(data) {
 
-                        jq('#advancedSearchTable_${ id } > tbody > tr').remove();
-                        var tbody = jq('#advancedSearchTable_${ id } > tbody');
+                        jq('#advancedSearchResults_${ id } > tbody > tr').remove();
+                        var tbody = jq('#advancedSearchResults_${ id } > tbody');
                         for (index in data) {
                             var item = data[index];
                             var row = '<tr><input type="hidden" value="' + item.id + '"/>';
@@ -32,7 +32,7 @@
                         }
 
                         // configure the action that occurs on a row click
-                        jq('#advancedSearchTable_${ id } > tbody > tr').click(function() {
+                        jq('#advancedSearchResults_${ id } > tbody > tr').click(function() {
                             window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\' + ' }
                                     <% if (config.selectParams) { %>
                                     '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
@@ -41,10 +41,10 @@
                         });
 
                         // configure highlighting
-                        jq('#advancedSearchTable_${ id } > tbody > tr').mouseover(function() {
+                        jq('#advancedSearchResults_${ id } > tbody > tr').mouseover(function() {
                             jq(this).addClass('highlighted');
                         });
-                        jq('#advancedSearchTable_${ id } > tbody > tr').mouseout(function() {
+                        jq('#advancedSearchResults_${ id } > tbody > tr').mouseout(function() {
                             jq(this).removeClass('highlighted');
                         });
                     })
@@ -57,9 +57,8 @@
 </script>
 
 <div class="advancedSearch content">
-    <form id="advancedSearchForm_${ id }" name="fubar"/>
-        <table id="advancedSearchTable_${ id }">
-            <thead>
+    <form id="advancedSearchForm_${ id }"/>
+        <table id="advancedSearchForm_${ id }">
             <th colspan="2" class="label">
                 ${ ui.message("providermanagement.findProviderAdvanced") }
             </th>
@@ -116,12 +115,15 @@
             </tr>
 
             <tr>
-                <td colspan="2">
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [type: "submit", label: ui.message("general.search")] ]]) }
+                <td colspan="2" align="center">
+                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [type: "submit", id: "searchButton_" + id, label: ui.message("general.search")],
+                                                                                    [type: "reset", id: "cancelButton_" + id, label: ui.message("general.cancel")] ]]) }
                 </td>
             </tr>
 
-            </thead>
+        </table>
+
+        <table id="advancedSearchResults_${ id }">
 
             <tbody>
 

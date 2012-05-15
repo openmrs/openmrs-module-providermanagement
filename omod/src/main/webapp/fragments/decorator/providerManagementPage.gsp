@@ -1,6 +1,6 @@
-<% ui.decorateWith("standardPage") %>
+${ ui.includeFragment("standardIncludes") }
 
-<% ui.includeCss("providermanagement", "providermanagement.css") %>
+<% ui.includeCss("providermanagement", "providerManagement.css") %>
 
 <% ui.includeJavascript("jquery.js") %>
 
@@ -8,4 +8,15 @@
     var jq = jQuery;
 </script>
 
-${ config.content }
+
+<div id="providerHeader">
+    <!-- banner -->
+    ${ ui.includeFragment("providerManagementBanner") }
+
+    <!-- include the menu -->
+    ${ ui.includeFragment("providerManagementMenu") }
+</div>
+
+<div id="content">
+    ${ config.content }
+</div>

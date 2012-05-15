@@ -5,11 +5,12 @@ table {
 
 th {
     font-weight: bold;
-    background-color: #ffd700;
+    background-color: #A1B5B1;
 }
 
 .content {
-    background-color: #e0ffff;
+    background-color: #E7F7F4;
+    position: relative;
 }
 
 .label {
@@ -18,6 +19,19 @@ th {
 
 .highlighted {
     background-color: yellow;
+}
+
+button {
+    background-color: white;
+    font-weight: bold;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+}
+
+.buttonLink {
+    text-decoration: none;
 }
 
 #adminMenu {
