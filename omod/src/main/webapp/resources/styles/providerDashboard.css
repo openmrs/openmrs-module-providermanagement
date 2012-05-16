@@ -59,9 +59,8 @@
     background-color: #00A391;
 }
 
-/* Patient section */
 
-.patients {
+.pane {
     position: absolute;
     top: 240px;
     left: 625px;
@@ -69,55 +68,25 @@
     display: none;
 }
 
-.patients .multiSelectTitle th {
+.pane .multiSelectTitle th {
     background-color: #BAD6D2;
 }
 
-.patients .multiSelectActionButtons td {
+.pane .multiSelectActionButtons td {
     background-color: #00A391;
     text-align: right;
 }
 
-.transferPatients {
+.transfer {
     display: none;
 }
 
-.addPatient {
+.add {
     display: none;
 }
 
-/* Supervisors section */
 
-#supervisors {
-    position: absolute;
-    top: 240px;
-    left: 625px;
-    width: 900px;
-    display: none;
-}
-
-/* Supervisees section */
-
-#supervisees {
-    position: absolute;
-    top: 240px;
-    left: 625px;
-    width: 900px;
-    display: none;
-}
-
-#supervisees .multiSelectActionButtons td {
-    background-color: #00A391;
-    text-align: right;
-}
-
-#transferSupervisees {
-    display: none;
-}
-
-#addSupervisee {
-    display: none;
-}
+/* TODO: finish this */
 
 #suggestSupervisees {
     display: none;

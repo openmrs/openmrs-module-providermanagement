@@ -75,14 +75,14 @@
 </script>
 
 <div class="content ajaxSearch">
-    <table id="searchTable_${ id }">
+    <table id="searchTable_${ id }" class="searchTable">
         <thead>
             <tr>
                 <th colspan="${ config.resultFields.size() }">${ config.title }</th>
             </tr>
 
             <tr>
-                <td colspan="${ config.resultFields.size() }"><input id="searchField_${ id }" type="text" size="40"/></td>
+                <td colspan="${ config.resultFields.size() }"><input id="searchField_${ id }" class="searchField" type="text" size="40"/></td>
             </tr>
 
             <% if (config.actionButtons) { %>

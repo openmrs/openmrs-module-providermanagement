@@ -2,6 +2,12 @@
 <% ui.decorateWith("providerManagementPage")
    ui.includeCss("providermanagement", "providerDashboard.css")
 
+    // add the uuids we are going to use to identify each panel
+    // (note that we remember these so that we know what panel to open on reload
+    def superviseesId = "83814a90-9f89-11e1-a8b0-0800200c9a66"
+    def supervisorsId = "a4ce1250-9f89-11e1-a8b0-0800200c9a66"
+
+   // TODO: remove these
    def transferSuperviseesSearchId = ui.randomId()
    def addSuperviseeSearchId = ui.randomId()
    def superviseeTableId = ui.randomId()
@@ -17,8 +23,6 @@
             jq('#providerView').hide();
             jq('#relationshipsPanel').hide();
             jq('#providerEdit').show();
-
-
         });
 
         jq('#cancelEditButton').click(function() {
@@ -27,115 +31,91 @@
             jq('#relationshipsPanel').show();
         });
 
-        // handles showing the patients pane
-        jq('.patientPaneSelect').click(function(){
+        // handles showing the appropriate pane
+        jq('.paneSelect').click(function(){
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
             // remove any existing hightlights from the table
-            jq('.paneSelect').removeClass('selected');
+            jq('.paneSelectTop').removeClass('selected');
+            jq('.paneSelectBottom').removeClass('selected');
 
-            // hide any existing panes on display
-            jq('#supervisees').hide();
-            jq('#supervisors').hide();
-            jq('.patients').hide();
+            // hide any existing panels on display
+            jq('.pane').hide();
+
+            // hide the add and transfer sections sections
+            jq('.add').hide();
+            jq('.transfer').hide();
+
+            // clear out any existing search values
+            jq('.searchField}').val('');
+            jq('.searchTable > tbody > tr').remove();
+
 
             // highlight selection and show the appropriate patient pane
-            jq('#patientPaneSelectTop_' + id).addClass('selected');
-            jq('#patientPaneSelectBottom_' + id).addClass('selected');
-            jq('#patient_' + id).show();
+            jq('#paneSelectTop_' + id).addClass('selected');
+            jq('#paneSelectBottom_' + id).addClass('selected');
+            jq('#pane_' + id).show();
         });
 
 
-        // handles showing the supervisee pane
-        jq('.superviseePaneSelect').click(function() {
-            // remove any existing highlights from the table
-            jq('.paneSelect').removeClass('selected');
+        // handles displaying the transfer divs
+        jq('.transferButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
 
-            // hide any existing panes on display
-            jq('#supervisors').hide();
-            jq('.patients').hide();
+            // hide the add sections
+            jq('.add').hide();
 
-            // highlight selection and show the supervisee pane
-            jq('.superviseePaneSelect').addClass('selected');
-            jq('#supervisees').show();
-        });
+            // clear out any existing search values
+            jq('.searchField}').val('');
+            jq('.searchTable > tbody > tr').remove();
 
-        // handles showing the supervisor pane
-        jq('.supervisorPaneSelect').click(function() {
-            // remove any existing highlights from the table
-            jq('.paneSelect').removeClass('selected');
-
-            // hide any existing panes on display
-            jq('#supervisees').hide();
-            jq('.patients').hide();
-
-            // highlight selection and show supervisor panel
-            jq('.supervisorPaneSelect').addClass('selected');
-            jq('#supervisors').show();
-        });
-
-
-        // handles showing/hiding the add and transfer panes within the supervisees pane
-        jq('#transferSuperviseesButton').click(function() {
-            jq('#addSupervisee').hide();
-            // clear out the add supervisee search form
-            jq('#searchField_${ addSuperviseeSearchId }').val('');
-            jq('#searchTable_${ addSuperviseeSearchId } > tbody > tr').remove();
-
-            jq('#suggestSupervisees').hide();
-            jq('#transferSupervisees').show();
+            // show the appropriate transfer div
+            jq('#transfer_' + id).show();
         }) ;
 
-        jq('#transferSuperviseesCancelButton').click(function() {
-            jq('#transferSupervisees').hide();
+        // handles clicking the transfer cancel button
+        jq('.transferCancelButton').click(function() {
+            // hide the transfer section
+            jq('.transfer').hide();
 
-            // clear out the transfer supervisees search form
-            jq('#searchField_${ transferSuperviseesSearchId }').val('');
-            jq('#searchTable_${ transferSuperviseesSearchId } > tbody > tr').remove();
+            // clear out any existing search values
+            jq('.searchField}').val('');
+            jq('.searchTable > tbody > tr').remove();
         });
 
-        jq('#addSuperviseeButton').click(function() {
-            jq('#transferSupervisees').hide();
-            // clear out the transfer supervisees search form
-            jq('#searchField_${ transferSuperviseesSearchId }').val('');
-            jq('#searchTable_${ transferSuperviseesSearchId } > tbody > tr').remove();
-
-            jq('#suggestSupervisees').hide();
-            jq('#addSupervisee').show();
-        });
-
-        jq('#addSuperviseeCancelButton').click(function() {
-            jq('#addSupervisee').hide();
-
-            // clear out the add supervisees search form
-            jq('#searchField_${ addSuperviseeSearchId }').val('');
-            jq('#searchTable_${ addSuperviseeSearchId } > tbody > tr').remove();
-        });
-
-        // handles showing/hiding the add and transfer panes within the patient pane
-        jq('.addPatientButton').click(function() {
+        // handles clicking on the add buttons
+        jq('.addButton').click(function() {
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
-            // clear out the associated transfer patients form
-            jq('#searchField_' + id).val('');
-            jq('#searchTable_' + id + ' > tbody > tr').remove();
+           // hide the transfer sections
+            jq('.transfer').hide();
 
-            jq('#addPatient_' + id).show();
+            // clear out any existing search values
+            jq('.searchField}').val('');
+            jq('.searchTable > tbody > tr').remove();
+
+            // show the appropriate add div
+            jq('#add_' + id).show();
         });
 
-        jq('.addPatientCancelButton').click(function() {
-            // first fetch the id of the pane we are dealing with
-            var id = jq(this).attr('id').split("_")[1];
+        // handles clicking the add cancel button
+        jq('.addCancelButton').click(function() {
+            // hide the transfer section
+            jq('.add').hide();
 
-            jq('#addPatient_' + id).hide();
-
-            // clear out the add patients search form
-            jq('#searchField_' + id).val('');
-            jq('#searchTable_' + id + ' > tbody > tr').remove();
+            // clear out any existing search values
+            jq('.searchField}').val('');
+            jq('.searchTable > tbody > tr').remove();
         });
 
+        jq(document).ready(function(){
+            jq('.pane:first').show();
+            jq('.paneSelectTop:first').addClass('selected');
+            jq('.paneSelectBottom:first').addClass('selected');
+        });
     });
 </script>
 
@@ -163,14 +143,14 @@
                 <td class="borderCell">&nbsp;</td>
 
                 <% patientMap?.each { %>
-                    <td id="patientPaneSelectTop_${ it.key.id }" class="patientPaneSelect paneSelect"> <img src=" ${ ui.resourceLink ("images/patient-nested.png") }"/></td>
+                    <td id="paneSelectTop_${ it.key.uuid }" class="paneSelectTop paneSelect"> <img src=" ${ ui.resourceLink ("images/patient-nested.png") }"/></td>
                 <% } %>
 
                 <% if (provider.providerRole?.isSupervisorRole()) { %>
-                    <td class="superviseePaneSelect paneSelect"> <img src=" ${ ui.resourceLink ("images/supervisee-nested.png") }"/></td>
+                    <td id="paneSelectTop_${ superviseesId }" class="paneSelectTop paneSelect"> <img src=" ${ ui.resourceLink ("images/supervisee-nested.png") }"/></td>
                 <% } %>
 
-                <td class="supervisorPaneSelect paneSelect"> <img src=" ${ ui.resourceLink ("images/supervisor-nested.png") }"/></td>
+                <td id="paneSelectTop_${ supervisorsId }" class="paneSelectTop paneSelect"> <img src=" ${ ui.resourceLink ("images/supervisor-nested.png") }"/></td>
 
                 <td class="borderCell">&nbsp;</td>
             </tr>
@@ -178,14 +158,14 @@
                 <td>&nbsp;</td>
 
                 <% patientMap?.each { %>
-                    <td id="patientPaneSelectBottom_${ it.key.id }" class="patientPaneSelect paneSelect">${ it.key.aIsToB }<br/>${ ui.message("providermanagement.patients") }</td>
+                    <td id="paneSelectBottom_${ it.key.uuid }" class="paneSelectBottom paneSelect">${ it.key.aIsToB }<br/>${ ui.message("providermanagement.patients") }</td>
                 <% } %>
 
                 <% if (provider.providerRole?.isSupervisorRole()) { %>
-                    <td class="superviseePaneSelect paneSelect">${ ui.message("providermanagement.supervisees") }</td>
+                    <td id="paneSelectBottom_${ superviseesId }" class="paneSelectBottom paneSelect">${ ui.message("providermanagement.supervisees") }</td>
                 <% } %>
 
-                <td class="supervisorPaneSelect paneSelect">${ ui.message("providermanagement.supervisors") }</td>
+                <td id="paneSelectBottom_${ supervisorsId }" class="paneSelectBottom paneSelect">${ ui.message("providermanagement.supervisors") }</td>
 
                 <td>&nbsp;</td>
             </tr>
@@ -197,7 +177,52 @@
 
     </div>
 
-    <div id="supervisors">
+        <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
+    <% patientMap?.each {   %>
+
+        <div id="pane_${ it.key.uuid }" class="pane">
+
+            <div id="list_${ it.key.uuid }" class="list">
+                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
+                        id: it.key.uuid,
+                        columns: patientListDisplayFields.values(),
+                        columnLabels: patientListDisplayFields.keySet(),
+                        formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id ]),
+                        formFieldName: "patients",
+                        actionButtons: [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
+                                        [label: ui.message("providermanagement.transfer"), id: "transferButton_${ it.key.uuid }", class: "transferButton", type: "button"],
+                                        [label: ui.message("general.remove"), type: "submit"]] ]) %>
+            </div>
+
+            <div id="transfer_${ it.key.uuid }" class="transfer">
+                <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferPatients"),
+                        searchAction: ui.actionLink("providerSearch", "getProviders"),
+                        searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
+                        resultFields: providerSearchDisplayFields.values(),
+                        resultFieldLabels: providerSearchDisplayFields.keySet(),
+                        selectAction: ui.actionLink('providerEdit', 'transferPatients'),
+                        selectIdParam: "newProvider",
+                        selectParams: [ oldProvider: person.id, relationshipType: it.key.id, paneId: it.key.uuid ],
+                        selectForm: "multiSelectCheckboxForm_" + it.key.uuid,
+                        actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]] ])  %>
+            </div>
+
+            <div id="add_${ it.key.uuid }" class="add">
+                <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
+                        searchAction: ui.actionLink("patientSearch", "getPatients"),
+                        searchParams: [excludePatientsOf: person.id, existingRelationshipTypeToExclude: it.key.id ],
+                        resultFields: patientSearchDisplayFields.values(),
+                        resultFieldLabels: patientSearchDisplayFields.keySet(),
+                        selectAction: ui.actionLink('providerEdit', 'addPatient'),
+                        selectIdParam: "patient",
+                        selectParams: [ provider: person.id, relationshipType: it.key.id, paneId: it.key.uuid ],
+                        actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "addCancelButton"]] ])  %>
+            </div>
+
+        </div>
+    <% } %>
+
+    <div id="pane_${ supervisorsId }" class="pane">
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisors.sort { item -> item.personName?.toString() },
                 columns: providerListDisplayFields.values(),
                 columnLabels: providerListDisplayFields.keySet(),
@@ -206,113 +231,69 @@
 
     </div>
 
+
     <% if (provider.providerRole?.isSupervisorRole()) { %>
-        <div id="supervisees">
+    <div id="pane_${ superviseesId }" class="pane">
 
-            <div id="listSupervisees">
-                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
-                                                                            id: superviseeTableId,
-                                                                            columns: providerListDisplayFields.values(),
-                                                                            columnLabels: providerListDisplayFields.keySet(),
-                                                                            selectAction: ui.pageLink('providerDashboard'),
-                                                                            selectIdParam: "personId",
-                                                                            formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
-                                                                            formFieldName: "supervisees",
-                                                                            actionButtons: [[label: ui.message("general.add"), id: "addSuperviseeButton", type: "button"],
-                                                                                            [label: ui.message("providermanagement.transfer"), id: "transferSuperviseesButton", type: "button"],
-                                                                                            [label: ui.message("providermanagement.suggest"), id: "suggestSuperviseesButton", type: "button"],
-                                                                                            [label: ui.message("general.remove"), type: "submit"]] ]) %>
-
-            </div>
-
-            <div id="transferSupervisees">
-                <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
-                        id: transferSuperviseesSearchId,
-                        searchAction: ui.actionLink("providerSearch", "getProviders"),
-                        searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
-                        resultFields: providerSearchDisplayFields.values(),
-                        resultFieldLabels: providerSearchDisplayFields.keySet(),
-                        selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
-                        selectIdParam: "newSupervisor",
-                        selectParams: [ oldSupervisor: person.id ],
-                        selectForm: "multiSelectCheckboxForm_" + superviseeTableId,
-                        actionButtons: [[label: ui.message("general.cancel"), id: "transferSuperviseesCancelButton"]] ])  %>
-            </div>
-
-
-            <div id="addSupervisee">
-                <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
-                                                                id: addSuperviseeSearchId,
-                                                                searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                                                searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
-                                                                resultFields: providerSearchDisplayFields.values(),
-                                                                resultFieldLabels: providerSearchDisplayFields.keySet(),
-                                                                selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
-                                                                selectIdParam: "supervisee",
-                                                                selectParams: [ supervisor: person.id ],
-                                                                actionButtons: [[label: ui.message("general.cancel"), id: "addSuperviseeCancelButton"]] ])  %>
-            </div>
-
-            <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
-                <div id="suggestedSupervisees">
-                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
-                            title: ui.message("providermanagement.suggestedSupervisees"),
-                            columns: providerListDisplayFields.values(),
-                            columnLabels: providerListDisplayFields.keySet(),
-                            selectAction: ui.pageLink('providerDashboard'),
-                            selectIdParam: "personId",
-                            formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
-                            formFieldName: "supervisees",
-                            actionButtons: [[label: ui.message("general.add"), type: "submit"]] ]) %>
-                </div>
-            <% } %>
-        </div>
-
-    <% } %>
-
-
-        <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
-    <% patientMap?.each {   %>
-
-        <div id="patient_${ it.key.id }" class="patients">
-
-            <div id="listPatients_${ it.key.id }" class="listPatients">
-                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
-                        id: it.key.id,
-                        columns: patientListDisplayFields.values(),
-                        columnLabels: patientListDisplayFields.keySet(),
-                        formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id ]),
-                        formFieldName: "patients",
-                        actionButtons: [[label: ui.message("general.add"), id: "addPatientButton_${ it.key.id }", class: "addPatientButton", type: "button"],
-                                        [label: ui.message("providermanagement.transfer"), id: "transferPatientsButton_${ it.key.id }", class: "transferPatientsButton", type: "button"],
-                                        [label: ui.message("general.remove"), type: "submit"]] ]) %>
-            </div>
-
-            <div id="transferPatients_${ it.key.id }" class="transferPatients">
-                <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferPatients"),
-                        searchAction: ui.actionLink("providerSearch", "getProviders"),
-                        searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
-                        resultFields: providerSearchDisplayFields.values(),
-                        resultFieldLabels: providerSearchDisplayFields.keySet(),
-                        selectAction: ui.actionLink('providerEdit', 'transferPatients'),
-                        selectIdParam: "newProvider",
-                        selectParams: [ oldProvider: person.id, relationshipType: it.key.id ],
-                        selectForm: "multiSelectCheckboxForm_" + it.key.id])  %>
-            </div>
-
-            <div id="addPatient_${ it.key.id }" class="addPatient">
-                <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
-                        searchAction: ui.actionLink("patientSearch", "getPatients"),
-                        searchParams: [excludePatientsOf: person.id, existingRelationshipTypeToExclude: it.key.id ],
-                        resultFields: patientSearchDisplayFields.values(),
-                        resultFieldLabels: patientSearchDisplayFields.keySet(),
-                        selectAction: ui.actionLink('providerEdit', 'addPatient'),
-                        selectIdParam: "patient",
-                        selectParams: [ provider: person.id, relationshipType: it.key.id ],
-                        actionButtons: [[label: ui.message("general.cancel"), id: "addPatientCancelButton_${ it.key.id }", class: "addPatientCancelButton"]] ])  %>
-            </div>
+        <div id="list_${ superviseesId }" class="list">
+            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
+                    id: superviseeTableId,
+                    columns: providerListDisplayFields.values(),
+                    columnLabels: providerListDisplayFields.keySet(),
+                    selectAction: ui.pageLink('providerDashboard'),
+                    selectIdParam: "personId",
+                    formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
+                    formFieldName: "supervisees",
+                    actionButtons: [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
+                            [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
+                            [label: ui.message("providermanagement.suggest"), id: "suggestButton_${ superviseesId }", class: "suggestButton", type: "button"],
+                            [label: ui.message("general.remove"), type: "submit"]] ]) %>
 
         </div>
+
+        <div id="transfer_${ superviseesId }" class="transfer">
+            <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
+                    id: transferSuperviseesSearchId,
+                    searchAction: ui.actionLink("providerSearch", "getProviders"),
+                    searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
+                    resultFields: providerSearchDisplayFields.values(),
+                    resultFieldLabels: providerSearchDisplayFields.keySet(),
+                    selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
+                    selectIdParam: "newSupervisor",
+                    selectParams: [ oldSupervisor: person.id, paneId: superviseesId ],
+                    selectForm: "multiSelectCheckboxForm_" + superviseeTableId,
+                    actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]] ])  %>
+        </div>
+
+
+        <div id="add_${ superviseesId }" class="add">
+            <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
+                    id: addSuperviseeSearchId,
+                    searchAction: ui.actionLink("providerSearch", "getProviders"),
+                    searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
+                    resultFields: providerSearchDisplayFields.values(),
+                    resultFieldLabels: providerSearchDisplayFields.keySet(),
+                    selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
+                    selectIdParam: "supervisee",
+                    selectParams: [ supervisor: person.id, paneId: superviseesId ],
+                    actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]] ])  %>
+        </div>
+
+        <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
+        <div id="suggestedSupervisees">
+            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
+                    title: ui.message("providermanagement.suggestedSupervisees"),
+                    columns: providerListDisplayFields.values(),
+                    columnLabels: providerListDisplayFields.keySet(),
+                    selectAction: ui.pageLink('providerDashboard'),
+                    selectIdParam: "personId",
+                    formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
+                    formFieldName: "supervisees",
+                    actionButtons: [[label: ui.message("general.add"), type: "submit"]] ]) %>
+        </div>
+        <% } %>
+    </div>
+
     <% } %>
 
 
