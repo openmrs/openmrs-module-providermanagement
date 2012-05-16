@@ -1,45 +1,107 @@
 
-#providerView {
+/* Provider info section */
+
+#providerTopBar {
     position: absolute;
     top: 100px;
+    width: 600px;
+    height: 22px;
+    background-color: #00A391;
+}
+
+#providerView {
+    position: absolute;
+    top: 120px;
     width: 600px;
 }
 
 #providerEdit {
     position: absolute;
-    top: 100px;
+    top: 120px;
     width: 600px;
     display: none;
 }
 
-#patients {
+/* The right-hand header section */
+#patientSupervisorHeader {
     position: absolute;
-    top: 200px;
-    left: 700px;
+    top: 100px;
+    left: 625px;
     width: 900px;
+    height: 120px;
 }
 
-#patients .multiSelectTitle th {
-    background-color: #BAD6D2;
+#patientSupervisorHeader table {
+    height: 100%;
 }
 
-#patients .multiSelectActionButtons td {
+#patientSupervisorHeader .borderCell {
+    width: 30%;
+}
+
+#patientSupervisorHeader td {
+    font-size: 0.9em;
+    padding-left: 20px;
+    padding-top: 10px
+}
+
+#patientSupervisorHeader .selected {
     background-color: #00A391;
-    text-align: right;
+    color: #FFFFFF;
 }
 
-#supervisors {
+#patientSupervisorHeaderDivider {
     position: absolute;
-    top: 200px;
-    left: 700px;
+    top: 220px;
+    left: 625px;
+    width: 900px;
+    height: 22px;
+    background-color: #00A391;
+}
+
+/* Patient section */
+
+.patients {
+    position: absolute;
+    top: 240px;
+    left: 625px;
     width: 900px;
     display: none;
 }
 
+.patients .multiSelectTitle th {
+    background-color: #BAD6D2;
+}
+
+.patients .multiSelectActionButtons td {
+    background-color: #00A391;
+    text-align: right;
+}
+
+.transferPatients {
+    display: none;
+}
+
+.addPatient {
+    display: none;
+}
+
+/* Supervisors section */
+
+#supervisors {
+    position: absolute;
+    top: 240px;
+    left: 625px;
+    width: 900px;
+    display: none;
+}
+
+/* Supervisees section */
+
 #supervisees {
     position: absolute;
-    top: 200px;
-    left: 700px;
+    top: 240px;
+    left: 625px;
     width: 900px;
     display: none;
 }
@@ -61,10 +123,3 @@
     display: none;
 }
 
-.transferPatients {
-    display: none;
-}
-
-.addPatient {
-    display: none;
-}

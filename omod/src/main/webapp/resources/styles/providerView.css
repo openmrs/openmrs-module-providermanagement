@@ -12,8 +12,12 @@
 }
 
 .providerView .providerActionButtonsTable {
-    background-color: #BAD6D2;
+    background-color: #00A391;
     text-align: center;
+}
+
+.providerView th,td {
+    padding-left: 10px;
 }
 
 

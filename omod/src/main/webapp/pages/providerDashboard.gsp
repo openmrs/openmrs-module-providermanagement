@@ -1,15 +1,18 @@
 
 <% ui.decorateWith("providerManagementPage")
    ui.includeCss("providermanagement", "providerDashboard.css")
+
    def transferSuperviseesSearchId = ui.randomId()
    def addSuperviseeSearchId = ui.randomId()
-   def superviseeTableId = ui.randomId()  %>
+   def superviseeTableId = ui.randomId()
+%>
 
 <!-- TODO: permissions! -->
 
 <script>
     jq(function() {
-        // buttons
+
+        // handles showing/hiding the provider edit pane
         jq('#showEditButton').click(function() {
             jq('#providerView').hide();
             jq('#relationshipsPanel').hide();
@@ -24,6 +27,56 @@
             jq('#relationshipsPanel').show();
         });
 
+        // handles showing the patients pane
+        jq('.patientPaneSelect').click(function(){
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
+            // remove any existing hightlights from the table
+            jq('.paneSelect').removeClass('selected');
+
+            // hide any existing panes on display
+            jq('#supervisees').hide();
+            jq('#supervisors').hide();
+            jq('.patients').hide();
+
+            // highlight selection and show the appropriate patient pane
+            jq('#patientPaneSelectTop_' + id).addClass('selected');
+            jq('#patientPaneSelectBottom_' + id).addClass('selected');
+            jq('#patient_' + id).show();
+        });
+
+
+        // handles showing the supervisee pane
+        jq('.superviseePaneSelect').click(function() {
+            // remove any existing highlights from the table
+            jq('.paneSelect').removeClass('selected');
+
+            // hide any existing panes on display
+            jq('#supervisors').hide();
+            jq('.patients').hide();
+
+            // highlight selection and show the supervisee pane
+            jq('.superviseePaneSelect').addClass('selected');
+            jq('#supervisees').show();
+        });
+
+        // handles showing the supervisor pane
+        jq('.supervisorPaneSelect').click(function() {
+            // remove any existing highlights from the table
+            jq('.paneSelect').removeClass('selected');
+
+            // hide any existing panes on display
+            jq('#supervisees').hide();
+            jq('.patients').hide();
+
+            // highlight selection and show supervisor panel
+            jq('.supervisorPaneSelect').addClass('selected');
+            jq('#supervisors').show();
+        });
+
+
+        // handles showing/hiding the add and transfer panes within the supervisees pane
         jq('#transferSuperviseesButton').click(function() {
             jq('#addSupervisee').hide();
             // clear out the add supervisee search form
@@ -32,7 +85,7 @@
 
             jq('#suggestSupervisees').hide();
             jq('#transferSupervisees').show();
-        })
+        }) ;
 
         jq('#transferSuperviseesCancelButton').click(function() {
             jq('#transferSupervisees').hide();
@@ -40,7 +93,7 @@
             // clear out the transfer supervisees search form
             jq('#searchField_${ transferSuperviseesSearchId }').val('');
             jq('#searchTable_${ transferSuperviseesSearchId } > tbody > tr').remove();
-        })
+        });
 
         jq('#addSuperviseeButton').click(function() {
             jq('#transferSupervisees').hide();
@@ -50,41 +103,45 @@
 
             jq('#suggestSupervisees').hide();
             jq('#addSupervisee').show();
-        })
-
-        jq('#addSupervisee').dialog();
+        });
 
         jq('#addSuperviseeCancelButton').click(function() {
             jq('#addSupervisee').hide();
 
-            // clear out the transfer supervisees search form
+            // clear out the add supervisees search form
             jq('#searchField_${ addSuperviseeSearchId }').val('');
             jq('#searchTable_${ addSuperviseeSearchId } > tbody > tr').remove();
-        })
+        });
 
-        // bound to a click on any of the transfer patient buttons
-        jq('.transferPatientsButton').click(function() {
-
-            // first figure out the id of thie button
+        // handles showing/hiding the add and transfer panes within the patient pane
+        jq('.addPatientButton').click(function() {
+            // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
-            // hide and clear all add and transfer patient divs
-            jq('.addPatient').hide();
-            jq('.transferPatients').hide();
+            // clear out the associated transfer patients form
+            jq('#searchField_' + id).val('');
+            jq('#searchTable_' + id + ' > tbody > tr').remove();
 
-            // now show the appropriate transfer div
-            jq('#transferPatients_' + id).show();
+            jq('#addPatient_' + id).show();
+        });
 
+        jq('.addPatientCancelButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
 
+            jq('#addPatient_' + id).hide();
 
-            // clear out the add supervisee search form
-            //jq('#searchField_${ addSuperviseeSearchId }').val('');
-            //jq('#searchTable_${ addSuperviseeSearchId } > tbody > tr').remove();
+            // clear out the add patients search form
+            jq('#searchField_' + id).val('');
+            jq('#searchTable_' + id + ' > tbody > tr').remove();
+        });
 
-            //jq('#transferSupervisees').show();
-        })
     });
 </script>
+
+<div id="providerTopBar">
+
+</div>
 
 <div id="providerView">
     ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEditButton"],
@@ -100,9 +157,48 @@
 
 <div id="relationshipsPanel">
 
+    <div id="patientSupervisorHeader">
+        <table>
+            <tr>
+                <td class="borderCell">&nbsp;</td>
+
+                <% patientMap?.each { %>
+                    <td id="patientPaneSelectTop_${ it.key.id }" class="patientPaneSelect paneSelect"> <img src=" ${ ui.resourceLink ("images/patient-nested.png") }"/></td>
+                <% } %>
+
+                <% if (provider.providerRole?.isSupervisorRole()) { %>
+                    <td class="superviseePaneSelect paneSelect"> <img src=" ${ ui.resourceLink ("images/supervisee-nested.png") }"/></td>
+                <% } %>
+
+                <td class="supervisorPaneSelect paneSelect"> <img src=" ${ ui.resourceLink ("images/supervisor-nested.png") }"/></td>
+
+                <td class="borderCell">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+
+                <% patientMap?.each { %>
+                    <td id="patientPaneSelectBottom_${ it.key.id }" class="patientPaneSelect paneSelect">${ it.key.aIsToB }<br/>${ ui.message("providermanagement.patients") }</td>
+                <% } %>
+
+                <% if (provider.providerRole?.isSupervisorRole()) { %>
+                    <td class="superviseePaneSelect paneSelect">${ ui.message("providermanagement.supervisees") }</td>
+                <% } %>
+
+                <td class="supervisorPaneSelect paneSelect">${ ui.message("providermanagement.supervisors") }</td>
+
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div id="patientSupervisorHeaderDivider">
+
+    </div>
+
     <div id="supervisors">
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisors.sort { item -> item.personName?.toString() },
-                title: ui.message("providermanagement.supervisedBy"),
                 columns: providerListDisplayFields.values(),
                 columnLabels: providerListDisplayFields.keySet(),
                 selectAction: ui.pageLink('providerDashboard'),
@@ -116,7 +212,6 @@
             <div id="listSupervisees">
                 <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
                                                                             id: superviseeTableId,
-                                                                            title: '',
                                                                             columns: providerListDisplayFields.values(),
                                                                             columnLabels: providerListDisplayFields.keySet(),
                                                                             selectAction: ui.pageLink('providerDashboard'),
@@ -175,25 +270,25 @@
 
     <% } %>
 
-    <div id="patients">
-        <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
-        <% patientMap?.each {
-             def id = ui.randomId()   %>
 
-            <div id="listPatients_${ id }" class="listPatients">
+        <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
+    <% patientMap?.each {   %>
+
+        <div id="patient_${ it.key.id }" class="patients">
+
+            <div id="listPatients_${ it.key.id }" class="listPatients">
                 <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
-                        id: id,
-                        title: it.key.aIsToB  + " " + ui.message("providermanagement.patients"),
+                        id: it.key.id,
                         columns: patientListDisplayFields.values(),
                         columnLabels: patientListDisplayFields.keySet(),
                         formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id ]),
                         formFieldName: "patients",
-                        actionButtons: [[label: ui.message("general.add"), id: "addPatientButton_${ id }", class: "addPatientButton", type: "button"],
-                                        [label: ui.message("providermanagement.transfer"), id: "transferPatientsButton_${ id }", class: "transferPatientsButton", type: "button"],
+                        actionButtons: [[label: ui.message("general.add"), id: "addPatientButton_${ it.key.id }", class: "addPatientButton", type: "button"],
+                                        [label: ui.message("providermanagement.transfer"), id: "transferPatientsButton_${ it.key.id }", class: "transferPatientsButton", type: "button"],
                                         [label: ui.message("general.remove"), type: "submit"]] ]) %>
             </div>
 
-            <div id="transferPatients_${ id }" class="transferPatients">
+            <div id="transferPatients_${ it.key.id }" class="transferPatients">
                 <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferPatients"),
                         searchAction: ui.actionLink("providerSearch", "getProviders"),
                         searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
@@ -202,10 +297,10 @@
                         selectAction: ui.actionLink('providerEdit', 'transferPatients'),
                         selectIdParam: "newProvider",
                         selectParams: [ oldProvider: person.id, relationshipType: it.key.id ],
-                        selectForm: "multiSelectCheckboxForm_" + id])  %>
+                        selectForm: "multiSelectCheckboxForm_" + it.key.id])  %>
             </div>
 
-            <div id="addPatient_${ id }" class="addPatient">
+            <div id="addPatient_${ it.key.id }" class="addPatient">
                 <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
                         searchAction: ui.actionLink("patientSearch", "getPatients"),
                         searchParams: [excludePatientsOf: person.id, existingRelationshipTypeToExclude: it.key.id ],
@@ -213,11 +308,12 @@
                         resultFieldLabels: patientSearchDisplayFields.keySet(),
                         selectAction: ui.actionLink('providerEdit', 'addPatient'),
                         selectIdParam: "patient",
-                        selectParams: [ provider: person.id, relationshipType: it.key.id ] ])  %>
+                        selectParams: [ provider: person.id, relationshipType: it.key.id ],
+                        actionButtons: [[label: ui.message("general.cancel"), id: "addPatientCancelButton_${ it.key.id }", class: "addPatientCancelButton"]] ])  %>
             </div>
 
-            <br/><br/>
-        <% } %>
-    </div>
+        </div>
+    <% } %>
+
 
 </div>
