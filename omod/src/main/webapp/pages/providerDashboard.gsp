@@ -64,8 +64,9 @@
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
-            // hide the add sections
+            // hide the add and suggest sections
             jq('.add').hide();
+            jq('.suggest').hide();
 
             // clear out any existing search values
             jq('.searchField}').val('');
@@ -90,8 +91,9 @@
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
-           // hide the transfer sections
+           // hide the transfer & suggest sections
             jq('.transfer').hide();
+            jq('.suggest').hide();
 
             // clear out any existing search values
             jq('.searchField}').val('');
@@ -103,7 +105,8 @@
 
         // handles clicking the add cancel button
         jq('.addCancelButton').click(function() {
-            // hide the transfer section
+
+            // hide the add section
             jq('.add').hide();
 
             // clear out any existing search values
@@ -111,11 +114,40 @@
             jq('.searchTable > tbody > tr').remove();
         });
 
+        // handles clicking on the suggest button
+        jq('.suggestButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
+            // hide the add & transfer sections
+            jq('.add').hide();
+            jq('.transfer').hide();
+
+            // clear out any existing search values
+            jq('.searchField}').val('');
+            jq('.searchTable > tbody > tr').remove();
+
+            // show the appropriate div
+            jq('#suggest_' + id).show();
+        })
+
         jq(document).ready(function(){
             jq('.pane:first').show();
             jq('.paneSelectTop:first').addClass('selected');
             jq('.paneSelectBottom:first').addClass('selected');
         });
+
+        // handles clicking on the suggest cancel
+        jq('.suggestCancelButton').click(function() {
+
+            // hide the add section
+            jq('.suggest').hide();
+
+            // clear out any existing search values
+            jq('.searchField}').val('');
+            jq('.searchTable > tbody > tr').remove();
+        });
+
     });
 </script>
 
@@ -218,16 +250,6 @@
         </div>
     <% } %>
 
-    <div id="pane_${ supervisorsId }" class="pane">
-        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisors.sort { item -> item.personName?.toString() },
-                columns: providerListDisplayFields.values(),
-                columnLabels: providerListDisplayFields.keySet(),
-                selectAction: ui.pageLink('providerDashboard'),
-                selectIdParam: "personId" ]) %>
-
-    </div>
-
-
     <% if (provider.providerRole?.isSupervisorRole()) { %>
     <div id="pane_${ superviseesId }" class="pane">
 
@@ -276,7 +298,7 @@
         </div>
 
         <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
-        <div id="suggestedSupervisees">
+        <div id="suggest_${ superviseesId }" class="suggest">
             <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
                     title: ui.message("providermanagement.suggestedSupervisees"),
                     columns: providerListDisplayFields.values(),
@@ -285,9 +307,19 @@
                     selectIdParam: "personId",
                     formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
                     formFieldName: "supervisees",
-                    actionButtons: [[label: ui.message("general.add"), type: "submit"]] ]) %>
+                    actionButtons: [[label: ui.message("general.add"), type: "submit"],
+                                    [label: ui.message("general.cancel"), id: "suggestCancelButton_${ superviseesId}", class:"suggestCancelButton", type: "reset"]] ]) %>
         </div>
         <% } %>
+    </div>
+
+    <div id="pane_${ supervisorsId }" class="pane">
+        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisors.sort { item -> item.personName?.toString() },
+                columns: providerListDisplayFields.values(),
+                columnLabels: providerListDisplayFields.keySet(),
+                selectAction: ui.pageLink('providerDashboard'),
+                selectIdParam: "personId" ]) %>
+
     </div>
 
     <% } %>

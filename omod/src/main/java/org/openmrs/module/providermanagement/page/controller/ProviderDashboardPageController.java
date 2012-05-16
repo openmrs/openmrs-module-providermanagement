@@ -82,9 +82,8 @@ public class ProviderDashboardPageController {
        pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
 
         // calculate suggested supervisees
-        // by default, we only suggest supervisees if no supervisees are found
         // TODO: add a flag to force suggestion of  supervisees (or do this via AJAX?)
-        if (provider.getProviderRole().isSupervisorRole() && (supervisees == null || supervisees.size() == 0)) {
+        if (provider.getProviderRole().isSupervisorRole()) {
             List<Person> suggestedSupervisees = Context.getService(ProviderSuggestionService.class).suggestSuperviseesForProvider(person);
             pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
         }
