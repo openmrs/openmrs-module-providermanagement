@@ -1,4 +1,8 @@
+
+<% ui.includeCss("providermanagement", "manage.css") %>
+
 <% ui.decorateWith("providerManagementAdminPage") %>
 
-${ ui.includeFragment("supervisionSuggestionForm", [supervisionSuggestion: param.supervisionSuggestion,  successUrl: ui.pageLink("manageSuggestions")]) }
-
+<div id="editSupervisionSuggestion">
+    ${ ui.includeFragment("supervisionSuggestionForm", [supervisionSuggestion: param.supervisionSuggestion,  successUrl: ui.pageLink("manageSuggestions")]) }
+</div>

@@ -1,6 +1,5 @@
-<div>
 
-    ${ ui.startForm("saveProviderSuggestion", [id: providerSuggestion?.providerSuggestionId, successUrl: config.successUrl]) }
+${ ui.startForm("saveProviderSuggestion", [id: providerSuggestion?.providerSuggestionId, successUrl: config.successUrl]) }
 
     <table>
 
@@ -47,7 +46,7 @@
 
     </table>
 
-    ${ ui.endForm() }
+${ ui.endForm() }
 
-</div>
+
 

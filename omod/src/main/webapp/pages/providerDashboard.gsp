@@ -251,67 +251,68 @@
     <% } %>
 
     <% if (provider.providerRole?.isSupervisorRole()) { %>
-    <div id="pane_${ superviseesId }" class="pane">
+        <div id="pane_${ superviseesId }" class="pane">
 
-        <div id="list_${ superviseesId }" class="list">
-            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
-                    id: superviseeTableId,
-                    columns: providerListDisplayFields.values(),
-                    columnLabels: providerListDisplayFields.keySet(),
-                    selectAction: ui.pageLink('providerDashboard'),
-                    selectIdParam: "personId",
-                    formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
-                    formFieldName: "supervisees",
-                    actionButtons: [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
-                            [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
-                            [label: ui.message("providermanagement.suggest"), id: "suggestButton_${ superviseesId }", class: "suggestButton", type: "button"],
-                            [label: ui.message("general.remove"), type: "submit"]] ]) %>
+            <div id="list_${ superviseesId }" class="list">
+                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
+                        id: superviseeTableId,
+                        columns: providerListDisplayFields.values(),
+                        columnLabels: providerListDisplayFields.keySet(),
+                        selectAction: ui.pageLink('providerDashboard'),
+                        selectIdParam: "personId",
+                        formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
+                        formFieldName: "supervisees",
+                        actionButtons: [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
+                                [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
+                                [label: ui.message("providermanagement.suggest"), id: "suggestButton_${ superviseesId }", class: "suggestButton", type: "button"],
+                                [label: ui.message("general.remove"), type: "submit"]] ]) %>
 
+            </div>
+
+            <div id="transfer_${ superviseesId }" class="transfer">
+                <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
+                        id: transferSuperviseesSearchId,
+                        searchAction: ui.actionLink("providerSearch", "getProviders"),
+                        searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
+                        resultFields: providerSearchDisplayFields.values(),
+                        resultFieldLabels: providerSearchDisplayFields.keySet(),
+                        selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
+                        selectIdParam: "newSupervisor",
+                        selectParams: [ oldSupervisor: person.id, paneId: superviseesId ],
+                        selectForm: "multiSelectCheckboxForm_" + superviseeTableId,
+                        actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]] ])  %>
+            </div>
+
+
+            <div id="add_${ superviseesId }" class="add">
+                <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
+                        id: addSuperviseeSearchId,
+                        searchAction: ui.actionLink("providerSearch", "getProviders"),
+                        searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
+                        resultFields: providerSearchDisplayFields.values(),
+                        resultFieldLabels: providerSearchDisplayFields.keySet(),
+                        selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
+                        selectIdParam: "supervisee",
+                        selectParams: [ supervisor: person.id, paneId: superviseesId ],
+                        actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]] ])  %>
+            </div>
+
+            <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
+            <div id="suggest_${ superviseesId }" class="suggest">
+                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
+                        title: ui.message("providermanagement.suggestedSupervisees"),
+                        columns: providerListDisplayFields.values(),
+                        columnLabels: providerListDisplayFields.keySet(),
+                        selectAction: ui.pageLink('providerDashboard'),
+                        selectIdParam: "personId",
+                        formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
+                        formFieldName: "supervisees",
+                        actionButtons: [[label: ui.message("general.add"), type: "submit"],
+                                        [label: ui.message("general.cancel"), id: "suggestCancelButton_${ superviseesId}", class:"suggestCancelButton", type: "reset"]] ]) %>
+            </div>
+            <% } %>
         </div>
-
-        <div id="transfer_${ superviseesId }" class="transfer">
-            <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
-                    id: transferSuperviseesSearchId,
-                    searchAction: ui.actionLink("providerSearch", "getProviders"),
-                    searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
-                    resultFields: providerSearchDisplayFields.values(),
-                    resultFieldLabels: providerSearchDisplayFields.keySet(),
-                    selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
-                    selectIdParam: "newSupervisor",
-                    selectParams: [ oldSupervisor: person.id, paneId: superviseesId ],
-                    selectForm: "multiSelectCheckboxForm_" + superviseeTableId,
-                    actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]] ])  %>
-        </div>
-
-
-        <div id="add_${ superviseesId }" class="add">
-            <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
-                    id: addSuperviseeSearchId,
-                    searchAction: ui.actionLink("providerSearch", "getProviders"),
-                    searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
-                    resultFields: providerSearchDisplayFields.values(),
-                    resultFieldLabels: providerSearchDisplayFields.keySet(),
-                    selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
-                    selectIdParam: "supervisee",
-                    selectParams: [ supervisor: person.id, paneId: superviseesId ],
-                    actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]] ])  %>
-        </div>
-
-        <% if (suggestedSupervisees != null) { %>   <!-- note that we want to display this if the results are an empty list, hence the explicit test for null here -->
-        <div id="suggest_${ superviseesId }" class="suggest">
-            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
-                    title: ui.message("providermanagement.suggestedSupervisees"),
-                    columns: providerListDisplayFields.values(),
-                    columnLabels: providerListDisplayFields.keySet(),
-                    selectAction: ui.pageLink('providerDashboard'),
-                    selectIdParam: "personId",
-                    formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
-                    formFieldName: "supervisees",
-                    actionButtons: [[label: ui.message("general.add"), type: "submit"],
-                                    [label: ui.message("general.cancel"), id: "suggestCancelButton_${ superviseesId}", class:"suggestCancelButton", type: "reset"]] ]) %>
-        </div>
-        <% } %>
-    </div>
+    <% } %>
 
     <div id="pane_${ supervisorsId }" class="pane">
         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisors.sort { item -> item.personName?.toString() },
@@ -321,8 +322,5 @@
                 selectIdParam: "personId" ]) %>
 
     </div>
-
-    <% } %>
-
 
 </div>

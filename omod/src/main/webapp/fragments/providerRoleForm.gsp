@@ -1,5 +1,4 @@
-<div>
-
+<% ui.includeCss("providermanagement", "manage.css") %>
 
 ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUrl: config.successUrl]) }
 
@@ -63,5 +62,4 @@ ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUr
 
 ${ ui.endForm() }
 
-</div>
 

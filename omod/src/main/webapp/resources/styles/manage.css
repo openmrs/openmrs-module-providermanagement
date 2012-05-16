@@ -1,0 +1,35 @@
+
+#providerRoleList,#suggestionLists,#providerRoleForm,#editProviderSuggestion,#editSupervisionSuggestion,#manageOtherSettings {
+    position:relative;
+    top: 75px;
+    left: 75px;
+}
+
+#providerRoleList table {
+     width: auto;
+ }
+
+#providerRoleForm table {
+    width: auto;
+}
+
+#suggestionLists table {
+    width: auto;
+}
+
+#editProviderSuggestion table {
+    width: auto;
+}
+
+#editSupervisionSuggestion table {
+    width: auto;
+}
+
+#manageOtherSettings table {
+    width: auto;
+}
+
+#providerRoleList,#suggestionLists td {
+    padding: 5px;
+}
+

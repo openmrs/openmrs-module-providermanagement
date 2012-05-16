@@ -1,10 +1,17 @@
+<% ui.includeCss("providermanagement", "manage.css") %>
 
 <% ui.decorateWith("providerManagementAdminPage") %>
 
-<a href="${ ui.pageLink("editProviderSuggestion") }">${ ui.message("providermanagement.addAProviderSuggestion") }</a>
+<div id="suggestionLists">
+    <div id="providerSuggestionList">
+        <a href="${ ui.pageLink("editProviderSuggestion") }">${ ui.message("providermanagement.addAProviderSuggestion") }</a>
+        ${ ui.includeFragment("providerSuggestionList") }
+    </div>
 
-${ ui.includeFragment("providerSuggestionList") }
+    <br/><br/><br/>
 
-<a href="${ ui.pageLink("editSupervisionSuggestion") }">${ ui.message("providermanagement.addASupervisionSuggestion") }</a>
-
-${ ui.includeFragment("supervisionSuggestionList") }
+    <div id="providerSupervisionSuggestionList">
+        <a href="${ ui.pageLink("editSupervisionSuggestion") }">${ ui.message("providermanagement.addASupervisionSuggestion") }</a>
+        ${ ui.includeFragment("supervisionSuggestionList") }
+    </div>
+</div>
