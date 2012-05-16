@@ -119,10 +119,6 @@
     });
 </script>
 
-<div id="providerTopBar">
-
-</div>
-
 <div id="providerView">
     ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEditButton"],
                                                              [label: ui.message("general.retire"),id: "retire", confirm: ui.message("providermanagement.confirmRetire"),

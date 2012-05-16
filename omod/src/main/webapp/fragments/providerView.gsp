@@ -4,6 +4,9 @@
 <div class="content providerView">
 
     <table class="providerHeaderTable">
+        <tr class="topBar">
+            <td colspan="2">&nbsp;</td>
+        </tr>
         <tr>
             <td colspan="2" class="label">${ person.personName } ${ provider.retired ? '(' + ui.message("general.retired") + ')' : '' }</td>
         </tr>

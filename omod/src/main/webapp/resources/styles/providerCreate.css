@@ -1,4 +1,8 @@
 
 #providerEdit {
+    position: relative;
+    top: 150px;
     width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }

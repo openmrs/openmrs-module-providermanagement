@@ -47,7 +47,7 @@
 </script>
 
 
-<div id="providerSearch" class="content">
+<div id="providerSearch">
 
     <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.findProvider"),
             id: providerSearchId,
@@ -71,7 +71,7 @@
 
 <!-- TODO: does this need to be restricted to show only users?  not patients?  what about privileges required, since this is in essence a patient search? -->
 
-<div id="personSearch" class="content">
+<div id="personSearch">
     ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.selectPerson"),
                                                 id: personSearchId,
                                                 searchAction: ui.actionLink("personSearch", "getPeople"),
@@ -83,7 +83,7 @@
 
 </div>
 
-<div id="advancedSearch" class="content">
+<div id="advancedSearch">
 
     ${ ui.includeFragment("providerAdvancedSearch", [selectIdParam: "personId",
                                                      id: advancedSearchId,

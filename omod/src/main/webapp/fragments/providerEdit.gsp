@@ -51,11 +51,14 @@
         <input type="hidden" name="personId" value="${person?.id ?: ''}"/>
 
         <table class="providerHeaderTable">
-            <tr>
-                <td colspan="2" class="label">${ person.personName } ${ provider.retired ? '(' + ui.message("general.retired") + ')' : '' }</td>
+            <tr class="topBar">
+                <td colspan="2">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="2"> ${ provider.providerRole?.name ?: '' }</td>
+                <td colspan="2" class="label">${ person?.personName ?: '&nbsp;' } ${ provider?.retired ? '(' + ui.message("general.retired") + ')' : '' }</td>
+            </tr>
+            <tr>
+                <td colspan="2"> ${ provider?.providerRole?.name ?: '' }</td>
             </tr>
         </table>
 

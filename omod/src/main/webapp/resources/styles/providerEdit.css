@@ -4,6 +4,10 @@
     width: 100%;
 }
 
+.providerEdit .topBar {
+    background-color: #00A391;
+}
+
 .providerEdit .providerHeaderTable {
     background-color: #BAD6D2;
 }

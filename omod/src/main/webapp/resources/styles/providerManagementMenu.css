@@ -2,5 +2,11 @@
 #menu {
     width: 100%;
     background-color: #00A391;
+    text-align: center;
+}
+
+#menu a {
+    color: #FFFFFF;
+    text-decoration: none;
 }
 

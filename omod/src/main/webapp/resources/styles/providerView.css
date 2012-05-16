@@ -3,6 +3,10 @@
     width: 100%;
 }
 
+.providerView .topBar {
+    background-color: #00A391;
+}
+
 .providerView .providerHeaderTable {
     background-color: #BAD6D2;
 }
