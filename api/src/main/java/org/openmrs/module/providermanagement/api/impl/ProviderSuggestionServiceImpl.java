@@ -128,11 +128,10 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a valid provider relationship type");
         }
 
-        // first, see if there are any custom suggestion rules
-        // if not, just return all the providers that support the specified relationship type
+        // first, see if there are any suggestion rules if not, just return null
         List<ProviderSuggestion> suggestions = getProviderSuggestionsByRelationshipType(relationshipType);
         if (suggestions == null || suggestions.size() ==0) {
-            return Context.getService(ProviderManagementService.class).getProvidersByRelationshipType(relationshipType);
+            return null;
         }
 
         // otherwise, get all the providers that match the suggestion rules
@@ -250,9 +249,9 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         // first, get all the roles for this provider
         List<ProviderRole> roles = Context.getService(ProviderManagementService.class).getProviderRoles(provider);
 
-        // if the provider has no roles, return an empty list
+        // if the provider has no roles, return null
         if (roles == null || roles.size() == 0) {
-            return new ArrayList<Person>();
+            return null;
         }
 
         // now get all the roles that this provider can supervise or be supervisors by (depending on type)
@@ -276,10 +275,10 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
         // TODO: add an error trap here if validRoles = null or is empty
 
-        // if there are no suggestions, just return all the providers with roles that the given provider can supervisee or can be supervised by
+        // if there are no suggestions, just return null
         // TODO: or perhaps we should just return nothing here?
         if (suggestions.size() == 0) {
-            return Context.getService(ProviderManagementService.class).getProvidersByRoles(validRoles);
+            return null;
         }
 
         // otherwise, get all the providers that match the suggestion rules

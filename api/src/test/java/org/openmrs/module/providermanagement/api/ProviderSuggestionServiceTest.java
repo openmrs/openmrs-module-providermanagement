@@ -233,28 +233,11 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
     // TODO: do we need a "validateProviderSuggestion" method that attempts to parse and validate the groovy code in the criteria
 
     @Test
-    public void suggestProvidersForPatient_shouldReturnAllProvidersForRelationshipTypeIfNoSuggestionSpecified() throws Exception {
+    public void suggestProvidersForPatient_shouldReturnNullfNoSuggestionSpecified() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1002);
-
         List<Person> providers = providerSuggestionService.suggestProvidersForPatient(patient, relationshipType);
-
-        // there should be five providers
-        Assert.assertEquals(5, providers.size());
-
-        Iterator<Person> i = providers.iterator();
-
-        while (i.hasNext()) {
-            Person person = i.next();
-            int id = person.getId();
-
-            if (id == 2 || id == 6 || id == 7 || id == 8 || id == 9) {
-                i.remove();
-            }
-        }
-
-        // list should now be empty
-        Assert.assertEquals(0, providers.size());
+        Assert.assertNull(providers);
     }
 
     @Test
@@ -518,27 +501,10 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
     }
 
     @Test
-    public void suggestSupervisorsForProvider_shouldReturnAllProvidersThatCanSupervisorProviderRolesIfNoRulesSpecified() throws Exception {
+    public void suggestSupervisorsForProvider_shouldReturnNullIfNoRulesSpecified() throws Exception {
         Person provider = Context.getPersonService().getPerson(9);
-
         List<Person> providers = providerSuggestionService.suggestSupervisorsForProvider(provider);
-
-        // there should be two providers
-        Assert.assertEquals(2, providers.size());
-
-        Iterator<Person> i = providers.iterator();
-
-        while (i.hasNext()) {
-            Person person = i.next();
-            int id = person.getId();
-
-            if (id == 501 || id == 2) {
-                i.remove();
-            }
-        }
-
-        // list should now be empty
-        Assert.assertEquals(0, providers.size());
+        Assert.assertNull(providers);
     }
 
 
@@ -597,27 +563,10 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
     }
 
     @Test
-    public void suggestSuperviseesForProvider_shouldReturnAllProvidersThatCanBeSupervisedByProviderRolesIfNoRulesSpecified() throws Exception {
+    public void suggestSuperviseesForProvider_shouldReturnNullIfNoRulesSpecified() throws Exception {
         Person provider = Context.getPersonService().getPerson(501);
-
         List<Person> providers = providerSuggestionService.suggestSuperviseesForProvider(provider);
-
-        // there should be five providers
-        Assert.assertEquals(5, providers.size());
-
-        Iterator<Person> i = providers.iterator();
-
-        while (i.hasNext()) {
-            Person person = i.next();
-            int id = person.getId();
-
-            if (id == 2 || id == 6 || id == 7 || id == 8 || id == 9) {
-                i.remove();
-            }
-        }
-
-        // list should now be empty
-        Assert.assertEquals(0, providers.size());
+        Assert.assertNull(providers);
     }
 
 

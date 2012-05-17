@@ -96,15 +96,13 @@ public interface ProviderSuggestionService {
     /**
      * Suggests all the potential providers for a patient based on relationship type
      *
-     * If no ProviderSuggestions are found for the specified relationship type, this
-     * method will return all providers in the system who support the specified relationship type
+     * If one or more ProviderSuggestions are found for the specified relationship type, the method will
+     * take the union of the provider sets returns by the suggestions; from the resultant set it will *remove*
+     * any providers who do not support the specified relationship type. Finally, any providers currently
+     * associated with specified patient via the specified relationship type are removed from the result set
      *
-     * If one or more ProviderSuggestions exist, the method will take the union of the provider sets
-     * returns by the suggestions; from the resultant set it will *remove* any providers who do not support
-     * the specified relationship type
-     *
-     * Finally, any providers currently associated with specified patient via the specified relationship type
-     * are removed from the result set
+     *  If no ProviderSuggestions are found for the specified relationship type, this
+     * method will return null
      *
      * @param patient
      * @param relationshipType
@@ -188,15 +186,13 @@ public interface ProviderSuggestionService {
     /**
      * Suggests the supervisors for a provider based on that provider's role(s)
      *
-     * If no SupervisionSuggestions of type "Supervisor" are found for the provider's roles, this
-     * method will return all providers who have roles that are valid supervisor roles for the roles
-     * of the passed provider
-     *
-     * If one or more SupervisionSuggestions exist, the method will take the union of the provider sets
-     * returns by the suggestions; from the resultant set it will *remove* any providers who do not
-     * have a role that is valid supervisory role for one or more of the roles of the passed provider
-     *
+     * If one or more SupervisionSuggestions of type "Supervisor" exist for the provider's roles , the method will take the union
+     * of the provider sets returns by the suggestions; from the resultant set it will *remove* any providers who do not
+     * have a role that is valid supervisory role for one or more of the roles of the passed provider.
      * Finally, any providers currently supervising the specified provider are removed from the result set
+     *                                                     *
+     * If no SupervisionSuggestions of type "Supervisor" are found for the provider's roles, this
+     * method will return null
      *
      * @param provider
      * @return
@@ -209,15 +205,13 @@ public interface ProviderSuggestionService {
     /**
      * Suggests the supervisees for a provider based on that provider's role(s)
      *
-     * If no SupervisionSuggestions of type "Supervisee" are found for the provider's roles, this
-     * method will return all providers who have roles that are valid supervisee roles for the roles
-     * of the passed provider
-     *
-     * If one or more SupervisionSuggestions exist, the method will take the union of the provider sets
+     * If one or more SupervisionSuggestions of type "Supervisee" exist, the method will take the union of the provider sets
      * returns by the suggestions; from the resultant set it will *remove* any providers who do not
-     * have a role that is valid supervisee role for one or more of the roles of the passed provider
-     *
+     * have a role that is valid supervisee role for one or more of the roles of the passed provider.
      * Finally, any providers currently being supervised by specified provider are removed from the result set
+     *
+     * If no SupervisionSuggestions of type "Supervisee" are found for the provider's roles, this
+     * method will return null
      *
      * @param provider
      * @return
