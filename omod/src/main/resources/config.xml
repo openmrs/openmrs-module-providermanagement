@@ -122,5 +122,44 @@
 	</messages>
 	<!-- /Internationalization -->
 
+
+    <!-- Required Privileges -->
+    <privilege>
+        <name>Provider Management API</name>
+        <description>Allows access to all provider management service and provider suggestion service API method</description>
+    </privilege>
+
+    <privilege>
+        <name>Provider Management API - Read-only</name>
+        <description>Allows access to all provider management service and provider suggestion service API methods that are read-only</description>
+    </privilege>
+
+    <privilege>
+        <name>Provider Management Dashboard - View Providers</name>
+        <description>Allows access to viewing provider information on the provider management dashboard</description>
+    </privilege>
+
+    <privilege>
+        <name>Provider Management Dashboard - Edit Providers</name>
+        <description>Allows access to editing provider information on the provider management dashboard</description>
+    </privilege>
+
+    <privilege>
+        <name>Provider Management Dashboard - View Patients</name>
+        <description>Allows access to viewing patient information on the provider management dashboard</description>
+    </privilege>
+
+    <privilege>
+        <name>Provider Management Dashboard - Edit Patients</name>
+        <description>Allows access to editing patient information on the provider management dashboard</description>
+    </privilege>
+
+    <privilege>
+        <name>Provider Management - Admin</name>
+        <description>Allows access to admin pages of the provider management module</description>
+    </privilege>
+
+    <!-- TODO: admin privileges? -->
+
 </module>
 

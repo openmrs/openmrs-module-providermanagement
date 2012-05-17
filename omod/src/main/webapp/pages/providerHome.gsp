@@ -1,5 +1,7 @@
 
-<% ui.decorateWith("providerManagementPage")
+<%
+   context.requirePrivilege("Provider Management Dashboard - View Providers")
+   ui.decorateWith("providerManagementPage")
    ui.includeCss("providermanagement", "providerHome.css")
    def providerSearchId = ui.randomId()
    def personSearchId = ui.randomId()
@@ -61,27 +63,38 @@
 
     <br/>
 
-    ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("providermanagement.createProvider"),
-                                                                     link: ui.pageLink("providerCreate")],
-                                                                    [label: ui.message("providermanagement.createProviderFromExistingPerson"),
-                                                                     id: "personSearchShowButton"] ] ]
-    )}
+
+    <% if (context.hasPrivilege("Provider Management Dashboard - Edit Providers")) { %>
+        <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
+            ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("providermanagement.createProvider"),
+                                                                             link: ui.pageLink("providerCreate")],
+                                                                            [label: ui.message("providermanagement.createProviderFromExistingPerson"),
+                                                                             id: "personSearchShowButton"] ] ]
+            )}
+        <% } else { %>
+            ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("providermanagement.createProvider"),
+                    link: ui.pageLink("providerCreate")] ] ]
+            )}
+        <% } %>
+    <% } %>
 
 </div>
 
 <!-- TODO: does this need to be restricted to show only users?  not patients?  what about privileges required, since this is in essence a patient search? -->
 
-<div id="personSearch">
-    ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.selectPerson"),
-                                                id: personSearchId,
-                                                searchAction: ui.actionLink("personSearch", "getPeople"),
-                                                resultFields: personSearchDisplayFields.values(),
-                                                resultFieldLabels: personSearchDisplayFields.keySet(),
-                                                selectAction: ui.pageLink("providerCreate"),
-                                                selectIdParam: "person",
-                                                actionButtons: [ [label: ui.message("general.cancel"), id: "personSearchCancelButton"] ] ] ) }
+<% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
+    <div id="personSearch">
+        ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.selectPerson"),
+                                                    id: personSearchId,
+                                                    searchAction: ui.actionLink("personSearch", "getPeople"),
+                                                    resultFields: personSearchDisplayFields.values(),
+                                                    resultFieldLabels: personSearchDisplayFields.keySet(),
+                                                    selectAction: ui.pageLink("providerCreate"),
+                                                    selectIdParam: "person",
+                                                    actionButtons: [ [label: ui.message("general.cancel"), id: "personSearchCancelButton"] ] ] ) }
 
-</div>
+    </div>
+<% } %>
 
 <div id="advancedSearch">
 

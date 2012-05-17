@@ -19,6 +19,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
+import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
@@ -59,21 +60,24 @@ public class ProviderDashboardPageController {
         Provider provider = ProviderManagementWebUtil.getProvider(person);
         pageModel.addAttribute("provider", provider);
 
-        // add the patients of this provider, grouped by relationship type
-        Map<RelationshipType, List<Patient>> patientMap = new HashMap<RelationshipType,List<Patient>>();
-        if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
-            for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
-                if (!relationshipType.isRetired()) {
-                    patientMap.put(relationshipType, new ArrayList<Patient>());
+        // only add the patients if the provider has the appropriate privilege
+        // TODO: figure out a way to aggregate patient data
+        if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_VIEW_PATIENTS_PRIVILEGE)) {
+            // add the patients of this provider, grouped by relationship type
+            Map<RelationshipType, List<Patient>> patientMap = new HashMap<RelationshipType,List<Patient>>();
+            if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
+                for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
+                    if (!relationshipType.isRetired()) {
+                        patientMap.put(relationshipType, new ArrayList<Patient>());
 
-                    for (Patient patient : pmService.getPatientsOfProvider(person, relationshipType, new Date())) {
-                        patientMap.get(relationshipType).add(patient);
+                        for (Patient patient : pmService.getPatientsOfProvider(person, relationshipType, new Date())) {
+                            patientMap.get(relationshipType).add(patient);
+                        }
                     }
                 }
             }
+           pageModel.addAttribute("patientMap", patientMap);
         }
-
-       pageModel.addAttribute("patientMap", patientMap);
 
        List<Person> supervisors = pmService.getSupervisorsForProvider(person, new Date());
        pageModel.addAttribute("supervisors", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisors, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0]) ));
@@ -81,14 +85,16 @@ public class ProviderDashboardPageController {
        List<Person> supervisees = pmService.getSuperviseesForSupervisor(person, new Date());
        pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
 
-        // calculate suggested supervisees
-        // TODO: add a flag to force suggestion of  supervisees (or do this via AJAX?)
-        if (provider.getProviderRole().isSupervisorRole()) {
-            List<Person> suggestedSupervisees = Context.getService(ProviderSuggestionService.class).suggestSuperviseesForProvider(person);
-            pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
-        }
-        else {
-            pageModel.addAttribute("suggestedSupervisees", null);
+        if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_EDIT_PROVIDERS_PRIVILEGE)) {
+            // calculate suggested supervisees
+            // TODO: add a flag to force suggestion of  supervisees (or do this via AJAX?)
+            if (provider.getProviderRole().isSupervisorRole()) {
+                List<Person> suggestedSupervisees = Context.getService(ProviderSuggestionService.class).suggestSuperviseesForProvider(person);
+                pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
+            }
+            else {
+                pageModel.addAttribute("suggestedSupervisees", null);
+            }
         }
 
 

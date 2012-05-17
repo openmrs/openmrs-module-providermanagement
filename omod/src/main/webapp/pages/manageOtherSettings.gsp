@@ -1,6 +1,6 @@
-<% ui.includeCss("providermanagement", "manage.css") %>
-
-<% ui.decorateWith("providerManagementAdminPage") %>
+<% context.requirePrivilege("Provider Management - Admin")
+   ui.includeCss("providermanagement", "manage.css")
+   ui.decorateWith("providerManagementAdminPage") %>
 
 <div id="manageOtherSettings">
     <table>

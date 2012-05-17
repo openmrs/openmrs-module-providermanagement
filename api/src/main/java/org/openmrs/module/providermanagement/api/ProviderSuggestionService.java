@@ -17,6 +17,8 @@ package org.openmrs.module.providermanagement.api;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
@@ -37,6 +39,7 @@ public interface ProviderSuggestionService {
      * @param id
      * @return the provider suggestion referenced by the specified id
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public ProviderSuggestion getProviderSuggestion(Integer id);
 
     /**
@@ -45,6 +48,7 @@ public interface ProviderSuggestionService {
      * @param uuid
      * @return the provider suggestion referenced by the specified uuid
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public ProviderSuggestion getProviderSuggestionByUuid(String uuid);
 
     /**
@@ -53,6 +57,7 @@ public interface ProviderSuggestionService {
      * @param relationshipType
      * @return the provider suggestions for the specified relationship type
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<ProviderSuggestion> getProviderSuggestionsByRelationshipType(RelationshipType relationshipType);
 
     /**
@@ -61,6 +66,7 @@ public interface ProviderSuggestionService {
      * @param includeRetired
      * @return
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<ProviderSuggestion> getAllProviderSuggestions(Boolean includeRetired);
 
     /**
@@ -68,6 +74,7 @@ public interface ProviderSuggestionService {
      *
      * @param suggestion
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void saveProviderSuggestion(ProviderSuggestion suggestion);
 
 
@@ -77,6 +84,7 @@ public interface ProviderSuggestionService {
      * @param suggestion
      * @param reason
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void retireProviderSuggestion(ProviderSuggestion suggestion, String reason);
 
     /**
@@ -84,6 +92,7 @@ public interface ProviderSuggestionService {
      *
      * @param suggestion
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void unretireProviderSuggestion(ProviderSuggestion suggestion);
 
     /**
@@ -91,6 +100,7 @@ public interface ProviderSuggestionService {
      *
      * @param suggestion
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void purgeProviderSuggestion(ProviderSuggestion suggestion);
 
     /**
@@ -110,6 +120,7 @@ public interface ProviderSuggestionService {
      * @throws InvalidRelationshipTypeException
      * @throws SuggestionEvaluationException
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<Person> suggestProvidersForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException, SuggestionEvaluationException;
 
@@ -119,6 +130,7 @@ public interface ProviderSuggestionService {
      * @param id
      * @return the Supervision Suggestion referenced by the specified id
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public SupervisionSuggestion getSupervisionSuggestion(Integer id);
 
     /**
@@ -127,6 +139,7 @@ public interface ProviderSuggestionService {
      * @param uuid
      * @return the Supervision Suggestion referenced by the specified uuid
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public SupervisionSuggestion getSupervisionSuggestionByUuid(String uuid);
 
     /**
@@ -136,6 +149,7 @@ public interface ProviderSuggestionService {
      * @param suggestionType if set to null will return all suggestions for provider role regardless of type
      * @return  all Supervision Suggestions for the specified provider role of the specified type
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
 
     /**
@@ -144,6 +158,7 @@ public interface ProviderSuggestionService {
      * @param providerRole
      * @return  all Supervision Suggestions for the specified provider role
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ProviderRole providerRole);
 
     /**
@@ -152,6 +167,7 @@ public interface ProviderSuggestionService {
      * @param includeRetired
      * @return
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<SupervisionSuggestion> getAllSupervisionSuggestions(Boolean includeRetired);
 
     /**
@@ -159,6 +175,7 @@ public interface ProviderSuggestionService {
      *
      * @param suggestion
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void saveSupervisionSuggestion(SupervisionSuggestion suggestion);
 
     /**
@@ -167,6 +184,7 @@ public interface ProviderSuggestionService {
      * @param suggestion
      * @param reason
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void retireSupervisionSuggestion(SupervisionSuggestion suggestion, String reason);
 
     /**
@@ -174,6 +192,7 @@ public interface ProviderSuggestionService {
      *
      * @param suggestion
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void unretireSupervisionSuggestion(SupervisionSuggestion suggestion);
 
     /**
@@ -181,6 +200,7 @@ public interface ProviderSuggestionService {
      *
      * @param suggestion
      */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void purgeSupervisionSuggestion(SupervisionSuggestion suggestion);
 
     /**
@@ -199,6 +219,7 @@ public interface ProviderSuggestionService {
      * @throws PersonIsNotProviderException
      * @throws SuggestionEvaluationException
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<Person> suggestSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException;
 
@@ -218,6 +239,7 @@ public interface ProviderSuggestionService {
      * @throws PersonIsNotProviderException
      * @throws SuggestionEvaluationException
      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<Person> suggestSuperviseesForProvider(Person provider)
             throws PersonIsNotProviderException, SuggestionEvaluationException;
 }

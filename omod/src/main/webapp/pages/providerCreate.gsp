@@ -1,9 +1,8 @@
 
-<% ui.decorateWith("providerManagementPage") %>
+<%  context.requirePrivilege("Provider Management Dashboard - Edit Providers")
+    ui.decorateWith("providerManagementPage") %>
 
 <% ui.includeCss("providermanagement", "providerCreate.css") %>
-
-<!-- TODO: permissions! -->
 
 <div id="providerEdit">
     ${ ui.includeFragment("providerEdit", [ actionButtons: [ [label: ui.message("general.save"), type: "submit"],
