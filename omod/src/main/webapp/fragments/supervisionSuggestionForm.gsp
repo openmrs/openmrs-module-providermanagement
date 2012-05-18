@@ -56,7 +56,9 @@
 
         <tr>
             <td>&nbsp;</td>
-            <td><input type="submit"/></td>
+            <td><button type="submit">${ ui.message("general.submit") }</button>
+                ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
+            </td>
         </tr>
 
     </table>

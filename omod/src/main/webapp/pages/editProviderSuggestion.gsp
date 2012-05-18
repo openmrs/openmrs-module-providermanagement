@@ -5,6 +5,8 @@
 
 
 <div id="editProviderSuggestion">
-    ${ ui.includeFragment("providerSuggestionForm", [providerSuggestion: param.providerSuggestion,  successUrl: ui.pageLink("manageSuggestions")]) }
+    ${ ui.includeFragment("providerSuggestionForm", [providerSuggestion: param.providerSuggestion,  successUrl: ui.pageLink("manageSuggestions"),
+                                                     actionButtons: [[label: ui.message("general.cancel"), link: ui.pageLink("manageSuggestions"), type: "reset"]] ]
+    )}
 </div>
 

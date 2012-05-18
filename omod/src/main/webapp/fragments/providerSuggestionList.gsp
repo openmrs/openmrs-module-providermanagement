@@ -8,8 +8,6 @@
             <th>${ ui.message("providermanagement.evaluator") }</th>
             <th>${ ui.message("general.retired") }</th>
             <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
         </tr>
 
         <!-- TODO: add strikethrough formatting if a person attribute is retired? -->
@@ -24,9 +22,12 @@
                     ${ it.evaluator }
                 </td>
                 <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
-                <td><a href="${ ui.pageLink("editProviderSuggestion", [providerSuggestion: it.id]) }">${ ui.message("general.edit") }</a></td>
-                <td><a href="${ ui.actionLink("providerSuggestionForm", "retireProviderSuggestion", [providerSuggestion: it.id]) }">${ ui.message("general.retire") }</a></td>
-                <td><a href="${ ui.actionLink("providerSuggestionForm", "deleteProviderSuggestion", [providerSuggestion: it.id]) }">${ ui.message("general.delete") }</a></td>
+                <td>
+                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("editProviderSuggestion", [providerSuggestion: it.id])],
+                            [label: ui.message("general.retire"), link: ui.actionLink("providerSuggestionForm", "retireProviderSuggestion", [providerSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")],
+                            [label: ui.message("general.delete"), link: ui.actionLink("providerSuggestionForm", "deleteProviderSuggestion", [providerSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")]]]
+                    )}
+                 </td>
             </tr>
         <% } %>
 

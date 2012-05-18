@@ -29,7 +29,7 @@
     width: auto;
 }
 
-#providerRoleList,#suggestionLists td {
-    padding: 5px;
+td {
+    padding: 4px;
 }
 

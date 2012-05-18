@@ -29,9 +29,12 @@
                 ${ it.evaluator }
             </td>
             <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
-            <td><a href="${ ui.pageLink("editSupervisionSuggestion", [supervisionSuggestion: it.id]) }">${ ui.message("general.edit") }</a></td>
-            <td><a href="${ ui.actionLink("supervisionSuggestionForm", "retireSupervisionSuggestion", [supervisionSuggestion: it.id]) }">${ ui.message("general.retire") }</a></td>
-            <td><a href="${ ui.actionLink("supervisionSuggestionForm", "deleteSupervisionSuggestion", [supervisionSuggestion: it.id]) }">${ ui.message("general.delete") }</a></td>
+            <td>
+                ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("editSupervisionSuggestion", [supervisionSuggestion: it.id])],
+                        [label: ui.message("general.retire"), link: ui.actionLink("supervisionSuggestionForm", "retireSupervisionSuggestion", [supervisionSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")],
+                        [label: ui.message("general.delete"), link: ui.actionLink("supervisionSuggestionForm", "deleteSupervisionSuggestion", [supervisionSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")]]]
+                )}
+            </td>
         </tr>
         <% } %>
 
