@@ -29,16 +29,9 @@ import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
-import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
-import org.openmrs.ui.framework.fragment.action.SuccessResult;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class ProviderAdvancedSearchFragmentController {
 

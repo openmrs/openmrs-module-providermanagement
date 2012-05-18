@@ -14,7 +14,6 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
-import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 

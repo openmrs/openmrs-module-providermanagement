@@ -15,17 +15,12 @@
 package org.openmrs.module.providermanagement.controller;
 
 import org.openmrs.Patient;
-import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
-import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
-import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.web.controller.PortletController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

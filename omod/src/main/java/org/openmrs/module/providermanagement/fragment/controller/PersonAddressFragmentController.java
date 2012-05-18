@@ -14,12 +14,7 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
-import org.openmrs.Person;
-import org.openmrs.PersonAddress;
-import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
-import org.openmrs.ui.framework.annotation.BindParams;
-import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonAddressFragmentController {

@@ -14,12 +14,10 @@
 
 package org.openmrs.module.providermanagement.controller;
 
-import org.openmrs.Patient;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
-import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.web.controller.PortletController;
 

@@ -14,7 +14,6 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class ProviderSearchFragmentController {
 

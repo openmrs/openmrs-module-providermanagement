@@ -18,7 +18,6 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
@@ -31,7 +30,6 @@ import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;

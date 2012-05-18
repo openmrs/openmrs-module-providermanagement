@@ -27,15 +27,10 @@ import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
-import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
-import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
-import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
-import org.openmrs.web.WebConstants;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
