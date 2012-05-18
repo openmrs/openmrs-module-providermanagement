@@ -133,12 +133,6 @@
             jq('#suggest_' + id).show();
         })
 
-        jq(document).ready(function(){
-            jq('.pane:first').show();
-            jq('.paneSelectTop:first').addClass('selected');
-            jq('.paneSelectBottom:first').addClass('selected');
-        });
-
         // handles clicking on the suggest cancel
         jq('.suggestCancelButton').click(function() {
 
@@ -149,6 +143,22 @@
             jq('.searchField}').val('');
             jq('.searchTable > tbody > tr').remove();
         });
+
+        jq(document).ready(function(){
+           // display the proper pane on page reload
+            <% if (paneId) { %>
+                jq('#pane_${ paneId }').show();
+                jq('#paneSelectTop_${ paneId }').addClass('selected');
+                jq('#paneSelectBottom_${ paneId }').addClass('selected');
+            <% } else { %>
+                // if no pane specified, just show the first pane
+                jq('.pane:first').show();
+                jq('.paneSelectTop:first').addClass('selected');
+                jq('.paneSelectBottom:first').addClass('selected');
+            <% } %>
+        });
+
+
 
     });
 </script>
@@ -229,7 +239,7 @@
                             id: it.key.uuid,
                             columns: patientListDisplayFields.values(),
                             columnLabels: patientListDisplayFields.keySet(),
-                            formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id ]),
+                            formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                             formFieldName: "patients",
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
@@ -245,9 +255,9 @@
                                 searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
                                 resultFields: providerSearchDisplayFields.values(),
                                 resultFieldLabels: providerSearchDisplayFields.keySet(),
-                                selectAction: ui.actionLink('providerEdit', 'transferPatients'),
+                                selectAction: ui.actionLink('providerEdit', 'transferPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 selectIdParam: "newProvider",
-                                selectParams: [ oldProvider: person.id, relationshipType: it.key.id, paneId: it.key.uuid ],
+                                selectParams: [ oldProvider: person.id, relationshipType: it.key.id],
                                 selectForm: "multiSelectCheckboxForm_" + it.key.uuid,
                                 actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
                         ])  %>
@@ -259,9 +269,9 @@
                                 searchParams: [excludePatientsOf: person.id, existingRelationshipTypeToExclude: it.key.id ],
                                 resultFields: patientSearchDisplayFields.values(),
                                 resultFieldLabels: patientSearchDisplayFields.keySet(),
-                                selectAction: ui.actionLink('providerEdit', 'addPatient'),
+                                selectAction: ui.actionLink('providerEdit', 'addPatient', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 selectIdParam: "patient",
-                                selectParams: [ provider: person.id, relationshipType: it.key.id, paneId: it.key.uuid ],
+                                selectParams: [ provider: person.id, relationshipType: it.key.id],
                                 actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "addCancelButton"]]
                         ])  %>
                     </div>
@@ -280,7 +290,7 @@
                         columnLabels: providerListDisplayFields.keySet(),
                         selectAction: ui.pageLink('providerDashboard'),
                         selectIdParam: "personId",
-                        formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id]),
+                        formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         formFieldName: "supervisees",
                         actionButtons: (context.hasPrivilege("Provider Management Dashboard - Edit Providers") ?
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
@@ -299,9 +309,9 @@
                             searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
                             resultFields: providerSearchDisplayFields.values(),
                             resultFieldLabels: providerSearchDisplayFields.keySet(),
-                            selectAction: ui.actionLink('providerEdit', 'transferSupervisees'),
+                            selectAction: ui.actionLink('providerEdit', 'transferSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             selectIdParam: "newSupervisor",
-                            selectParams: [ oldSupervisor: person.id, paneId: superviseesId ],
+                            selectParams: [ oldSupervisor: person.id ],
                             selectForm: "multiSelectCheckboxForm_" + superviseeTableId,
                             actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
                     ])  %>
@@ -315,9 +325,9 @@
                             searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
                             resultFields: providerSearchDisplayFields.values(),
                             resultFieldLabels: providerSearchDisplayFields.keySet(),
-                            selectAction: ui.actionLink('providerEdit', 'addSupervisee'),
+                            selectAction: ui.actionLink('providerEdit', 'addSupervisee', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             selectIdParam: "supervisee",
-                            selectParams: [ supervisor: person.id, paneId: superviseesId ],
+                            selectParams: [ supervisor: person.id ],
                             actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]]
                     ])  %>
                 </div>
@@ -330,7 +340,7 @@
                             columnLabels: providerListDisplayFields.keySet(),
                             selectAction: ui.pageLink('providerDashboard'),
                             selectIdParam: "personId",
-                            formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id]),
+                            formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             formFieldName: "supervisees",
                             actionButtons: [[label: ui.message("general.add"), type: "submit"],
                                             [label: ui.message("general.cancel"), id: "suggestCancelButton_${ superviseesId}", class:"suggestCancelButton", type: "reset"]]

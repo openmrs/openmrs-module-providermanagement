@@ -42,6 +42,7 @@ public class ProviderDashboardPageController {
     public void controller (PageModel pageModel,
                             @RequestParam(value = "person", required = false) Person personParam,
                             @RequestParam(value = "personId", required = false) Integer personId,
+                            @RequestParam(value = "paneId", required = false) String paneId,
                             UiUtils ui)
                 throws PersonIsNotProviderException, InvalidRelationshipTypeException, SuggestionEvaluationException {
 
@@ -92,6 +93,8 @@ public class ProviderDashboardPageController {
             }
         }
 
+        // add the pane id (so that we know which pane to display_
+        pageModel.addAttribute("paneId", paneId);
 
         // add the global properties that specifies the fields to display in the provider and patient field and search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
