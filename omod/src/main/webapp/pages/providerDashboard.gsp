@@ -8,14 +8,8 @@
     // (note that we remember these so that we know what panel to open on reload
     def superviseesId = "83814a90-9f89-11e1-a8b0-0800200c9a66"
     def supervisorsId = "a4ce1250-9f89-11e1-a8b0-0800200c9a66"
-
-   // TODO: remove these
-   def transferSuperviseesSearchId = ui.randomId()
-   def addSuperviseeSearchId = ui.randomId()
-   def superviseeTableId = ui.randomId()
 %>
 
-<!-- TODO: permissions! -->
 
 <script>
     jq(function() {
@@ -241,6 +235,7 @@
                             columnLabels: patientListDisplayFields.keySet(),
                             formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                             formFieldName: "patients",
+                            disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("providermanagement.transfer"), id: "transferButton_${ it.key.uuid }", class: "transferButton", type: "button"],
@@ -285,13 +280,14 @@
 
             <div id="list_${ superviseesId }" class="list">
                 <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
-                        id: superviseeTableId,
+                        id: superviseesId,
                         columns: providerListDisplayFields.values(),
                         columnLabels: providerListDisplayFields.keySet(),
                         selectAction: ui.pageLink('providerDashboard'),
                         selectIdParam: "personId",
                         formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         formFieldName: "supervisees",
+                        disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                         actionButtons: (context.hasPrivilege("Provider Management Dashboard - Edit Providers") ?
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
@@ -304,7 +300,6 @@
             <% if (context.hasPrivilege("Provider Management Dashboard - Edit Providers")) { %>
                 <div id="transfer_${ superviseesId }" class="transfer">
                     <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
-                            id: transferSuperviseesSearchId,
                             searchAction: ui.actionLink("providerSearch", "getProviders"),
                             searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
                             resultFields: providerSearchDisplayFields.values(),
@@ -312,7 +307,7 @@
                             selectAction: ui.actionLink('providerEdit', 'transferSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             selectIdParam: "newSupervisor",
                             selectParams: [ oldSupervisor: person.id ],
-                            selectForm: "multiSelectCheckboxForm_" + superviseeTableId,
+                            selectForm: "multiSelectCheckboxForm_" + superviseesId,
                             actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
                     ])  %>
                 </div>
@@ -320,7 +315,6 @@
 
                 <div id="add_${ superviseesId }" class="add">
                     <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
-                            id: addSuperviseeSearchId,
                             searchAction: ui.actionLink("providerSearch", "getProviders"),
                             searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
                             resultFields: providerSearchDisplayFields.values(),
@@ -356,7 +350,8 @@
                 columns: providerListDisplayFields.values(),
                 columnLabels: providerListDisplayFields.keySet(),
                 selectAction: ui.pageLink('providerDashboard'),
-                selectIdParam: "personId" ]) %>
+                selectIdParam: "personId",
+                disabled: true ]) %>
 
     </div>
 

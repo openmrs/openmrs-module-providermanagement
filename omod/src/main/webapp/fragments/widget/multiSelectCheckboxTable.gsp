@@ -4,7 +4,8 @@
 
 <%  ui.includeCss("providermanagement", "widget/multiSelectCheckboxTable.css")
     def id = config.id ?: ui.randomId()
-    def selectIdParam = config.selectIdParam ?: 'id' %>
+    def selectIdParam = config.selectIdParam ?: 'id'
+    def disabled = config.disabled ?: false %>
 
 <script>
     jq(function() {
@@ -21,7 +22,7 @@
 
 <div class="content multiSelectCheckboxTable">
     
-    <% if (config.formAction) { %>
+    <% if (config.formAction && !disabled) { %>
         <form id="multiSelectCheckboxForm_${ id }" method="post" action="${ config.formAction }" >
     <% } %>
     
@@ -38,7 +39,10 @@
                     <% config.columnLabels.each { %>
                         <th>${ it }</th>
                     <% } %>
-                    <th>&nbsp;</th>
+
+                    <% if (!disabled) { %>
+                        <th>&nbsp;</th>
+                    <% } %>
                 </tr>
             </thead>
 
@@ -65,13 +69,16 @@
                                  <% } %>
                             </td>
                          <% } %>
-                        <td class="checkboxCell">
-                            <% if (config.formFieldName) { %>
-                                <input name="${config.formFieldName}" type="checkbox" value="${ item.id }"/>
-                            <% } else { %>
-                                 &nbsp;
-                            <% } %>
-                        </td>
+
+                        <% if (!disabled) { %>
+                            <td class="checkboxCell">
+                                <% if (config.formFieldName) { %>
+                                    <input name="${config.formFieldName}" type="checkbox" value="${ item.id }"/>
+                                <% } else { %>
+                                     &nbsp;
+                                <% } %>
+                            </td>
+                        <% } %>
                     </tr>
                 <% } %>
             </tbody>
@@ -85,7 +92,7 @@
             <% } %>
         </table>
 
-    <% if (config.formAction) { %>
+    <% if (config.formAction && !disabled) { %>
         </form>
      <% } %>
 </div>
