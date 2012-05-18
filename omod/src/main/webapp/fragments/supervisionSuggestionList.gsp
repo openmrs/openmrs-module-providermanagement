@@ -14,8 +14,6 @@
             <th>&nbsp;</th>
         </tr>
 
-        <!-- TODO: add strikethrough formatting if a person attribute is retired? -->
-
         <% supervisionSuggestions?.each { %>
         <tr>
             <td>${ it.name }</td>
