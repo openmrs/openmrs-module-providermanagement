@@ -56,6 +56,16 @@
                     optionsKey: "name", optionsValue: "uuid", multiple: false] ) }
             </td>
         </tr>
+
+        <tr>
+            <td>${ ui.message("providermanagement.selectAddressWidget")}
+                <br/>
+                ${ ui.includeFragment("globalPropertyUpdater", [propertyName: "providermanagement.addressWidget", type: "selectList",
+                        options: [[name: "Standard", value: "personAddress"], [name: "Rwanda Address Hierarchy", value: "rwanda/addressHierarchyRwanda"]],
+                        optionsKey: "name", optionsValue: "value", multiple: false] ) }
+            </td>
+        </tr>
+
     </table>
 </div>
 

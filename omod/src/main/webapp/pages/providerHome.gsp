@@ -102,6 +102,7 @@
                                                      id: advancedSearchId,
                                                      selectAction: ui.pageLink('providerDashboard'),
                                                      resultFields: providerSearchDisplayFields.values(),
-                                                     resultFieldLabels: providerSearchDisplayFields.keySet()]) }
+                                                     resultFieldLabels: providerSearchDisplayFields.keySet()]
+    )}
 
 </div>

@@ -137,6 +137,9 @@ public class ProviderAdvancedSearchFragmentController {
         PersonAttributeType personAttributeType =  ProviderManagementGlobalProperties.GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE();
         model.addAttribute("advancedSearchPersonAttributeType", personAttributeType);
 
+        // add the address widget to use
+        model.addAttribute("addressWidget", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_ADDRESS_WIDGET());
+
         // add the empty command object
         model.addAttribute("command", initializeCommand());
     }

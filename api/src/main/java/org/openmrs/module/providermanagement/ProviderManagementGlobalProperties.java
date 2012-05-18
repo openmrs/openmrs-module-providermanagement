@@ -73,6 +73,16 @@ public class ProviderManagementGlobalProperties {
         }
     }
 
+    public static final String GLOBAL_PROPERTY_ADDRESS_WIDGET() {
+        String propertyValue = Context.getAdministrationService().getGlobalProperty("providermanagement.addressWidget");
+        if (StringUtils.isNotBlank(propertyValue)) {
+            return propertyValue;
+        }
+        else {
+            return "personAddress";
+        }
+    }
+
     public static final Map<String,String> globalPropertyToMap(String globalPropertyName) {
 
         // load the appropriate global property

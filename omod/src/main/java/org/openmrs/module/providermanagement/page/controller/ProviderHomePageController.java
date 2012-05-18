@@ -23,6 +23,5 @@ public class ProviderHomePageController {
         // add the global properties that specify the fields to display in the provider and person search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
         pageModel.addAttribute("personSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_SEARCH_DISPLAY_FIELDS());
-
     }
 }

@@ -90,8 +90,6 @@
                 </td>
             </tr>
 
-
-            <!-- TODO: add widget that allows specifying birthdate via age? -->
             <tr>
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
                 <td></td>
@@ -126,7 +124,7 @@
             </tr>
 
             <!-- include the address fragment -->
-            ${ ui.includeFragment("rwanda/addressHierarchyRwanda", [personAddress: person?.personAddress, displayStructured: true, mode: 'edit']) }
+            ${ ui.includeFragment(addressWidget, [personAddress: person?.personAddress, mode: 'edit']) }
 
         </table>
 

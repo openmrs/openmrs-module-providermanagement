@@ -113,6 +113,9 @@ public class ProviderEditFragmentController {
         // add the possible provider roles
         model.addAttribute("providerRoles", Context.getService(ProviderManagementService.class).getAllProviderRoles(false));
 
+        // add the address widget to use
+        model.addAttribute("addressWidget", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_ADDRESS_WIDGET());
+
     }
 
 

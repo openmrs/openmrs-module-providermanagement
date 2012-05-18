@@ -90,7 +90,7 @@
                         </tr>
 
                         <!-- include the address fragment -->
-                        ${ ui.includeFragment("rwanda/addressHierarchyRwanda", [personAddress: command?.personAddress, mode: 'edit']) }
+                        ${ ui.includeFragment(addressWidget, [personAddress: command?.personAddress, mode: 'edit']) }
 
                     </table>
                 </td>
