@@ -62,7 +62,7 @@
 
     <globalProperty>
         <property>providermanagement.providerListDisplayFields</property>
-        <defaultValue>Name:personName</defaultValue>
+        <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
         <description>
             Fields to display in the provider lists; specified as a pipe-delimited list of key/value pairs
         </description>
@@ -166,8 +166,6 @@
         <name>Provider Management - Admin</name>
         <description>Allows access to admin pages of the provider management module</description>
     </privilege>
-
-    <!-- TODO: admin privileges? -->
 
 </module>
 

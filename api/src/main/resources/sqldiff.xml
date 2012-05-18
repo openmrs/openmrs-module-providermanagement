@@ -104,7 +104,8 @@
 
             INSERT INTO relationship_type
                 (a_is_to_b, b_is_to_a, preferred, weight, description, creator, date_created,uuid) VALUES
-                    ('Supervisor','Supervisee',0,0,'Provider supervisor to provider supervisee relationship', 1, NOW(), '2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc');
+                    ('Supervisor','Supervisee',0,0,'Provider supervisor to provider supervisee relationship', 1, NOW(), '2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc')
+                    ON DUPLICATE KEY UPDATE weight = weight;
 
 
         </sql>
