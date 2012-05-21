@@ -10,13 +10,13 @@
             <th>&nbsp;</th>
         </tr>
 
-        <!-- TODO: add strikethrough formatting if a person attribute is retired? -->
-
         <% providerSuggestions?.each { %>
             <tr>
-                <td>${ it.name }</td>
                 <td>
-                    ${ it.relationshipType.aIsToB }
+                    ${ (it.retired ? '<span class="retired">' + it.name + '</span>' : it.name) }
+                </td>
+                <td>
+                    ${ (it.retired ? '<span class="retired">' + it.relationshipType.aIsToB + '</span>' : it.relationshipType.aIsToB) }
                 </td>
                 <td>
                     ${ it.evaluator }
