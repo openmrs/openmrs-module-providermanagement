@@ -3,8 +3,6 @@
     def id = config.id ?: ui.randomId()
     def selectIdParam = config.selectIdParam ?: 'id' %>
 
-<!-- TODO: will need to tweak this so that it doesn't reload on every keystroke? -->
-
 <script>
     jq(function() {
         // configure the AJAX search call

@@ -1,5 +1,4 @@
 
-<!-- TODO: make this use a random widget name, and have css configurable by that name -->
 <!-- TODO: add a select all function -->
 
 <%  ui.includeCss("providermanagement", "widget/multiSelectCheckboxTable.css")
@@ -15,6 +14,16 @@
         });
         jq('#multiSelectCheckboxTable_${ id } > tbody > tr').mouseout(function() {
             jq(this).removeClass('highlighted');
+        });
+
+        // handle the select all function
+        jq('#selectAll_${ id }').click(function() {
+           if(jq(this).attr('checked')) {
+               jq('.checkbox_${ id }').attr('checked', true);
+           }
+           else {
+               jq('.checkbox_${ id }').attr('checked', false);
+           }
         });
     });
 </script>
@@ -41,7 +50,13 @@
                     <% } %>
 
                     <% if (!disabled) { %>
-                        <th>&nbsp;</th>
+                        <th class="checkboxCell">
+                            <% if (config.items?.size) { %>
+                                <input id="selectAll_${ id }" type="checkbox" />
+                            <% } else { %>
+                                &nbsp;
+                            <% } %>
+                        </th>
                     <% } %>
                 </tr>
             </thead>
@@ -73,7 +88,7 @@
                         <% if (!disabled) { %>
                             <td class="checkboxCell">
                                 <% if (config.formFieldName) { %>
-                                    <input name="${config.formFieldName}" type="checkbox" value="${ item.id }"/>
+                                    <input name="${config.formFieldName}" class="checkbox_${ id }" type="checkbox" value="${ item.id }"/>
                                 <% } else { %>
                                      &nbsp;
                                 <% } %>

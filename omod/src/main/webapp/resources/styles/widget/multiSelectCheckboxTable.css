@@ -9,4 +9,5 @@
 
 .multiSelectCheckboxTable .checkboxCell {
     width: 5%;
+    padding-left: 2px;
 }
