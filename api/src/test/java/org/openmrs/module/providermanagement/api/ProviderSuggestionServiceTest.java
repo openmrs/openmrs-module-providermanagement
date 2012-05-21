@@ -230,7 +230,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         Assert.assertNull(providerSuggestionService.getProviderSuggestion(1));
     }
 
-    // TODO: do we need a "validateProviderSuggestion" method that attempts to parse and validate the groovy code in the criteria
+    // TODO: (PROV-12) create a "validateProviderSuggestion" method that attempts to parse and validate the groovy code in the criteria
 
     @Test
     public void suggestProvidersForPatient_shouldReturnNullfNoSuggestionSpecified() throws Exception {
@@ -632,8 +632,4 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         Person provider = Context.getPersonService().getPerson(8);
         providerSuggestionService.suggestSuperviseesForProvider(provider);
     }
-
-    // TODO: do we need a "validateProviderSuggestion" method that attempts to parse and validate the groovy code in the criteria
-    // TODO: a way to provider this search as a fitler?
-
 }

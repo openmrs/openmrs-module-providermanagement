@@ -24,6 +24,7 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.exception.DateCannotBeInFutureException;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
 import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
@@ -318,8 +319,6 @@ public interface ProviderManagementService extends OpenmrsService {
     * Methods for assigning patient to providers
     */
 
-    // TODO:
-
     /**
      * Assigns the patient to the provider using the specified relationship type
      *
@@ -337,7 +336,7 @@ public interface ProviderManagementService extends OpenmrsService {
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
-            PersonIsNotProviderException;
+            PersonIsNotProviderException, DateCannotBeInFutureException;
 
     /**
      * Assigns the patient to the provider using the specified relationship type using current date
@@ -373,7 +372,8 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
-            throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException;
+            throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException,
+                DateCannotBeInFutureException;
 
     /**
      * Unassigns the patient from the provider on the current date
@@ -419,7 +419,7 @@ public interface ProviderManagementService extends OpenmrsService {
     public void unassignAllPatientsFromProvider(Person provider)
             throws PersonIsNotProviderException;
 
-    // TODO: we will probably need a "purge" option for purging relationships created by accident, but we should probably spec this out a bit better
+    // TODO: we will probably need a "purge" option for purging relationships created by accident, (will need to be implemented when we take on PROV-1)
 
     /**
      * Gets all patients that are patients of the specified provider with the specified relationship type on the specified date
@@ -589,7 +589,7 @@ public interface ProviderManagementService extends OpenmrsService {
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void assignProviderToSupervisor(Person provider, Person supervisor, Date date)
             throws PersonIsNotProviderException, InvalidSupervisorException,
-            ProviderAlreadyAssignedToSupervisorException;
+            ProviderAlreadyAssignedToSupervisorException, DateCannotBeInFutureException;
 
     /**
      * Assigns the provider to the supervisor on the current date
@@ -622,7 +622,8 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void unassignProviderFromSupervisor(Person provider, Person supervisor, Date date)
-            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException;
+            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException,
+                DateCannotBeInFutureException;
 
     /**
      * Unassigns the provider from the supervisor on the current date

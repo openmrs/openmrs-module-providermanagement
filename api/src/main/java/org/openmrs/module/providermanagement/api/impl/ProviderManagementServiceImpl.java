@@ -35,6 +35,7 @@ import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 import org.openmrs.module.providermanagement.comparator.PersonByFirstNameComparator;
+import org.openmrs.module.providermanagement.exception.DateCannotBeInFutureException;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
 import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
@@ -514,7 +515,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional
     public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
-            PersonIsNotProviderException {
+            PersonIsNotProviderException, DateCannotBeInFutureException {
 
         if (patient == null) {
             throw new APIException("Patient cannot be null");
@@ -549,6 +550,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             date = new Date();
         }
 
+        if (date.after(new Date())) {
+            throw new DateCannotBeInFutureException("Assignment date cannot be in the future");
+        }
+
         // test to mark sure the relationship doesn't already exist
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships != null && relationships.size() > 0) {
@@ -569,13 +574,21 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
             PersonIsNotProviderException {
-        assignPatientToProvider(patient, provider, relationshipType, new Date());
+        try {
+            assignPatientToProvider(patient, provider, relationshipType, new Date());
+        }
+        // we should never get a DateCannotBeInFuture exception since this method is suppose to do the assignment on the current date
+        catch (DateCannotBeInFutureException e) {
+            throw new APIException("DateCannotBeInFutureException should never be thrown here", e);
+        }
     }
+
 
     @Override
     @Transactional
     public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
-        throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException {
+        throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException,
+            DateCannotBeInFutureException {
 
         if (patient == null) {
             throw new APIException("Patient cannot be null");
@@ -603,6 +616,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             date = new Date();
         }
 
+        if (date.after(new Date())) {
+            throw new DateCannotBeInFutureException("Unassignment date cannot be in the future");
+        }
+
         // find the existing relationship
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships == null || relationships.size() == 0) {
@@ -622,7 +639,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional
     public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType)
             throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException {
-        unassignPatientFromProvider(patient, provider, relationshipType, new Date());
+
+        try {
+            unassignPatientFromProvider(patient, provider, relationshipType, new Date());
+        }
+        // we should never get a DateCannotBeInFuture exception since this method is suppose to do the assignment on the current date
+        catch (DateCannotBeInFutureException e) {
+            throw new APIException("DateCannotBeInFutureException should never be thrown here", e);
+        }
     }
 
     @Override
@@ -900,7 +924,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional
     public void assignProviderToSupervisor(Person provider, Person supervisor, Date date)
             throws PersonIsNotProviderException, InvalidSupervisorException,
-            ProviderAlreadyAssignedToSupervisorException {
+            ProviderAlreadyAssignedToSupervisorException, DateCannotBeInFutureException {
 
         if (supervisor == null) {
             throw new APIException("Supervisor cannot be null");
@@ -927,6 +951,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             date = new Date();
         }
 
+        if (date.after(new Date())) {
+            throw new DateCannotBeInFutureException("Unassignment date cannot be in the future");
+        }
+
         // test to mark sure the relationship doesn't already exist
         List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, getSupervisorRelationshipType(), date);
         if (relationships != null && relationships.size() > 0) {
@@ -947,13 +975,21 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public void assignProviderToSupervisor(Person provider, Person supervisor)
             throws PersonIsNotProviderException, InvalidSupervisorException,
             ProviderAlreadyAssignedToSupervisorException {
-        assignProviderToSupervisor(provider, supervisor, new Date());
+
+        try {
+            assignProviderToSupervisor(provider, supervisor, new Date());
+        }
+        // we should never get a DateCannotBeInFuture exception since this method is suppose to do the assignment on the current date
+        catch (DateCannotBeInFutureException e) {
+            throw new APIException("DateCannotBeInFutureException should never be thrown here", e);
+        }
     }
 
     @Override
     @Transactional
     public void unassignProviderFromSupervisor(Person provider, Person supervisor, Date date)
-            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException {
+            throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException,
+                DateCannotBeInFutureException {
 
         if (supervisor == null) {
             throw new APIException("Supervisor cannot be null");
@@ -976,6 +1012,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             date = new Date();
         }
 
+        if (date.after(new Date())) {
+            throw new DateCannotBeInFutureException("Unassignment date cannot be in the future");
+        }
+
         // find the existing relationship
         List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, getSupervisorRelationshipType(), date);
         if (relationships == null || relationships.size() == 0) {
@@ -995,7 +1035,14 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Transactional
     public void unassignProviderFromSupervisor(Person provider, Person supervisor)
             throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException {
-        unassignProviderFromSupervisor(provider, supervisor, new Date());
+
+        try {
+            unassignProviderFromSupervisor(provider, supervisor, new Date());
+        }
+        // we should never get a DateCannotBeInFuture exception since this method is suppose to do the assignment on the current date
+        catch (DateCannotBeInFutureException e) {
+            throw new APIException("DateCannotBeInFutureException should never be thrown here", e);
+        }
     }
 
     @Override

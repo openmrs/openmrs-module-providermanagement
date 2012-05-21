@@ -29,8 +29,6 @@ import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionTyp
 
 import java.util.List;
 
-// TODO: random note--will need to create a "provider" tag that displays provider information whe given a person?
-
 public interface ProviderSuggestionService {
 
     /**
