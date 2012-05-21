@@ -17,12 +17,14 @@ package org.openmrs.module.providermanagement.fragment.controller;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.comparator.PersonByFirstNameComparator;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class PersonSearchFragmentController {
@@ -41,10 +43,19 @@ public class PersonSearchFragmentController {
         // now fetch the results
         List<Person> people = Context.getPersonService().getPeople(searchValue, false);
 
+        // exclude anyone who is already a provider
+
+        Iterator<Person> i = people.iterator();
+        while (i.hasNext()) {
+            Person p = i.next();
+            if (Context.getService(ProviderManagementService.class).isProvider(p)) {
+                i.remove();
+            }
+        }
+
+
         // the get people search doesn't appear to sort by name, so we do that here
         Collections.sort(people, new PersonByFirstNameComparator());
-
-        // TODO: should this exclude people who are providers?
 
         return SimpleObject.fromCollection(people, ui, resultFields);
     }
