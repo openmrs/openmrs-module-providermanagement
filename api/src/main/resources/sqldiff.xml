@@ -14,8 +14,6 @@
         </description>
         <sql>
 
-            ALTER TABLE `provider` ADD COLUMN provider_role_id int(11);
-
             CREATE TABLE providermanagement_provider_role (
                 provider_role_id int(11) NOT NULL auto_increment,
                 name varchar(255) NOT NULL,
@@ -31,6 +29,10 @@
                 uuid char(38) NOT NULL,
                 PRIMARY KEY (provider_role_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+            ALTER TABLE `provider` ADD COLUMN provider_role_id int(11);
+            ALTER TABLE `provider` ADD KEY provider_role_id (provider_role_id);
+            ALTER TABLE `provider` ADD CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id);
 
             CREATE TABLE providermanagement_provider_role_relationship_type (
                 provider_role_id int(11) NOT NULL,
