@@ -264,7 +264,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional
     public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier) {
-        // TODO: make sure this syncs properly!
 
         if (provider == null) {
             throw new APIException("Cannot set provider role: provider is null");
@@ -298,7 +297,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional
     public void unassignProviderRoleFromPerson(Person provider, ProviderRole role) {
-        // TODO: make sure this syncs properly!
 
         if (provider == null) {
             throw new APIException("Cannot set provider role: provider is null");
@@ -356,9 +354,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         if (roles == null || roles.isEmpty()) {
             throw new APIException("Roles cannot be null or empty");
         }
-
-        // TODO: figure out if we want to sort results here -- could use PersonByNameComparator (or could just use this comparator in the web layer as needed?)
-
         List<Provider> providers = dao.getProvidersByProviderRoles(roles, false);
         return providersToPersons(providers);
     }
@@ -1227,8 +1222,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         
         Set<Person> persons = new HashSet<Person>();
 
-        // note that simply ignores providers that are not persons
-        // TODO: is this the correct behavior
+        // note that simply ignores providers that are not person, as the module cannot handle them (and I believe that it has been determined that OpemMRS won't support them)
         for (Provider provider : providers) {
             if (provider.getPerson() != null) {
                 persons.add(provider.getPerson());

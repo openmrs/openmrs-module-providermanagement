@@ -44,7 +44,6 @@ import java.util.List;
 
 public interface ProviderManagementService extends OpenmrsService {
 
-    // TODO: add permissions
     // TODO: make sure we are handling excluding/including retired metadata in a logical manner
 
     /*
@@ -54,7 +53,7 @@ public interface ProviderManagementService extends OpenmrsService {
     /**
      * Gets all Provider Roles in the database
      *
-     * @param includeRetired whether or not to include retired providers
+     * @param includeRetired whether or not to include retired provider roles
      * @return list of all provider roles in the system
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
@@ -91,7 +90,7 @@ public interface ProviderManagementService extends OpenmrsService {
 
     /**
      * Returns all provider roles that are able to supervise the specified provider role
-     * (Excluded retired provider roles)
+     * (Excludes retired provider roles)
      *
      * @param providerRole
      * @return the provider roles that can supervise the specified provider role
@@ -245,6 +244,7 @@ public interface ProviderManagementService extends OpenmrsService {
 
     /**
      * Gets all providers that support the specified relationship type
+     *  (Excludes retired providers)
      *
      * @param relationshipType
      * @return the list of providers that support the specified relationship type
@@ -255,6 +255,7 @@ public interface ProviderManagementService extends OpenmrsService {
 
     /**
      * Gets all the provider roles that can server as supervisors of the specified provider
+     *  (Excludes retired providers)
      * 
      * @param provider
      * @return the list of provider roles that can supervise the specific provider
@@ -317,7 +318,7 @@ public interface ProviderManagementService extends OpenmrsService {
     * Methods for assigning patient to providers
     */
 
-    // TODO: for assignment and unassignments, should we not allow dates in the future?  this is probably a good idea...?
+    // TODO:
 
     /**
      * Assigns the patient to the provider using the specified relationship type
