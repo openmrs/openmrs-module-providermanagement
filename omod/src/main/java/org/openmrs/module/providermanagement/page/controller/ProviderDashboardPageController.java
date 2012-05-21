@@ -28,9 +28,14 @@ import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeEx
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.WebConstants;
+import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.ui.framework.session.Session;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +44,7 @@ import java.util.Map;
 
 public class ProviderDashboardPageController {
 
-    public void controller (PageModel pageModel,
+    public void controller (HttpServletRequest request, PageModel pageModel,
                             @RequestParam(value = "person", required = false) Person personParam,
                             @RequestParam(value = "personId", required = false) Integer personId,
                             @RequestParam(value = "paneId", required = false) String paneId,
@@ -95,6 +100,10 @@ public class ProviderDashboardPageController {
 
         // add the pane id (so that we know which pane to display_
         pageModel.addAttribute("paneId", paneId);
+
+        // add any error messages (and clear it out if one exists)
+        pageModel.addAttribute("errorMessage", request.getSession().getAttribute(WebConstants.OPENMRS_ERROR_ATTR));
+        request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, null);
 
         // add the global properties that specifies the fields to display in the provider and patient field and search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());

@@ -253,7 +253,7 @@ public class ProviderEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
 
     }
@@ -271,7 +271,7 @@ public class ProviderEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
 
     }
@@ -287,7 +287,7 @@ public class ProviderEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
 
     }
@@ -302,7 +302,7 @@ public class ProviderEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
     }
 
@@ -318,7 +318,7 @@ public class ProviderEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
     }
 
@@ -333,7 +333,7 @@ public class ProviderEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
 
     }
@@ -348,7 +348,7 @@ public class ProviderEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
 
     }
@@ -369,7 +369,7 @@ public class ProviderEditFragmentController {
             Context.getProviderService().retireProvider(p, "retired via Provider Management UI");
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
 
         return new SuccessResult();

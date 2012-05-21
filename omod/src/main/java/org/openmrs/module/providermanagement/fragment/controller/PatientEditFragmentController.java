@@ -19,6 +19,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +32,6 @@ public class PatientEditFragmentController {
                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
                                                 @RequestParam(value = "providers", required = true) List<Person> providers) {
 
-        // TODO: better handle error cases
         try {
             for (Person provider : providers) {
                 Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType);
@@ -39,7 +39,7 @@ public class PatientEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
     }
 
@@ -48,7 +48,6 @@ public class PatientEditFragmentController {
                                                    @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
                                                    @RequestParam(value = "providers", required = true) List<Person> providers) {
 
-        // TODO: better handle error cases
         try {
             for (Person provider : providers) {
                 Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType);
@@ -56,7 +55,7 @@ public class PatientEditFragmentController {
             return new SuccessResult();
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            return new FailureResult(e.getLocalizedMessage());
         }
     }
 
