@@ -14,6 +14,7 @@
 package org.openmrs.module.providermanagement.extension.html;
 
 import org.openmrs.module.Extension;
+import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.web.extension.AdministrationSectionExt;
 
 import java.util.LinkedHashMap;
@@ -39,8 +40,9 @@ public class AdminList extends AdministrationSectionExt {
 		return "providermanagement.title";
 	}
 
-    // TODO: add privilege checks here!
-	
+    public String getRequiredPrivilege() {
+        return ProviderManagementConstants.PROVIDER_MANAGEMENT_ADMIN_PRIVILEGE;
+    }
 	/**
 	 * @see AdministrationSectionExt#getLinks()
 	 */
@@ -49,6 +51,7 @@ public class AdminList extends AdministrationSectionExt {
 		map.put("/pages/manageProviderRoles.page", "providermanagement.manageProviderRoles");
         map.put("/pages/manageSuggestions.page", "providermanagement.manageSuggestions");
         map.put("/pages/manageOtherSettings.page", "providermanagement.manageOtherSettings");
+        map.put("/pages/providerHome.page", "providermanagement.providerSearch");
 		return map;
 	}
 	

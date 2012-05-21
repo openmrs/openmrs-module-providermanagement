@@ -26,7 +26,7 @@ import java.util.List;
 
 public class GlobalPropertyUpdaterFragmentController {
 
-    // TODO: rework so that this operates on multiple properties on one page!
+    // TODO: (PROV-13) Improve GlobalPropertyUpdater so that all global properties on a page can be handled by a single submit button
 
     public void controller(FragmentModel model,
                            @FragmentParam("propertyName") GlobalProperty property,
@@ -74,7 +74,6 @@ public class GlobalPropertyUpdaterFragmentController {
             updatedValue = StringUtils.join(values,'|');
         }
         else {
-            // TODO: confirm that this is a regex that splits on whitespace + newlines?
             updatedValue = StringUtils.join(value.split("\\s+"),"|");
         }
 
