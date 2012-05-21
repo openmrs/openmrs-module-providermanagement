@@ -114,7 +114,7 @@
                         </tr>
                         <% } %>
 
-                        <!-- TODO: add these directly to the data object instead of having to apply them here? -->
+                        <!-- TODO: add these directly to the data object instead of having to apply them here as hidden fields? -->
                         <% if (config.resultFields) { config.resultFields.each { %>
                             <input name="resultFields" type="hidden" value="${ it }"/>
                         <% } } %>

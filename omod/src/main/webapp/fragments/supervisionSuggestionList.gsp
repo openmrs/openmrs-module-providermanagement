@@ -16,12 +16,14 @@
 
         <% supervisionSuggestions?.each { %>
         <tr>
-            <td>${ it.name }</td>
             <td>
-                ${ it.providerRole?.name }
+                ${ (it.retired ? '<span class="retired">' + it.name + '</span>' : it.name) }
             </td>
             <td>
-                ${ it.suggestionType }
+                ${ (it.retired ? '<span class="retired">' + it.providerRole?.name + '</span>' : it.providerRole?.name) }
+            </td>
+            <td>
+                ${ (it.retired ? '<span class="retired">' + it.suggestionType + '</span>' : it.suggestionType) }
             </td>
             <td>
                 ${ it.evaluator }

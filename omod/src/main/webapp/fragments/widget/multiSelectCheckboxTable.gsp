@@ -1,6 +1,4 @@
 
-<!-- TODO: add a select all function -->
-
 <%  ui.includeCss("providermanagement", "widget/multiSelectCheckboxTable.css")
     def id = config.id ?: ui.randomId()
     def selectIdParam = config.selectIdParam ?: 'id'

@@ -9,19 +9,17 @@
         <th>&nbsp;</th>
     </tr>
 
-    <!-- TODO: add strikethrough formatting if a person attribute is retired? -->
-
     <% providerRoles.each { %>
     <tr>
-        <td><a href="${ ui.pageLink("editProviderRole", [providerRoleId: it.id]) }">${ it.name }</a></td>
+        <td><a href="${ ui.pageLink("editProviderRole", [providerRoleId: it.id]) }">${ (it.retired ? '<span class="retired">' + it.name + '</span>': it.name) }</a></td>
         <td>
-            ${ it.superviseeProviderRoles?.collect { it.name }.join(', ') }
+            ${ it.superviseeProviderRoles?.collect { (it.retired ? '<span class="retired">' + it.name + '</span>' : it.name) }.join(', ') }
         </td>
         <td>
-            ${ it.relationshipTypes?.collect { it.aIsToB }.join(', ') }
+            ${ it.relationshipTypes?.collect { (it.retired ? '<span class="retired">' + it.aIsToB + '</span>' : it.aIsToB) }.join(', ') }
         </td>
         <td>
-            ${ it.providerAttributeTypes?.collect { it.name }.join(', ') }
+            ${ it.providerAttributeTypes?.collect { (it.retired ? '<span class="retired">' + it.name + '</span>' : it.name) }.join(', ') }
         </td>
         <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
          <td>
