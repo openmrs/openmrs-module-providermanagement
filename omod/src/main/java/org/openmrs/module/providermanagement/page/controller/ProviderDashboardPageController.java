@@ -101,10 +101,6 @@ public class ProviderDashboardPageController {
         // add the pane id (so that we know which pane to display_
         pageModel.addAttribute("paneId", paneId);
 
-        // add any error messages (and clear it out if one exists)
-        pageModel.addAttribute("errorMessage", request.getSession().getAttribute(WebConstants.OPENMRS_ERROR_ATTR));
-        request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, null);
-
         // add the global properties that specifies the fields to display in the provider and patient field and search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
         pageModel.addAttribute("providerListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS());

@@ -157,11 +157,6 @@
     });
 </script>
 
-<% if (errorMessage) { %>
-    <div class="error">${ errorMessage }</div>
-<% } %>
-
-
 <% if (context.hasPrivilege("Provider Management Dashboard - Edit Providers")) { %>
     <div id="providerView">
         ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEditButton"],

@@ -16,6 +16,9 @@ ${ ui.includeFragment("standardIncludes") }
     ${ ui.includeFragment("providerManagementMenu") }
 </div>
 
+<!--  show any generic error messages -->
+${ ui.includeFragment("flashMessage") }
+
 <div id="content">
     ${ config.content }
 </div>
