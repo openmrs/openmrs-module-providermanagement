@@ -152,9 +152,7 @@ public class ProviderEditFragmentController {
         return new ProviderCommand();
     }
 
-    // TODO: unit test this!
-
-    public FragmentActionResult saveProvider(@MethodParam("initializePerson") @BindParams() @Validate Person person,
+    public FragmentActionResult saveProvider(@MethodParam("initializePerson") @BindParams() Person person, //@Validate Person person,
                                                 @MethodParam("initializeProviderCommand") @BindParams("provider") ProviderCommand providerCommand) {
 
         // fetch the provider associated with this person
@@ -182,17 +180,15 @@ public class ProviderEditFragmentController {
         provider.setPerson(person);
 
         // manually bind the provider attributes
-        // TODO: double-check that this is working correctly
-        // TODO: this currently only works for string attributes
-        // TODO: do we need to make this work for integers since households are numbers?
-        // TODO: note that when provider attributes are updated they are voided, but person attributes are overwritten?
+        // TODO: (PROV-10) Improve the editing of Provider Attributes to be able to handle attributes that aren't Strings
+        // TODO: (PROV-16) note that when provider attributes are updated they are voided, but person attributes are overwritten?
         if (providerCommand.attributeMap != null) {
             for (Map.Entry entry : providerCommand.attributeMap.entrySet()) {
 
                 if (StringUtils.isNotBlank(entry.getValue().toString())) {
                     ProviderAttributeType type = Context.getProviderService().getProviderAttributeType(Integer.valueOf(entry.getKey().toString()));
 
-                    // NOTE: note that this currently allows only one active attribute of each type--and retires any others
+                    // NOTE: note that this currently allows only one active attribute of each type--and voids any others
                     boolean foundMatch = false;
                     for (ProviderAttribute attr : provider.getActiveAttributes(type)) {
                         if (attr.getValueReference().equals(entry.getValue())) {
@@ -208,16 +204,14 @@ public class ProviderEditFragmentController {
                     if (!foundMatch) {
                         ProviderAttribute attr = new ProviderAttribute();
                         attr.setAttributeType(type);
-                        attr.setValueReferenceInternal(entry.getValue().toString());   // TODO: only works with string attributes
+                        attr.setValueReferenceInternal(entry.getValue().toString());   // TODO: (PROV-10) only works with string attributes
                         provider.addAttribute(attr);
                     }
                 }
             }
         }
 
-        // TODO: should we warn/stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
-        // TODO: think about validation issues here... if we simply trap person validation and it fails, we would still want to be able to roll back provider information
-        // TODO: should we remove the person address field if it is not used?
+        // TODO: (PROV-17) stop someone from changing a provider role if they have relationship types or supervisees not supported by the new role?
 
         // we need to manually validate the provider
         Validator providerValidator = HandlerUtil.getPreferredHandler(Validator.class, Provider.class);
@@ -245,9 +239,6 @@ public class ProviderEditFragmentController {
     public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                               @RequestParam(value = "supervisee", required=true) Person supervisee) {
 
-        // TODO: should we be returing a fragment action result in all these cases?  does it matter? -->
-
-        // TODO: better handle error cases
         try {
             Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
             return new SuccessResult();
@@ -261,9 +252,6 @@ public class ProviderEditFragmentController {
     public FragmentActionResult addSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                               @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
 
-        // TODO: should we be returing a fragment action result in all these cases?  does it matter? -->
-
-        // TODO: better handle error cases
         try {
             for (Person supervisee : supervisees) {
                 Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
@@ -279,7 +267,6 @@ public class ProviderEditFragmentController {
     public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                                   @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
 
-        // TODO: better handle error cases
         try {
             for (Person supervisee : supervisees) {
                 Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(supervisee, supervisor);
@@ -296,7 +283,6 @@ public class ProviderEditFragmentController {
                                            @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
                                            @RequestParam(value = "patient", required = true) Patient patient) {
 
-        // TODO: better handle error cases
         try {
             Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType);
             return new SuccessResult();
@@ -310,7 +296,6 @@ public class ProviderEditFragmentController {
                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
                                                 @RequestParam(value = "patients", required = true) List<Patient> patients) {
 
-        // TODO: better handle error cases
         try {
             for (Patient patient : patients) {
                 Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType);
@@ -327,7 +312,6 @@ public class ProviderEditFragmentController {
                                                  @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
                                                  @RequestParam(value = "patients", required = true) List<Patient> patients) {
 
-        // TODO: better handle error cases
         try {
             Context.getService(ProviderManagementService.class).transferPatients(patients,oldProvider, newProvider, relationshipType);
             return new SuccessResult();
@@ -342,7 +326,6 @@ public class ProviderEditFragmentController {
                                                     @RequestParam(value = "newSupervisor", required = true) Person newSupervisor,
                                                     @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
 
-        // TODO: better handle error cases
         try {
             Context.getService(ProviderManagementService.class).transferSupervisees(supervisees, oldSupervisor, newSupervisor);
             return new SuccessResult();
@@ -354,8 +337,6 @@ public class ProviderEditFragmentController {
     }
 
     public FragmentActionResult retireProvider(@RequestParam(value = "provider", required = true) Person provider) {
-
-        // TODO: better handle error cases
 
         try {
             Provider p = ProviderManagementWebUtil.getProvider(provider);   // get actual provider object associated with this provider
