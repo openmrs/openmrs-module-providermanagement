@@ -23,6 +23,9 @@ import org.openmrs.module.providermanagement.exception.ProviderRoleInUseExceptio
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.ui.framework.fragment.action.FailureResult;
+import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -55,33 +58,40 @@ public class ProviderRoleFormFragmentController {
         model.addAttribute("providerAttributeTypes", providerAttributeTypes);
     }
 
-    public void deleteProviderRole(@RequestParam(value = "providerRoleId", required = true) Integer providerRoleId) {
-
-        // TODO: add some validation/sanity check here
+    public FragmentActionResult deleteProviderRole(@RequestParam(value = "providerRoleId", required = true) Integer providerRoleId) {
 
         ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
 
         try {
             providerManagementService.purgeProviderRole(providerManagementService.getProviderRole(providerRoleId));
+            return new SuccessResult();
         }
-        catch (ProviderRoleInUseException e) {
-            // give some kind of error message that you can't delete this role
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
         }
     }
 
-    public void retireProviderRole(@RequestParam(value = "providerRoleId", required = true) Integer providerRoleId) {
-
-        // TODO: add some validation/sanity check here
+    public FragmentActionResult retireProviderRole(@RequestParam(value = "providerRoleId", required = true) Integer providerRoleId) {
 
         ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
-        providerManagementService.retireProviderRole(providerManagementService.getProviderRole(providerRoleId), "retired via provider management ui");
+
+        try {
+            providerManagementService.retireProviderRole(providerManagementService.getProviderRole(providerRoleId), "retired via provider management ui");
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
 
-    public void saveProviderRole(@BindParams() ProviderRole providerRole) {
+    public FragmentActionResult saveProviderRole(@BindParams() ProviderRole providerRole) {
 
-        // TODO: add validation
-
-        Context.getService(ProviderManagementService.class).saveProviderRole(providerRole);
+        try {
+            Context.getService(ProviderManagementService.class).saveProviderRole(providerRole);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
-
 }

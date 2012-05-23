@@ -22,6 +22,9 @@ import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.ui.framework.fragment.action.FailureResult;
+import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -45,28 +48,39 @@ public class ProviderSuggestionFormFragmentController {
 
     }
 
-    public void deleteProviderSuggestion(@RequestParam(value = "providerSuggestion", required = true) ProviderSuggestion providerSuggestion) {
-
-        // TODO: add some validation/sanity check here
-
-        Context.getService(ProviderSuggestionService.class).purgeProviderSuggestion(providerSuggestion);
-
+    public FragmentActionResult deleteProviderSuggestion(@RequestParam(value = "providerSuggestion", required = true) ProviderSuggestion providerSuggestion) {
+        try {
+            Context.getService(ProviderSuggestionService.class).purgeProviderSuggestion(providerSuggestion);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
 
-    public void retireProviderSuggestion(@RequestParam(value = "providerSuggestion", required = true) ProviderSuggestion providerSuggestion) {
+    public FragmentActionResult retireProviderSuggestion(@RequestParam(value = "providerSuggestion", required = true) ProviderSuggestion providerSuggestion) {
+        try {
+            Context.getService(ProviderSuggestionService.class).retireProviderSuggestion(providerSuggestion, "retired via provider management ui");
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+}
 
-        // TODO: add some validation/sanity check here
+    public FragmentActionResult saveProviderSuggestion(@BindParams() ProviderSuggestion suggestion) {
 
-        Context.getService(ProviderSuggestionService.class).retireProviderSuggestion(providerSuggestion, "retired via provider management ui");
-    }
-
-
-    public void saveProviderSuggestion(@BindParams() ProviderSuggestion suggestion) {
-
-        // TODO: add validation -- at least check that the criteria is valid!
+        // TODO: (PROV-12) add validation to check to make sure criteria is valid Groovy code
 
         // hard code the evaluator to the groovy evaluator since this is the only type we currently support
         suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
-        Context.getService(ProviderSuggestionService.class).saveProviderSuggestion(suggestion);
+
+        try {
+            Context.getService(ProviderSuggestionService.class).saveProviderSuggestion(suggestion);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
 }
