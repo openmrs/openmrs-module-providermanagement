@@ -60,38 +60,44 @@
             </thead>
 
             <tbody>
-                <% config.items?.each { item -> %>
+                <% if (config.items) {
+                    config.items?.each { item -> %>
                     <tr>
-                         <% config.columns.each { %>
-                            <td>
+                        <% config.columns.each { %>
+                        <td>
+                            <% if (config.selectAction) { %>
+                            <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
+                                <% } %>
+
+                                <%
+                                        // allows for displaying nested fields
+                                        def display = item
+                                        it.split("\\.").each { field ->
+                                            display = display[field]
+                                        }
+                                        print display
+                                %>
+
                                 <% if (config.selectAction) { %>
-                                    <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
-                                 <% } %>
-
-                                  <%
-                                    // allows for displaying nested fields
-                                    def display = item
-                                     it.split("\\.").each { field ->
-                                         display = display[field]
-                                     }
-                                     print display
-                                  %>
-
-                                 <% if (config.selectAction) { %>
-                                    </a>
-                                 <% } %>
-                            </td>
-                         <% } %>
+                            </a>
+                            <% } %>
+                        </td>
+                        <% } %>
 
                         <% if (!disabled) { %>
-                            <td class="checkboxCell">
-                                <% if (config.formFieldName) { %>
-                                    <input name="${config.formFieldName}" class="checkbox_${ id }" type="checkbox" value="${ item.id }"/>
-                                <% } else { %>
-                                     &nbsp;
-                                <% } %>
-                            </td>
+                        <td class="checkboxCell">
+                            <% if (config.formFieldName) { %>
+                            <input name="${config.formFieldName}" class="checkbox_${ id }" type="checkbox" value="${ item.id }"/>
+                            <% } else { %>
+                            &nbsp;
+                            <% } %>
+                        </td>
                         <% } %>
+                    </tr>
+                    <% }
+                 } else if (config.emptyMessage) { %>
+                    <tr>
+                        <td colspan="${ config.columns.size() + 1 }">${ config.emptyMessage }</td>
                     </tr>
                 <% } %>
             </tbody>

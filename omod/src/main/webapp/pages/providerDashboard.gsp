@@ -243,6 +243,7 @@
                             formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                             formFieldName: "patients",
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
+                            emptyMessage: ui.message("providermanagement.none"),
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("providermanagement.transfer"), id: "transferButton_${ it.key.uuid }", class: "transferButton", type: "button"],
@@ -304,6 +305,7 @@
                         formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         formFieldName: "supervisees",
                         disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
+                        emptyMessage: ui.message("providermanagement.none"),
                         actionButtons: (context.hasPrivilege("Provider Management Dashboard - Edit Providers") ?
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
@@ -352,6 +354,7 @@
                             selectIdParam: "personId",
                             formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             formFieldName: "supervisees",
+                            emptyMessage: ui.message("providermanagement.none"),
                             actionButtons: [[label: ui.message("general.add"), type: "submit"],
                                             [label: ui.message("general.cancel"), id: "suggestCancelButton_${ superviseesId}", class:"suggestCancelButton", type: "reset"]]
                     ]) %>
@@ -367,6 +370,7 @@
                 columnLabels: providerListDisplayFields.keySet(),
                 selectAction: ui.pageLink('providerDashboard'),
                 selectIdParam: "personId",
+                emptyMessage: ui.message("providermanagement.none"),
                 disabled: true ]) %>
 
     </div>
