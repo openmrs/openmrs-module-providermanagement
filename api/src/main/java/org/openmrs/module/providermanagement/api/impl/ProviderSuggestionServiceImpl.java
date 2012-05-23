@@ -273,11 +273,8 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             }
         }
 
-        // TODO: add an error trap here if validRoles = null or is empty
-
-        // if there are no suggestions, just return null
-        // TODO: or perhaps we should just return nothing here?
-        if (suggestions.size() == 0) {
+        // if there are no suggestions, or no valid roles, just return null
+        if (suggestions.size() == 0 || validRoles == null || validRoles.size() == 0) {
             return null;
         }
 

@@ -3,8 +3,6 @@
 
 <sqldiff version="1.0">
 
-    <!-- TODO: change this to liquibase?; classes so that that check to see if the tables, provider attribute type, and relationship type exist before adding -->
-
     <diff>
     <version>1.0</version>
         <author>Mark Goodrich</author>

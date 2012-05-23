@@ -106,7 +106,7 @@ public class ProviderManagementGlobalProperties {
             }
         }
 
-        // TODO: need to change this if this method is used for any other kind of global property
+        // TODO: will need to change this if this method is used for any other kind of global property
         // if for some reason we have no entries, add name as a default
         if (map.size() == 0) {
             map.put("Name","personName");

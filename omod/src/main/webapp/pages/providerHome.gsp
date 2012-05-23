@@ -80,7 +80,7 @@
 
 </div>
 
-<!-- TODO: does this need to be restricted to show only users?  not patients?  what about privileges required, since this is in essence a patient search? -->
+<!-- TODO: does this need to be restricted to show persons who aren't patients?  what about privileges required, since this is in essence a patient search? -->
 
 <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
     <div id="personSearch">

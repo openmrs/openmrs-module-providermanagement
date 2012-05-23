@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ProviderManagementWebUtil {
 
-    // TODO: add some unit tests
+    // TODO: unit test web utility methods
 
     /**
      * Utility method that, given a model, a person param, and a person id, fetches a
@@ -81,7 +81,7 @@ public class ProviderManagementWebUtil {
 
         // make sure the person isn't associated with multiple providers
         if (providers.size() > 1) {
-            // TODO: implement this
+            // TODO: (PROV-21) Improve UI to handle persons with one or more associated Provider objects
             throw new RuntimeException("Provider Management module currently does not support persons with multiple providers associated with them");
         }
 

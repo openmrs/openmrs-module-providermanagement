@@ -52,8 +52,7 @@ public class GroovySuggestionEvaluator implements SuggestionEvaluator {
         return persons;
     }
 
-
-    //TODO: add a better version of this which is driven by a config file?
+    // TODO: add a better version of this which is driven by a config file?
     private static Binding getBindings() {
         final Binding binding = new Binding();
         binding.setVariable("administrationService", Context.getAdministrationService());

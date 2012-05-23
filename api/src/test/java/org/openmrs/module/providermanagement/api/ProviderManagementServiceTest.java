@@ -1894,8 +1894,6 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         // list should now be empty
         Assert.assertEquals(0, providers.size());
     }
-
-    // TODO: transferAllPatients should not fail if no patients?
    
     @Test
     public void transferAllPatients_shouldTransferAllPatientsFromOneProviderToAnother() throws Exception {

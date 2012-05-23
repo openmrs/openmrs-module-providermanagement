@@ -61,7 +61,7 @@ import java.util.Set;
  */
 public class ProviderManagementServiceImpl extends BaseOpenmrsService implements ProviderManagementService {
 
-    // TODO: add checks to make sure person is not voided automatically when appropriate (in the assignment classes?)
+    // TODO: (???) add checks to make sure person is not voided automatically when appropriate (in the assignment classes?)
 
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
