@@ -61,8 +61,7 @@ public class ProviderDashboardPageController {
         Provider provider = ProviderManagementWebUtil.getProvider(person);
         pageModel.addAttribute("provider", provider);
 
-        // only add the patients if the provider has the appropriate privilege
-        // TODO: figure out a way to aggregate patient data
+        // if the provider has the appropriate privilege, add the patients of the provider
         if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_VIEW_PATIENTS_PRIVILEGE)) {
             // add the patients of this provider, grouped by relationship type
             Map<RelationshipType, List<Patient>> patientMap = new HashMap<RelationshipType,List<Patient>>();
@@ -78,6 +77,18 @@ public class ProviderDashboardPageController {
                 }
             }
            pageModel.addAttribute("patientMap", patientMap);
+        }
+        // otherwise, if the patient does not have view patient privileges, calculate an aggregate patient count
+        else {
+            Map<RelationshipType, Integer> patientCount = new HashMap<RelationshipType,Integer>();
+            if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
+                for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
+                    if (!relationshipType.isRetired()) {
+                        patientCount.put(relationshipType, pmService.getPatientsOfProviderCount(person, relationshipType, new Date()));
+                    }
+                }
+            }
+            pageModel.addAttribute("patientCount", patientCount);
         }
 
        List<Person> supervisors = pmService.getSupervisorsForProvider(person, new Date());

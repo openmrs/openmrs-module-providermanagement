@@ -456,6 +456,21 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
+     * Gets a count of all the patients that are patients of the specified provider with the specified relationship type on the specified date
+     *
+     * @param provider
+     * @param relationshipType limits returned patients to those related to the provider by a specific relationship type (if null, returns all patients linked by any provider relationships)
+     * @param date
+     * @return count of patients associated with the specified provider via the specified relationship type, on the specified date
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
+    public int getPatientsOfProviderCount(Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+
+
+    /**
      * Returns all the provider relationships associated with the given patient
      *
      * @param patient

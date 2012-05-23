@@ -748,6 +748,37 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
+    public int getPatientsOfProviderCount(Person provider, RelationshipType relationshipType, Date date)
+        throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+
+       // note that we can't just call getPatientsOfProvider and then do a count of the returns results,
+       // because we want this method to be callable by users that don't have the right to view patients
+        if (provider == null) {
+            throw new APIException("Provider cannot be null");
+        }
+
+        if (!isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider + " is not a provider");
+        }
+
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+            throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
+        }
+
+        // get the specified relationships for the provider
+        List<Relationship> relationships =
+                Context.getPersonService().getRelationships(provider, null, relationshipType, date);
+
+        // if a relationship type was not specified, we need to filter this list to only contain provider relationships
+        if (relationshipType == null) {
+            ProviderManagementUtils.filterNonProviderRelationships(relationships);
+        }
+
+        // TODO: the one flaw here is that this counts voided patients (but hopefully any relationships for voided patients will also be voided)
+        return relationships != null ? relationships.size() : 0;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException {

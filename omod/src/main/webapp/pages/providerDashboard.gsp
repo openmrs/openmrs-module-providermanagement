@@ -186,6 +186,10 @@
                     <% patientMap?.each { %>
                         <td id="paneSelectTop_${ it.key.uuid }" class="paneSelectTop paneSelect"> <img src=" ${ ui.resourceLink ("images/patient-nested.png") }"/></td>
                     <% } %>
+                <% } else { %>
+                    <% patientCount?.each { %>
+                         <td id="paneSelectTop_${ it.key.uuid }" class="paneSelectTop paneSelect"> <img src=" ${ ui.resourceLink ("images/patient-nested.png") }"/></td>
+                    <% } %>
                 <% } %>
 
                 <% if (provider.providerRole?.isSupervisorRole()) { %>
@@ -201,6 +205,10 @@
 
                 <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
                     <% patientMap?.each { %>
+                        <td id="paneSelectBottom_${ it.key.uuid }" class="paneSelectBottom paneSelect">${ it.key.aIsToB }<br/>${ ui.message("providermanagement.patients") }</td>
+                    <% } %>
+                <% } else { %>
+                    <% patientCount?.each { %>
                         <td id="paneSelectBottom_${ it.key.uuid }" class="paneSelectBottom paneSelect">${ it.key.aIsToB }<br/>${ ui.message("providermanagement.patients") }</td>
                     <% } %>
                 <% } %>
@@ -272,6 +280,15 @@
                 <% } %>
             </div>
         <% } %>
+    <% } else { %>
+            <!-- this map is keyed on relationship types; value is a count of the patients associated with the provider for that relationship type -->
+            <% patientCount?.each {   %>
+                <div id="pane_${ it.key.uuid }" class="pane">
+                    <div class="content">
+                        ${ it.value } ${ it.key.aIsToB } ${ ui.message("providermanagement.patients") }
+                    </div>
+                </div>
+            <% } %>
     <% } %>
 
     <% if (provider.providerRole?.isSupervisorRole()) { %>

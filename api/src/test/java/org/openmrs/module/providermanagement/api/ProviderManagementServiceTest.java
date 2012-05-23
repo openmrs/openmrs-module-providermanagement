@@ -1344,6 +1344,89 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
+    public void getPatientsOfProviderCount_shouldGetCountOfAllPatientsOfAProviderOnCurrentDate() throws Exception {
+
+        // first, assign a couple patients to a provider
+        Person provider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign this patient in the past
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
+
+        // assign this patient on today's date
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // confirm that the count returns two patients
+        Assert.assertEquals(2, providerManagementService.getPatientsOfProviderCount(provider, relationshipType, new Date()));
+    }
+
+    @Test
+    public void getPatientsOfProviderCount_shouldReturnZeroIfProviderHasNoPatients() throws Exception {
+        Person provider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+        Assert.assertEquals(0, providerManagementService.getPatientsOfProviderCount(provider, relationshipType, new Date()));
+    }
+
+    @Test
+    public void getPatientsOfProviderCount_shouldGetCountOfPatientsOfAProviderOnSpecifiedDate() throws Exception{
+
+        // first, assign a couple patients to a provider (but on different dates)
+        Person provider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign this patient in the past
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
+
+        // assign this patient on today's date
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        Assert.assertEquals(1, providerManagementService.getPatientsOfProviderCount(provider, relationshipType, PAST_DATE));
+    }
+
+    @Test
+    public void getPatientsOfProviderCount_shouldGetCountOfAllPatientsOfAProvider() throws Exception {
+
+        // first, assign a couple patients to a provider (but on different dates)
+        Person provider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign this patient in the past
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, PAST_DATE);
+
+        // assign this patient on today's date
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // confirm that both patients are counted if we query across all dates
+        Assert.assertEquals(2,  providerManagementService.getPatientsOfProviderCount(provider, relationshipType, null));
+    }
+
+    @Test
+    public void getPatientsOfProviderCount_shouldIgnorePatientsOfADifferentRelationshipType() throws Exception{
+
+        // first, assign a couple patients to a provider (but via different relationships)
+        Person provider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // assign this patient using a different relationship type
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        patient = Context.getPatientService().getPatient(8);
+        providerManagementService.assignPatientToProvider(patient, provider, relationshipType, DATE);
+
+        // confirm that only the patient of the specified relationship type are counted
+        Assert.assertEquals(1, providerManagementService.getPatientsOfProviderCount(provider, relationshipType, DATE));
+    }
+
+
+    @Test
     public void getProviderRelationships_shouldReturnAllRelationshipsForPatient() throws Exception {
         
         Patient patient = Context.getPatientService().getPatient(2);
