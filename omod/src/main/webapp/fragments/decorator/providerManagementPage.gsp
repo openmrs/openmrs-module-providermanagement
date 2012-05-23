@@ -2,6 +2,7 @@ ${ ui.includeFragment("standardIncludes") }
 
 <% ui.includeCss("providermanagement", "providerManagement.css") %>
 <% ui.includeJavascript("jquery.js") %>
+<% ui.includeJavascript("jquery-ui.js") %>
 
 <script>
     var jq = jQuery;

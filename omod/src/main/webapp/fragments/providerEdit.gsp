@@ -92,7 +92,10 @@
 
             <tr>
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
-                <td></td>
+                <td>${ ui.includeFragment("widget/field", [ class: java.util.Date,
+                        formFieldName: "birthdate",
+                        initialValue: person?.birthdate ]) }
+                </td>
             </tr>
 
             <% personAttributeTypes?.each { %>
