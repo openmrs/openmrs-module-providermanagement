@@ -57,7 +57,8 @@
             resultFields: providerSearchDisplayFields.values(),
             resultFieldLabels: providerSearchDisplayFields.keySet(),
             selectIdParam: "personId",
-            selectAction: ui.pageLink('providerDashboard'),
+            selectAction: ui.pageLink("providerDashboard"),
+            emptyMessage: ui.message("providermanagement.noMatches"),
             actionButtons: [ [label: ui.message("providermanagement.advancedSearch"),
                     id: "advancedSearchShowButton"] ] ]) %>
 
@@ -91,6 +92,7 @@
                                                     resultFieldLabels: personSearchDisplayFields.keySet(),
                                                     selectAction: ui.pageLink("providerCreate"),
                                                     selectIdParam: "person",
+                                                    emptyMessage: ui.message("providermanagement.noMatches"),
                                                     actionButtons: [ [label: ui.message("general.cancel"), id: "personSearchCancelButton"] ] ] ) }
 
     </div>
@@ -101,6 +103,7 @@
     ${ ui.includeFragment("providerAdvancedSearch", [selectIdParam: "personId",
                                                      id: advancedSearchId,
                                                      selectAction: ui.pageLink('providerDashboard'),
+                                                     emptyMessage: ui.message("providermanagement.noMatches"),
                                                      resultFields: providerSearchDisplayFields.values(),
                                                      resultFieldLabels: providerSearchDisplayFields.keySet()]
     )}

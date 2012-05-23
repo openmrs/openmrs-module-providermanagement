@@ -262,6 +262,7 @@
                                 selectIdParam: "newProvider",
                                 selectParams: [ oldProvider: person.id, relationshipType: it.key.id],
                                 selectForm: "multiSelectCheckboxForm_" + it.key.uuid,
+                                emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
                         ])  %>
                     </div>
@@ -275,6 +276,7 @@
                                 selectAction: ui.actionLink('providerEdit', 'addPatient', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 selectIdParam: "patient",
                                 selectParams: [ provider: person.id, relationshipType: it.key.id],
+                                emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "addCancelButton"]]
                         ])  %>
                     </div>
@@ -326,6 +328,7 @@
                             selectIdParam: "newSupervisor",
                             selectParams: [ oldSupervisor: person.id ],
                             selectForm: "multiSelectCheckboxForm_" + superviseesId,
+                            emptyMessage: ui.message("providermanagement.noMatches"),
                             actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
                     ])  %>
                 </div>
@@ -340,6 +343,7 @@
                             selectAction: ui.actionLink('providerEdit', 'addSupervisee', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             selectIdParam: "supervisee",
                             selectParams: [ supervisor: person.id ],
+                            emptyMessage: ui.message("providermanagement.noMatches"),
                             actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]]
                     ])  %>
                 </div>

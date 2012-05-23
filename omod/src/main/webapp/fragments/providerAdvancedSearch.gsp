@@ -30,24 +30,31 @@
                         headerRow += '</tr>';
                         tbody.append(headerRow);
 
-                        for (index in data) {
-                            var item = data[index];
-                            var row = '<tr><input type="hidden" value="' + item.id + '"/>';
-                        <% config.resultFields.each { %>
-                            row += '<td>' + ((item.${ it } != undefined) ? item.${ it } : '') + '</td>';
-                        <% } %>
-                            row += '</tr>';
-                            tbody.append(row);
-                        }
+                        if (data && data.length > 0) {
+                            for (index in data) {
+                                var item = data[index];
+                                var row = '<tr><input type="hidden" value="' + item.id + '"/>';
+                            <% config.resultFields.each { %>
+                                row += '<td>' + ((item.${ it } != undefined) ? item.${ it } : '') + '</td>';
+                            <% } %>
+                                row += '</tr>';
+                                tbody.append(row);
+                            }
 
-                        // configure the action that occurs on a row click
-                        jq('#advancedSearchResults_${ id } > tbody > tr').click(function() {
-                            window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\' + ' }
-                                    <% if (config.selectParams) { %>
-                                    '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
-                                    <% } %>
-                                    '&${ selectIdParam }=' + jq(this).children('input').val();
-                        });
+                            // configure the action that occurs on a row click
+                            jq('#advancedSearchResults_${ id } > tbody > tr').click(function() {
+                                window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\' + ' }
+                                        <% if (config.selectParams) { %>
+                                        '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
+                                        <% } %>
+                                        '&${ selectIdParam }=' + jq(this).children('input').val();
+                            });
+                        }
+                        <% if (config.emptyMessage) { %>
+                        else {
+                            tbody.append('<tr><td>${ config.emptyMessage }</td></tr>');
+                            }
+                        <% } %>
 
                         // configure highlighting
                         jq('#advancedSearchResults_${ id } > tbody > tr').mouseover(function() {
