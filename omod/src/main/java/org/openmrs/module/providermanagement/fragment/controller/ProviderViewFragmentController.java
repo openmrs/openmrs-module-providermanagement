@@ -30,8 +30,6 @@ public class ProviderViewFragmentController {
                            @FragmentParam(value = "personId", required = false) Integer personId)
                     throws PersonIsNotProviderException{
 
-        // TODO: fix this so that it does't need to fetch the provider?
-
         // utility methods fetch the person and provider, throwing exceptions if needed
         Person person = ProviderManagementWebUtil.getPerson(sharedPageModel, personParam, personId);
         Provider provider = ProviderManagementWebUtil.getProvider(person);

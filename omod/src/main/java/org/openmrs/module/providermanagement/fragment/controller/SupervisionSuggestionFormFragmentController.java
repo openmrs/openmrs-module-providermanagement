@@ -23,6 +23,9 @@ import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionTyp
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.ui.framework.fragment.action.FailureResult;
+import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -49,29 +52,43 @@ public class SupervisionSuggestionFormFragmentController {
 
     }
 
-    public void deleteSupervisionSuggestion(@RequestParam(value = "supervisionSuggestion", required = true) SupervisionSuggestion supervisionSuggestion) {
+    public FragmentActionResult deleteSupervisionSuggestion(@RequestParam(value = "supervisionSuggestion", required = true) SupervisionSuggestion supervisionSuggestion) {
 
-        // TODO: add some validation/sanity check here
-
-        Context.getService(ProviderSuggestionService.class).purgeSupervisionSuggestion(supervisionSuggestion);
-
+        try {
+            Context.getService(ProviderSuggestionService.class).purgeSupervisionSuggestion(supervisionSuggestion);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
 
-    public void retireSupervisionSuggestion(@RequestParam(value = "supervisionSuggestion", required = true) SupervisionSuggestion supervisionSuggestion) {
+    public FragmentActionResult retireSupervisionSuggestion(@RequestParam(value = "supervisionSuggestion", required = true) SupervisionSuggestion supervisionSuggestion) {
 
-        // TODO: add some validation/sanity check here
-
-        Context.getService(ProviderSuggestionService.class).retireSupervisionSuggestion(supervisionSuggestion, "retired via provider management ui");
+        try {
+            Context.getService(ProviderSuggestionService.class).retireSupervisionSuggestion(supervisionSuggestion, "retired via provider management ui");
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
 
 
-    public void saveSupervisionSuggestion(@BindParams() SupervisionSuggestion suggestion) {
+    public FragmentActionResult saveSupervisionSuggestion(@BindParams() SupervisionSuggestion suggestion) {
 
-        // TODO: add validation -- at least check that the criteria is valid!
+        // TODO: (PROV-12) add validation to check to make sure criteria is valid Groovy code
 
         // hard code the evaluator to the groovy evaluator since this is the only type we currently support
         suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
-        Context.getService(ProviderSuggestionService.class).saveSupervisionSuggestion(suggestion);
+
+        try {
+            Context.getService(ProviderSuggestionService.class).saveSupervisionSuggestion(suggestion);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
 
 }
