@@ -250,14 +250,11 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.purgeProviderRole(role);
     }
 
-    // TODO: remove the ignore from these two tests once the retiring of child collections issue is figured out (TRUNK-3174)
-
-    @Ignore
     @Test
     public void retireProviderRole_shouldRetireProviderRole() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.retireProviderRole(role, "test");
-        Assert.assertEquals(9, providerManagementService.getAllProviderRoles(false).size());
+        Assert.assertEquals(10, providerManagementService.getAllProviderRoles(false).size());
         
         role = providerManagementService.getProviderRole(1002);
         Assert.assertTrue(role.isRetired());
@@ -265,12 +262,11 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         
     }
 
-    @Ignore
     @Test
     public void unretireProviderRole_shouldUnretireProviderRole() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.retireProviderRole(role, "test");
-        Assert.assertEquals(9, providerManagementService.getAllProviderRoles(false).size());
+        Assert.assertEquals(10, providerManagementService.getAllProviderRoles(false).size());
 
        role = providerManagementService.getProviderRole(1002);
        providerManagementService.unretireProviderRole(role);

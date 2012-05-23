@@ -16,6 +16,8 @@ package org.openmrs.module.providermanagement;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.RelationshipType;
+import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.api.handler.RequiredDataHandler;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -37,12 +39,15 @@ import java.util.Set;
         private Integer providerRoleId;
 
         // the provider/patient relationships this role can support
+        @DisableHandlers(handlerTypes = { RequiredDataHandler.class })  // disable all required data handlers (save, retire, etc)
         private Set<RelationshipType> relationshipTypes;
 
         // the provider roles this provider role can supervise
+        @DisableHandlers(handlerTypes = { RequiredDataHandler.class })  // disable all required data handlers (save, retire, etc)
         private Set<ProviderRole> superviseeProviderRoles;
 
         // the attribute types associated with this role
+        @DisableHandlers(handlerTypes = { RequiredDataHandler.class }) // disable all required data handlers (save, retire, etc)
         private Set<ProviderAttributeType> providerAttributeTypes;
 
         // whether or not this role can serve as a supervisor
