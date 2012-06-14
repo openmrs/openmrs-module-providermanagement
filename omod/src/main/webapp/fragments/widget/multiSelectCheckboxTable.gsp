@@ -73,9 +73,9 @@
                                         // allows for displaying nested fields
                                         def display = item
                                         it.split("\\.").each { field ->
-                                            display = display[field]
+                                            if (display != null) { display = display[field] }
                                         }
-                                        print display
+                                        print display ?: ''
                                 %>
 
                                 <% if (config.selectAction) { %>
