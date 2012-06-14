@@ -19,7 +19,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +88,7 @@ public class ProviderManagementGlobalProperties {
         // load the appropriate global property
         String propertyValue = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
 
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String,String> map = new LinkedHashMap<String,String>();
         if (StringUtils.isNotBlank(propertyValue)) {
 
             // split the global property on the pipe symbol
