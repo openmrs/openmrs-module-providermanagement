@@ -71,7 +71,7 @@
                 <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
                 <td> ${ ui.includeFragment("widget/selectList", [ formFieldName: "provider.providerRole",
                         selected: [provider?.providerRole?.id], options: providerRoles, optionsDisplayField: 'name',
-                        optionsValueField: 'id'] ) }</td>
+                        optionsValueField: 'id', includeEmptyOption: true] ) }</td>
             </tr>
 
             <tr>
