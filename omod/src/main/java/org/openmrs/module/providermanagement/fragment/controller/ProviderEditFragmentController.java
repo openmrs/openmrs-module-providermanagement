@@ -128,11 +128,11 @@ public class ProviderEditFragmentController {
         }
 
         if (person.getPersonName() == null) {
-            person.addName(new PersonName());
+            person.getNames().add(new PersonName());
         }
 
         if (person.getPersonAddress() == null) {
-            person.addAddress(new PersonAddress());
+            person.getAddresses().add(new PersonAddress());
         }
 
         for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
