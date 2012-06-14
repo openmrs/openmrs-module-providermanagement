@@ -35,7 +35,7 @@
             selected: values, options: config.options, optionsDisplayField: config.optionsKey,
             optionsValueField: config.optionsValue, multiple: config.multiple] ) }
     <% } else { %>
-        <textarea name="value" rows="5" cols="30">${ value ?: ''}</textarea>
+        <textarea name="value" rows="5" cols="60">${ value ?: ''}</textarea>
     <% } %>
     <button type="submit">${ ui.message("providermanagement.update") }</button>
 
