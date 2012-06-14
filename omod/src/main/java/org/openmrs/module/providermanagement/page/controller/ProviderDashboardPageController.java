@@ -99,9 +99,14 @@ public class ProviderDashboardPageController {
 
         if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_EDIT_PROVIDERS_PRIVILEGE)) {
             // calculate suggested supervisees
-            if (provider.getProviderRole().isSupervisorRole()) {
+            if (provider.getProviderRole() != null && provider.getProviderRole().isSupervisorRole()) {
                 List<Person> suggestedSupervisees = Context.getService(ProviderSuggestionService.class).suggestSuperviseesForProvider(person);
-                pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
+                if (suggestedSupervisees != null && suggestedSupervisees.size() > 0) {
+                    pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
+                }
+                else {
+                    pageModel.addAttribute("suggestedSupervisees", null);
+                }
             }
             else {
                 pageModel.addAttribute("suggestedSupervisees", null);
