@@ -3,7 +3,7 @@
     <tr>
         <th>${ ui.message("providermanagement.providerRole") }</th>
         <th>${ ui.message("providermanagement.superviseeRoles") }</th>
-        <th>${ ui.message("providermanagement.relationshipTypes") }</th>
+        <th>${ ui.message("providermanagement.patientRelationshipTypes") }</th>
         <th>${ ui.message("providermanagement.attributeTypes") }</th>
         <th>${ ui.message("general.retired") }</th>
         <th>&nbsp;</th>

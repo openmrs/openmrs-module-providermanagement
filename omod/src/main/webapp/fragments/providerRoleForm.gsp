@@ -26,7 +26,7 @@ ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUr
 
 
         <tr>
-            <td>${ ui.message("providermanagement.associatedRelationshipTypes") }:</td>
+            <td>${ ui.message("providermanagement.patientRelationshipTypes") }:</td>
             <td>
                 <select name="relationshipTypes" multiple>
                     <% relationshipTypes.each { %>
