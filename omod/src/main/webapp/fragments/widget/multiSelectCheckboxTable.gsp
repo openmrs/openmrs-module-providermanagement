@@ -73,7 +73,7 @@
                                         // allows for displaying nested fields
                                         def display = item
                                         it.split("\\.").each { field ->
-                                            if (display != null) { display = display[field] }
+                                            if (display) { display = display[field] }
                                         }
                                         print display ?: ''
                                 %>
