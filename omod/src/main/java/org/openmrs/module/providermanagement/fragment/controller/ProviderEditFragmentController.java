@@ -93,7 +93,9 @@ public class ProviderEditFragmentController {
         Person person = ProviderManagementWebUtil.getPerson(sharedPageModel, personParam, personId);
         Provider provider = null;
 
-        if (person != null) {
+        // only try to fetch the provider if we have a non-transient person
+        // (the providerCreate page may create a transient person witha new person name)
+        if (person != null && person.getId() != null) {
             try {
                 provider = ProviderManagementWebUtil.getProvider(person);
             }

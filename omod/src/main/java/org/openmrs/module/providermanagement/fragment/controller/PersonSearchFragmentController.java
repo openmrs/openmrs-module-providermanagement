@@ -29,6 +29,8 @@ import java.util.List;
 
 public class PersonSearchFragmentController {
 
+    // TODO: are we still using this method?
+
     public List<SimpleObject> getPeople(@RequestParam(value="searchValue", required=true) String searchValue,
                                           @RequestParam(value="resultFields[]", required=true) String[] resultFields,
                                           UiUtils ui) {

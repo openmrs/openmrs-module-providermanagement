@@ -39,7 +39,7 @@ public class ProviderSearchFragmentController {
                 throws PersonIsNotProviderException {
 
         // NOTE that by default we return an empty list if the searchValue size < 2
-        if (searchValue == null || searchValue.length() < 2) {
+        if (searchValue == null || searchValue.length() < 3) {
             return new ArrayList<SimpleObject>();
         }
 

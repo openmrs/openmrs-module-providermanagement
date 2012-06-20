@@ -1,4 +1,3 @@
-
 <%  context.requirePrivilege("Provider Management Dashboard - Edit Providers")
     ui.decorateWith("providerManagementPage") %>
 

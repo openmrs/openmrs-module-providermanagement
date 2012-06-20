@@ -1,35 +1,21 @@
 
-
-
-#providerSearch {
+#providerList {
     position: relative;
     top: 75px;
     width: 1250px;
     margin-left: auto;
     margin-right: auto;
     background-color: #E7F7F4;
+    display: none;
 }
 
 
-#advancedSearch {
+#peopleList {
     position: relative;
     top: 75px;
     width: 1250px;
     margin-left: auto;
     margin-right: auto;
-    display: none;
     background-color: #E7F7F4;
-}
-
-#addProvider {
-    position: relative;
-    top: 150px;
-    width: 750px;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #E7F7F4;
-}
-
-#addNewProviderButton {
-    display: none;
+    display:none;
 }

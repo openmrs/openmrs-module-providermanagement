@@ -4,7 +4,6 @@
    ui.decorateWith("providerManagementPage")
    ui.includeCss("providermanagement", "providerHome.css")
    def providerSearchId = ui.randomId()
-   def personSearchId = ui.randomId()
    def advancedSearchId = ui.randomId() %>
 
 <script>
@@ -28,30 +27,30 @@
             jq('#providerSearch').show();
         });
 
-        jq('#personSearchShowButton').click(function() {
-            // hide the provider search div and reset the result fields
-            jq('#providerSearch').hide();
-            jq('#searchField_${ providerSearchId }').val('');
-            jq('#searchTable_${ providerSearchId } > tbody > tr').remove();
+        // jump to the similar persons page if the user tries to add a provider
+        jq('#addNewProviderButton').click(function() {
+            var name = jq('#searchField_${ providerSearchId }').val();
+            window.location='${ ui.pageLink("similarPeople") }?name=' + name;
+        })
 
-            jq('#personSearch').show();
-        });
+        // only show the add new provider button if the end user has entered data
+        jq('#searchField_${ providerSearchId}').keyup(function() {
+            var name = jq('#searchField_${ providerSearchId }').val();
+            if (name == undefined || name == '') {
+                jq('#addNewProviderButton').hide();
+            }
+            else {
+                jq('#addNewProviderButton').show();
+            }
+        })
 
-        jq('#personSearchCancelButton').click(function() {
-            // hide the person search div and reset the result fields
-            jq('#personSearch').hide();
-            jq('#searchField_${ personSearchId }').val('');
-            jq('#searchTable_${ personSearchId } > tbody > tr').remove();
-
-            jq('#providerSearch').show();
-        });
     });
 </script>
 
 
 <div id="providerSearch">
 
-    <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.findProvider"),
+    <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.findOrAddProvider"),
             id: providerSearchId,
             searchAction: ui.actionLink("providerSearch", "getProviders"),
             resultFields: providerSearchDisplayFields.values(),
@@ -60,43 +59,11 @@
             selectAction: ui.pageLink("providerDashboard"),
             emptyMessage: ui.message("providermanagement.noMatches"),
             actionButtons: [ [label: ui.message("providermanagement.advancedSearch"),
-                    id: "advancedSearchShowButton"] ] ]) %>
-
-    <br/>
-
-
-    <% if (context.hasPrivilege("Provider Management Dashboard - Edit Providers")) { %>
-        <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
-            ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("providermanagement.createProvider"),
-                                                                             link: ui.pageLink("providerCreate")],
-                                                                            [label: ui.message("providermanagement.createProviderFromExistingPerson"),
-                                                                             id: "personSearchShowButton"] ] ]
-            )}
-        <% } else { %>
-            ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("providermanagement.createProvider"),
-                    link: ui.pageLink("providerCreate")] ] ]
-            )}
-        <% } %>
-    <% } %>
+                                id: "advancedSearchShowButton"],
+                             [label: ui.message("providermanagement.addNewProvider"),
+                                id: "addNewProviderButton"] ] ]) %>
 
 </div>
-
-<!-- TODO: does this need to be restricted to show persons who aren't patients?  what about privileges required, since this is in essence a patient search? -->
-
-<% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
-    <div id="personSearch">
-        ${ ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.selectPerson"),
-                                                    id: personSearchId,
-                                                    searchAction: ui.actionLink("personSearch", "getPeople"),
-                                                    resultFields: personSearchDisplayFields.values(),
-                                                    resultFieldLabels: personSearchDisplayFields.keySet(),
-                                                    selectAction: ui.pageLink("providerCreate"),
-                                                    selectIdParam: "person",
-                                                    emptyMessage: ui.message("providermanagement.noMatches"),
-                                                    actionButtons: [ [label: ui.message("general.cancel"), id: "personSearchCancelButton"] ] ] ) }
-
-    </div>
-<% } %>
 
 <div id="advancedSearch">
 
