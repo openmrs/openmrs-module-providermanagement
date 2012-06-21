@@ -44,7 +44,7 @@
             jq('.transfer').hide();
 
             // clear out any existing search values
-            jq('.searchField}').val('');
+            jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
 
 
@@ -65,7 +65,7 @@
             jq('.suggest').hide();
 
             // clear out any existing search values
-            jq('.searchField}').val('');
+            jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
 
             // show the appropriate transfer div
@@ -78,7 +78,7 @@
             jq('.transfer').hide();
 
             // clear out any existing search values
-            jq('.searchField}').val('');
+            jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
         });
 
@@ -92,7 +92,7 @@
             jq('.suggest').hide();
 
             // clear out any existing search values
-            jq('.searchField}').val('');
+            jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
 
             // show the appropriate add div
@@ -106,7 +106,7 @@
             jq('.add').hide();
 
             // clear out any existing search values
-            jq('.searchField}').val('');
+            jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
         });
 
@@ -120,7 +120,7 @@
             jq('.transfer').hide();
 
             // clear out any existing search values
-            jq('.searchField}').val('');
+            jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
 
             // show the appropriate div
@@ -134,7 +134,7 @@
             jq('.suggest').hide();
 
             // clear out any existing search values
-            jq('.searchField}').val('');
+            jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
         });
 
