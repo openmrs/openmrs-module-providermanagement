@@ -102,6 +102,12 @@
                 <% } %>
             </tbody>
 
+            <% if (config.footer) { %>
+                <tr class="multiSelectFooter">
+                    <th colspan="${ config.columns.size() + 1 }">${ config.footer }</th>
+                </tr>
+            <% } %>
+
             <% if (config.actionButtons) { %>
                 <tr class="multiSelectActionButtons">
                     <td colspan="${ config.columns.size() + 1 }">

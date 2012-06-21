@@ -244,6 +244,7 @@
                             formFieldName: "patients",
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             emptyMessage: ui.message("providermanagement.none"),
+                            footer: it.value.size + " " + (it.value.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("providermanagement.transfer"), id: "transferButton_${ it.key.uuid }", class: "transferButton", type: "button"],
@@ -308,6 +309,7 @@
                         formFieldName: "supervisees",
                         disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                         emptyMessage: ui.message("providermanagement.none"),
+                        footer: supervisees.size + " " + (supervisees.size != 1 ? ui.message("providermanagement.totalSupervisees") : ui.message("providermanagement.totalSupervisee")),
                         actionButtons: (context.hasPrivilege("Provider Management Dashboard - Edit Providers") ?
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],

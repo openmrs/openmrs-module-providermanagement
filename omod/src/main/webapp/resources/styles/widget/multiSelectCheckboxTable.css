@@ -1,4 +1,9 @@
 
+.multiSelectCheckboxTable a {
+    text-decoration:  none;
+    color:            black;
+}
+
 .multiSelectCheckboxTable table {
     width: 100%
 }
