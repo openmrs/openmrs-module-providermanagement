@@ -48,7 +48,7 @@
         <property>providermanagement.personAttributeTypes</property>
         <defaultValue></defaultValue>
         <description>
-            Person attributes to display on the provider dashboard: specified as a pipe-delimited list of person attribute type uuids
+            Person attributes to display on the provider dashboard; specified as a pipe-delimited list of person attribute type uuids
         </description>
     </globalProperty>
 
@@ -56,7 +56,7 @@
         <property>providermanagement.providerSearchDisplayFields</property>
         <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
         <description>
-            Fields to display in the provider search box; specified as a pipe-delimited list of key/value pairs
+            Fields to display in the provider search results; specified as a pipe-delimited list of label/field pairs
         </description>
     </globalProperty>
 
@@ -64,7 +64,7 @@
         <property>providermanagement.providerListDisplayFields</property>
         <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
         <description>
-            Fields to display in the provider lists; specified as a pipe-delimited list of key/value pairs
+            Fields to display in the provider lists; specified as a pipe-delimited list of label/field pairs
         </description>
     </globalProperty>
 
@@ -72,7 +72,7 @@
         <property>providermanagement.patientSearchDisplayFields</property>
         <defaultValue>Name:personName</defaultValue>
         <description>
-            Fields to display in the patient search box; specified as a pipe-delimited list of patient fields
+            Fields to display in the patient search results; specified as a pipe-delimited list of label/field pairs
         </description>
     </globalProperty>
 
@@ -80,7 +80,7 @@
         <property>providermanagement.patientListDisplayFields</property>
         <defaultValue>Name:personName</defaultValue>
         <description>
-            Fields to display in the patient lists; specified as a pipe-delimited list of key/value pairs
+            Fields to display in the patient lists; specified as a pipe-delimited list of label/field pairs
         </description>
     </globalProperty>
 
@@ -88,7 +88,7 @@
         <property>providermanagement.personSearchDisplayFields</property>
         <defaultValue>Name:personName</defaultValue>
         <description>
-            Fields to display in the person searches; specified as a pipe-delimited list of key/value pairs
+            Fields to display in the person search results; specified as a pipe-delimited list of label/field pairs
         </description>
     </globalProperty>
 
@@ -96,7 +96,7 @@
         <property>providermanagement.advancedSearchPersonAttributeType</property>
         <defaultValue></defaultValue>
         <description>
-            Person attribute type to use as a search field on the advanced search page
+            Person attribute type, specified by uuid, to use as a search field on the advanced search page
         </description>
     </globalProperty>
 
