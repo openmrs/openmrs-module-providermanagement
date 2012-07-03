@@ -5,15 +5,20 @@
 
 <script>
     jq(function() {
-        // configure the AJAX search call
-        jq('#searchField_${ id }').keyup(function() {
-            if (jq(this).val()) {
+
+        // define the AJAX search function
+        var search = function () {
+
+            if (jq('#searchField_${ id }').val()) {
                 jq.getJSON('${ config.searchAction }',
                         { 'returnFormat': 'json',
-                            'searchValue': jq(this).val(),
+                            'searchValue': jq('#searchField_${ id }').val(),
+                            <% if (config.retiredToggle) { %>
+                            'includeRetired': jq('#includeRetired_${ id }').is(':checked') ? true : false,
+                            <% } %>
                             'resultFields': [ <%= config.resultFields.collect { "'${ it }'" }.join(",") %> ]
                             <% config.searchParams.each { %>
-                                , '${ it.key }': ${ it.value }
+                            , '${ it.key }': ${ it.value }
                             <% } %>
                         })
                         .success(function(data) {
@@ -24,7 +29,7 @@
                             // first, add the header row
                             var headerRow = '<tr>';
                             <% config.resultFieldLabels.each { %>
-                                headerRow += '<th> ${ it }</th>';
+                            headerRow += '<th> ${ it }</th>';
                             <% } %>
                             headerRow += '</tr>';
                             tbody.append(headerRow);
@@ -36,13 +41,13 @@
                                 <% config.resultFields.each { %>
                                     row += '<td>' + ((item
                                             <% it.split('\\.').each { field -> %>
-                                                ['${field}']
+                                            ['${field}']
                                             <% } %>
-                                         != undefined) ? item
+                                            != undefined) ? item
                                             <% it.split('\\.').each { field -> %>
-                                                ['${field}']
+                                            ['${field}']
                                             <% } %>
-                                         : '') + '</td>';
+                                            : '') + '</td>';
                                 <% } %>
                                     row += '</tr>';
                                     tbody.append(row);
@@ -52,18 +57,18 @@
                                 jq('#searchTable_${ id } > tbody > tr').click(function() {
                                     window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\' + ' }
                                             <% if (config.selectParams) { %>
-                                                '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
+                                            '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
                                             <% } %>
                                             <% if (config.selectForm) { %>
-                                                '&' + jq('#${ config.selectForm }').serialize() +
+                                            '&' + jq('#${ config.selectForm }').serialize() +
                                             <% } %>
                                             '&${ selectIdParam }=' + jq(this).children('input').val();
                                 });
                             }
-                            <% if (config.emptyMessage) { %>
-                                else {
-                                    tbody.append('<tr><td>${ config.emptyMessage }</td></tr>');
-                                }
+                                    <% if (config.emptyMessage) { %>
+                            else {
+                                tbody.append('<tr><td>${ config.emptyMessage }</td></tr>');
+                            }
                             <% } %>
 
                             // configure highlighting
@@ -82,7 +87,14 @@
                 // remove the results if no text in the search field
                 jq('#searchTable_${ id } > tbody > tr').remove();
             }
-        });
+        };
+
+        // trigger the search on key up in the search field, or a change in the retired toggle
+        jq('#searchField_${ id }').keyup(search);
+
+        <% if (config.retiredToggle) { %>
+            jq('#includeRetired_${ id }').change(search);
+        <% } %>
 
     });
 </script>
@@ -95,7 +107,12 @@
             </tr>
 
             <tr>
-                <td colspan="${ config.resultFields.size() }"><input id="searchField_${ id }" class="searchField" type="text" size="40"/></td>
+                <td colspan="${ config.resultFields.size() }">
+                    <input id="searchField_${ id }" class="searchField" type="text" size="40"/>
+                    <% if (config.retiredToggle) { %>
+                        <input id="includeRetired_${id}" type="checkbox"/> ${ ui.message("providermanagement.includeRetired") }
+                    <% } %>
+                </td>
             </tr>
 
             <% if (config.actionButtons) { %>

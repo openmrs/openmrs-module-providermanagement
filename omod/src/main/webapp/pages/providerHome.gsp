@@ -58,6 +58,7 @@
             selectIdParam: "personId",
             selectAction: ui.pageLink("providerDashboard"),
             emptyMessage: ui.message("providermanagement.noMatches"),
+            retiredToggle: true,
             actionButtons: [ [label: ui.message("providermanagement.advancedSearch"),
                                 id: "advancedSearchShowButton"],
                              [label: ui.message("providermanagement.addNewProvider"),
