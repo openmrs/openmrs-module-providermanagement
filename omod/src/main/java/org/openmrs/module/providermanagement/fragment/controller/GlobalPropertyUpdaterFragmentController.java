@@ -63,7 +63,7 @@ public class GlobalPropertyUpdaterFragmentController {
         // concatenate the values
         String updatedValue;
 
-        if (values != null) {
+        if (values != null && values.length > 0) {
             updatedValue = StringUtils.join(values,'|');
         }
         else {
