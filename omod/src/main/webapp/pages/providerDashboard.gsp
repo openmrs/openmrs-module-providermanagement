@@ -256,7 +256,7 @@
                     <div id="transfer_${ it.key.uuid }" class="transfer">
                         <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferPatients"),
                                 searchAction: ui.actionLink("providerSearch", "getProviders"),
-                                searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
+                                searchParams: [ providerRoles: [ provider.providerRole?.id ], excludeProvider: person.id ],
                                 resultFields: providerSearchDisplayFields.values(),
                                 resultFieldLabels: providerSearchDisplayFields.keySet(),
                                 selectAction: ui.actionLink('providerEdit', 'transferPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),

@@ -33,10 +33,13 @@ public class ProviderSearchFragmentController {
 
     public List<SimpleObject> getProviders(@RequestParam(value="searchValue", required=true) String searchValue,
                                           @RequestParam(value="excludeSuperviseesOf", required=false) Person excludeSuperviseesOf,
+                                          @RequestParam(value="excludeProvider", required=false) Person excludeProvider,
                                           @RequestParam(value="providerRoles[]", required=false) ProviderRole[] providerRoles,
                                           @RequestParam(value="resultFields[]", required=false) String[] resultFields,
                                           UiUtils ui)
                 throws PersonIsNotProviderException {
+
+        System.out.println(excludeProvider);
 
         // NOTE that by default we return an empty list if the searchValue size < 2
         if (searchValue == null || searchValue.length() < 3) {
@@ -54,6 +57,11 @@ public class ProviderSearchFragmentController {
         if (excludeSuperviseesOf != null) {
             List<Person> supervisees = Context.getService(ProviderManagementService.class).getSuperviseesForSupervisor(excludeSuperviseesOf, new Date());
             persons.removeAll(supervisees);
+        }
+
+        // exclude any specified provider
+        if (excludeProvider != null) {
+            persons.remove(excludeProvider);
         }
 
         // convert to a simple object list
