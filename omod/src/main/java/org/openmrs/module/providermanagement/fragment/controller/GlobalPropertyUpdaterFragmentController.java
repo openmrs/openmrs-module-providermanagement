@@ -47,14 +47,7 @@ public class GlobalPropertyUpdaterFragmentController {
         }
         // handle text area
         else if (type.equalsIgnoreCase("text")) {
-            StringBuilder value = new StringBuilder();
-
-            if (StringUtils.isNotBlank(currentValue)) {
-                for (String v : currentValue.split("\\|")) {
-                    value.append(v + "\n");
-                }
-            }
-            model.addAttribute("value", value);
+            model.addAttribute("value", currentValue);
         }
         else {
             throw new RuntimeException("Invalid global property type: must be select list or text");
@@ -74,7 +67,7 @@ public class GlobalPropertyUpdaterFragmentController {
             updatedValue = StringUtils.join(values,'|');
         }
         else {
-            updatedValue = StringUtils.join(value.split("(\\r|\\n)+"),"|");
+            updatedValue = value;
         }
 
         property.setPropertyValue(updatedValue);
