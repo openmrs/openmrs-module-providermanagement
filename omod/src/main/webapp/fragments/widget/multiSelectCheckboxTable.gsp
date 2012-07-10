@@ -75,7 +75,7 @@
                                         it.split("\\.").each { field ->
                                             if (display) { display = display[field] }
                                         }
-                                        print display ?: ''
+                                        print ui.format(display) ?: ''
                                 %>
 
                                 <% if (config.selectAction) { %>

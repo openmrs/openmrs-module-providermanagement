@@ -16,11 +16,14 @@ package org.openmrs.module.providermanagement.page.controller;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
+import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
@@ -44,6 +47,50 @@ import java.util.Map;
 
 public class ProviderDashboardPageController {
 
+    // command object for adding a patient and a relationship to the model as a unit
+    public class PatientAndRelationship {
+
+        private Integer id;
+
+        private Patient patient;
+
+        private Relationship relationship;
+
+        public PatientAndRelationship() {
+        }
+
+        public PatientAndRelationship(Patient patient, Relationship relationship) {
+            this.patient = patient;
+            this.relationship = relationship;
+            this.id = relationship.getId();
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public Patient getPatient() {
+            return patient;
+        }
+
+        public void setPatient(Patient patient) {
+            this.patient = patient;
+        }
+
+        public Relationship getRelationship() {
+            return relationship;
+        }
+
+        public void setRelationship(Relationship relationship) {
+            this.relationship = relationship;
+        }
+
+    }
+
     public void controller (HttpServletRequest request, PageModel pageModel,
                             @RequestParam(value = "person", required = false) Person personParam,
                             @RequestParam(value = "personId", required = false) Integer personId,
@@ -64,19 +111,35 @@ public class ProviderDashboardPageController {
         // if the provider has the appropriate privilege, add the patients of the provider
         if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_VIEW_PATIENTS_PRIVILEGE)) {
             // add the patients of this provider, grouped by relationship type
-            Map<RelationshipType, List<Patient>> patientMap = new HashMap<RelationshipType,List<Patient>>();
+            Map<RelationshipType, List<PatientAndRelationship>> currentPatientMap = new HashMap<RelationshipType,List<PatientAndRelationship>>();
+            Map<RelationshipType, List<PatientAndRelationship>> historicalPatientMap = new HashMap<RelationshipType, List<PatientAndRelationship>>();
+
             if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
                 for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
-                    if (!relationshipType.isRetired()) {
-                        patientMap.put(relationshipType, new ArrayList<Patient>());
 
-                        for (Patient patient : pmService.getPatientsOfProvider(person, relationshipType, new Date())) {
-                            patientMap.get(relationshipType).add(patient);
+                    if (!relationshipType.isRetired()) {
+                        currentPatientMap.put(relationshipType, new ArrayList<PatientAndRelationship>());
+                        historicalPatientMap.put(relationshipType, new ArrayList<PatientAndRelationship>());
+
+                        for (Relationship relationship : pmService.getPatientRelationshipsForProvider(person, relationshipType, null)) {
+
+                            Patient patient = Context.getPatientService().getPatient(relationship.getPersonB().getId());
+
+                            if (ProviderManagementUtils.isRelationshipActive(relationship)) {
+                                currentPatientMap.get(relationshipType).add(new PatientAndRelationship(patient, relationship));
+                            }
+                            else {
+                                historicalPatientMap.get(relationshipType).add(new PatientAndRelationship(patient, relationship));
+                            }
+
                         }
+
                     }
+
                 }
             }
-           pageModel.addAttribute("patientMap", patientMap);
+            pageModel.addAttribute("currentPatientMap", currentPatientMap);
+            pageModel.addAttribute("historicalPatientMap", historicalPatientMap);
         }
         // otherwise, if the patient does not have view patient privileges, calculate an aggregate patient count
         else {
@@ -113,7 +176,7 @@ public class ProviderDashboardPageController {
             }
         }
 
-        // add the pane id (so that we know which pane to display_
+        // add the pane id (so that we know which pane to display
         pageModel.addAttribute("paneId", paneId);
 
         // add the global properties that specifies the fields to display in the provider and patient field and search results

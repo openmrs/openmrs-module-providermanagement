@@ -88,6 +88,13 @@ public class ProviderManagementWebUtil {
         return providers.get(0);
     }
 
+
+    // TODO: unit test and comment thss
+    public static List<SimpleObject> convertRelationshipListToSimpleObjectList(List<Relationship> relationships, UiUtils ui, String [] resultFields) {
+
+    }
+
+
     /**
      * Converts a list of persons to a SimpleObject with the specified result fields
      * The key thing this method handles that the SimpleObject.fromCollection does

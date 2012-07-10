@@ -706,8 +706,8 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType, Date date)
-            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+    public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType, Date date)
+        throws PersonIsNotProviderException, InvalidRelationshipTypeException {
 
         if (provider == null) {
             throw new APIException("Provider cannot be null");
@@ -730,7 +730,24 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             ProviderManagementUtils.filterNonProviderRelationships(relationships);
         }
 
-        // now iterate through the relationships and fetch the patients
+        return relationships;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+        return getPatientRelationshipsForProvider(provider, relationshipType, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+
+        List<Relationship> relationships = Context.getService(ProviderManagementService.class).getPatientRelationshipsForProvider(provider, relationshipType, date);
+
+        // iterate through the relationships and fetch the patients
         Set<Patient> patients = new HashSet<Patient>();
         for (Relationship relationship : relationships) {
 
@@ -740,7 +757,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
             Patient p = Context.getPatientService().getPatient(relationship.getPersonB().getId());
             if (!p.isVoided()) {
-                patients.add(Context.getPatientService().getPatient(relationship.getPersonB().getId()));
+                patients.add(p);
             }
         }
 

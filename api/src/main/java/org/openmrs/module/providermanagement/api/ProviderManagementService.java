@@ -38,6 +38,7 @@ import org.openmrs.module.providermanagement.exception.SourceProviderSameAsDesti
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provider Management Service
@@ -420,6 +421,18 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException;
 
     // TODO: we will probably need a "purge" option for purging relationships created by accident, (will need to be implemented when we take on PROV-1)
+
+    // TODO: comment this and unit test this!!!!
+    // TODO: in the comments, note that these only return non-voided relationships (which is what we want)
+    // TODO: unit test that it ignores voied relationships
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
+    public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
+    public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
      * Gets all patients that are patients of the specified provider with the specified relationship type on the specified date

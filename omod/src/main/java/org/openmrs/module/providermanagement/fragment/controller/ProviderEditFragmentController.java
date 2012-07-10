@@ -23,6 +23,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
@@ -45,6 +46,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -295,10 +297,12 @@ public class ProviderEditFragmentController {
 
     public FragmentActionResult removePatients(@RequestParam(value = "provider", required = true) Person provider,
                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                                @RequestParam(value = "patients", required = true) List<Patient> patients) {
+                                                @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships) {
+
 
         try {
-            for (Patient patient : patients) {
+            for (Relationship patientRelationship : patientRelationships) {
+                Patient patient = Context.getPatientService().getPatient(patientRelationship.getPersonB().getId());
                 Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType);
             }
             return new SuccessResult();
@@ -311,9 +315,15 @@ public class ProviderEditFragmentController {
     public FragmentActionResult transferPatients(@RequestParam(value = "oldProvider", required = true) Person oldProvider,
                                                  @RequestParam(value = "newProvider", required = true) Person newProvider,
                                                  @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                                 @RequestParam(value = "patients", required = true) List<Patient> patients) {
+                                                 @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships) {
 
         try {
+            List<Patient> patients = new ArrayList<Patient>();
+
+            for (Relationship patientRelationship : patientRelationships) {
+                patients.add(Context.getPatientService().getPatient(patientRelationship.getPersonB().getId()));
+            }
+
             Context.getService(ProviderManagementService.class).transferPatients(patients,oldProvider, newProvider, relationshipType);
             return new SuccessResult();
         }

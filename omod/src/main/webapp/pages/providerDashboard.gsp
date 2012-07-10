@@ -183,7 +183,7 @@
                 <td class="borderCell">&nbsp;</td>
 
                 <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
-                    <% patientMap?.each { %>
+                    <% currentPatientMap?.each { %>
                         <td id="paneSelectTop_${ it.key.uuid }" class="paneSelectTop paneSelect"> <img src=" ${ ui.resourceLink ("images/patient-nested.png") }"/></td>
                     <% } %>
                 <% } else { %>
@@ -204,7 +204,7 @@
                 <td>&nbsp;</td>
 
                 <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
-                    <% patientMap?.each { %>
+                    <% currentPatientMap?.each { %>
                         <td id="paneSelectBottom_${ it.key.uuid }" class="paneSelectBottom paneSelect">${ it.key.aIsToB }<br/>${ ui.message("providermanagement.patients") }</td>
                     <% } %>
                 <% } else { %>
@@ -231,17 +231,17 @@
 
     <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
         <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
-        <% patientMap?.each {   %>
+        <% currentPatientMap?.each {   %>
 
             <div id="pane_${ it.key.uuid }" class="pane">
 
                 <div id="list_${ it.key.uuid }" class="list">
-                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.personName.toString() },
+                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.patient.personName.toString() },
                             id: it.key.uuid,
                             columns: patientListDisplayFields.values(),
                             columnLabels: patientListDisplayFields.keySet(),
                             formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
-                            formFieldName: "patients",
+                            formFieldName: "patientRelationships",
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             emptyMessage: ui.message("providermanagement.none"),
                             footer: it.value.size + " " + (it.value.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
