@@ -557,7 +557,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // test to mark sure the relationship doesn't already exist
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships != null && relationships.size() > 0) {
-            throw new PatientAlreadyAssignedToProviderException("Provider " + provider.getPersonName() + " is already assigned to " + patient.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
+            throw new PatientAlreadyAssignedToProviderException(patient.getPersonName() + " is already assigned to " + provider.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
         }
         
         // go ahead and create the relationship
@@ -623,7 +623,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // find the existing relationship
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships == null || relationships.size() == 0) {
-            throw new PatientNotAssignedToProviderException("Provider " + provider.getPersonName() + " is not assigned to " + patient.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
+            throw new PatientNotAssignedToProviderException(patient.getPersonName() + " is not assigned to " + provider.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
         }
         if (relationships.size() > 1) {
             throw new APIException("Duplicate " + relationshipType + " between " + provider.getPersonName() + " and " + patient.getPersonName());

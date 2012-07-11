@@ -311,13 +311,19 @@ public class ProviderEditFragmentController {
 
     public FragmentActionResult removePatients(@RequestParam(value = "provider", required = true) Person provider,
                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                                @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships) {
+                                                @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
+                                                @RequestParam(value = "date", required = false) Date date) {
 
 
         try {
+            // if no date specified, add on the current date
+            if (date == null) {
+                date = new Date();
+            }
+
             for (Relationship patientRelationship : patientRelationships) {
                 Patient patient = Context.getPatientService().getPatient(patientRelationship.getPersonB().getId());
-                Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType);
+                Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType, date);
             }
             return new SuccessResult();
         }

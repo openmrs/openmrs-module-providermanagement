@@ -14,6 +14,20 @@
 <script>
     jq(function() {
 
+        var resetActionDialogs = function () {
+
+            // hide the add, suggest, transfer, and remove sections
+            jq('.add').hide();
+            jq('.suggest').hide();
+            jq('.transfer').hide();
+            jq('.remove').hide();
+
+            // clear out any existing search values
+            jq('.searchField').val('');
+            jq('.searchTable > tbody > tr').remove();
+
+        }
+
         // handles showing/hiding the provider edit pane
         jq('#showEditButton').click(function() {
             jq('#providerView').hide();
@@ -39,14 +53,7 @@
             // hide any existing panels on display
             jq('.pane').hide();
 
-            // hide the add and transfer sections sections
-            jq('.add').hide();
-            jq('.transfer').hide();
-
-            // clear out any existing search values
-            jq('.searchField').val('');
-            jq('.searchTable > tbody > tr').remove();
-
+            resetActionDialogs();
 
             // highlight selection and show the appropriate patient pane
             jq('#paneSelectTop_' + id).addClass('selected');
@@ -57,16 +64,11 @@
 
         // handles displaying the transfer divs
         jq('.transferButton').click(function() {
+
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
-            // hide the add and suggest sections
-            jq('.add').hide();
-            jq('.suggest').hide();
-
-            // clear out any existing search values
-            jq('.searchField').val('');
-            jq('.searchTable > tbody > tr').remove();
+            resetActionDialogs();
 
             // show the appropriate transfer div
             jq('#transfer_' + id).show();
@@ -74,26 +76,16 @@
 
         // handles clicking the transfer cancel button
         jq('.transferCancelButton').click(function() {
-            // hide the transfer section
-            jq('.transfer').hide();
-
-            // clear out any existing search values
-            jq('.searchField').val('');
-            jq('.searchTable > tbody > tr').remove();
+            resetActionDialogs();
         });
 
         // handles clicking on the add buttons
         jq('.addButton').click(function() {
+
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
-           // hide the transfer & suggest sections
-            jq('.transfer').hide();
-            jq('.suggest').hide();
-
-            // clear out any existing search values
-            jq('.searchField').val('');
-            jq('.searchTable > tbody > tr').remove();
+            resetActionDialogs();
 
             // show the appropriate add div
             jq('#add_' + id).show();
@@ -101,27 +93,32 @@
 
         // handles clicking the add cancel button
         jq('.addCancelButton').click(function() {
+            resetActionDialogs();
+        });
 
-            // hide the add section
-            jq('.add').hide();
+        // handles displaying the remove divs
+        jq('.removeButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
 
-            // clear out any existing search values
-            jq('.searchField').val('');
-            jq('.searchTable > tbody > tr').remove();
+            resetActionDialogs();
+
+            // show the appropriate transfer div
+            jq('#remove_' + id).show();
+        }) ;
+
+        // handles clicking the cancel remove button
+        jq('.removeCancelButton').click(function() {
+            resetActionDialogs();
         });
 
         // handles clicking on the suggest button
         jq('.suggestButton').click(function() {
+
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
-            // hide the add & transfer sections
-            jq('.add').hide();
-            jq('.transfer').hide();
-
-            // clear out any existing search values
-            jq('.searchField').val('');
-            jq('.searchTable > tbody > tr').remove();
+            resetActionDialogs();
 
             // show the appropriate div
             jq('#suggest_' + id).show();
@@ -129,13 +126,7 @@
 
         // handles clicking on the suggest cancel
         jq('.suggestCancelButton').click(function() {
-
-            // hide the add section
-            jq('.suggest').hide();
-
-            // clear out any existing search values
-            jq('.searchField').val('');
-            jq('.searchTable > tbody > tr').remove();
+            resetActionDialogs();
         });
 
         jq(document).ready(function(){
@@ -151,8 +142,6 @@
                 jq('.paneSelectBottom:first').addClass('selected');
             <% } %>
         });
-
-
 
     });
 </script>
@@ -248,7 +237,7 @@
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("providermanagement.transfer"), id: "transferButton_${ it.key.uuid }", class: "transferButton", type: "button"],
-                                            [label: ui.message("general.remove"), type: "submit"]] : [])
+                                            [label: ui.message("general.remove"), id: "removeButton_${ it.key.uuid }", class: "removeButton", type: "button"]] : [])
                     ]) %>
                 </div>
 
@@ -283,6 +272,18 @@
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "addCancelButton"]]
+                        ])  %>
+                    </div>
+
+                    <div id="remove_${ it.key.uuid }" class="remove">
+                        <%=  ui.includeFragment("widget/dateDialog", [title: ui.message("providermanagement.confirmRemoval"),
+                                  submitAction: ui.actionLink('providerEdit', 'removePatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                  submitParams: [ provider: person.id, relationshipType: it.key.id ],
+                                  submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
+                                  submitForm: "multiSelectCheckboxForm_" + it.key.uuid,
+                                  dateLabel: ui.message("providermanagement.endDate"),
+                                  actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ it.key.uuid }", class: "confirmRemoveButton"],
+                                                  [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "removeCancelButton"]]
                         ])  %>
                     </div>
                 <% } %>
