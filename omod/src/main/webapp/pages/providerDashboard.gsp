@@ -236,7 +236,7 @@
             <div id="pane_${ it.key.uuid }" class="pane">
 
                 <div id="list_${ it.key.uuid }" class="list">
-                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.patient.personName.toString() },
+                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.patient.personName?.toString() },
                             id: it.key.uuid,
                             columns: patientListDisplayFields.values(),
                             columnLabels: patientListDisplayFields.keySet(),
@@ -263,6 +263,8 @@
                                 selectIdParam: "newProvider",
                                 selectParams: [ oldProvider: person.id, relationshipType: it.key.id],
                                 selectForm: "multiSelectCheckboxForm_" + it.key.uuid,
+                                showDateField: true,
+                                dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
                         ])  %>
@@ -277,6 +279,8 @@
                                 selectAction: ui.actionLink('providerEdit', 'addPatient', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 selectIdParam: "patient",
                                 selectParams: [ provider: person.id, relationshipType: it.key.id],
+                                showDateField: true,
+                                dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "addCancelButton"]]
                         ])  %>
@@ -299,17 +303,17 @@
         <div id="pane_${ superviseesId }" class="pane">
 
             <div id="list_${ superviseesId }" class="list">
-                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisees.sort { item -> item.personName?.toString() },
+                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: currentSupervisees.sort { item -> item.provider.person.personName?.toString() },
                         id: superviseesId,
                         columns: providerListDisplayFields.values(),
                         columnLabels: providerListDisplayFields.keySet(),
                         selectAction: ui.pageLink('providerDashboard'),
                         selectIdParam: "personId",
                         formAction: ui.actionLink("providerEdit","removeSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
-                        formFieldName: "supervisees",
+                        formFieldName: "superviseeRelationships",
                         disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                         emptyMessage: ui.message("providermanagement.none"),
-                        footer: supervisees.size + " " + (supervisees.size != 1 ? ui.message("providermanagement.totalSupervisees") : ui.message("providermanagement.totalSupervisee")),
+                        footer: currentSupervisees.size + " " + (currentSupervisees.size != 1 ? ui.message("providermanagement.totalSupervisees") : ui.message("providermanagement.totalSupervisee")),
                         actionButtons: (context.hasPrivilege("Provider Management Dashboard - Edit Providers") ?
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
@@ -330,6 +334,8 @@
                             selectIdParam: "newSupervisor",
                             selectParams: [ oldSupervisor: person.id ],
                             selectForm: "multiSelectCheckboxForm_" + superviseesId,
+                            showDateField: true,
+                            dateLabel: ui.message("providermanagement.onDate"),
                             emptyMessage: ui.message("providermanagement.noMatches"),
                             actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
                     ])  %>
@@ -345,6 +351,8 @@
                             selectAction: ui.actionLink('providerEdit', 'addSupervisee', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             selectIdParam: "supervisee",
                             selectParams: [ supervisor: person.id ],
+                            showDateField: true,
+                            dateLabel: ui.message("providermanagement.onDate"),
                             emptyMessage: ui.message("providermanagement.noMatches"),
                             actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]]
                     ])  %>
@@ -371,7 +379,7 @@
     <% } %>
 
     <div id="pane_${ supervisorsId }" class="pane">
-        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: supervisors.sort { item -> item.personName?.toString() },
+        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: currentSupervisors.sort { item -> item.provider.person.personName?.toString() },
                 columns: providerListDisplayFields.values(),
                 columnLabels: providerListDisplayFields.keySet(),
                 selectAction: ui.pageLink('providerDashboard'),

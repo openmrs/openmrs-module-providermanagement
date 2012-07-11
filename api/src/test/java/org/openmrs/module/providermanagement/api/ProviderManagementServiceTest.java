@@ -31,6 +31,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.exception.DateCannotBeInFutureException;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
 import org.openmrs.module.providermanagement.exception.PatientAlreadyAssignedToProviderException;
@@ -1935,6 +1936,37 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
 
     @Test
+    public void transferAllPatients_shouldTransferAllPatientsFromOneProviderToAnotherOnSpecifiedDate() throws Exception {
+        // first, assign a couple patients to a provider
+        Person oldProvider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // first patient
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, FURTHER_PAST_DATE);
+
+        // for the second patient, use a different relationship type
+        patient = Context.getPatientService().getPatient(8);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // now set up a transfer for PAST_DATE
+        Person newProvider = Context.getProviderService().getProvider(1005).getPerson();
+        providerManagementService.transferAllPatients(oldProvider, newProvider, PAST_DATE);
+
+        // now fetch the patients of each provider and verify that they are accurate
+        List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null, new Date());
+        List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, new Date());
+
+        // on the current date, the first patient should have been transferred to the new provider, but the second patient should still be with the first provider
+        Assert.assertEquals(1, oldProviderPatients.size());
+        Assert.assertEquals(1, newProviderPatients.size());
+
+        Assert.assertEquals(new Integer(8), oldProviderPatients.get(0).getId());
+        Assert.assertEquals(new Integer(2), newProviderPatients.get(0).getId());
+    }
+
+    @Test
     public void transferAllPatients_shouldTransferAllPatientsOfSpecifiedRelationshipTypeFromOneProviderToAnother() throws Exception {
         // first, assign a couple patients to a provider
         Person oldProvider = Context.getProviderService().getProvider(1004).getPerson();
@@ -1959,6 +1991,36 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, FUTURE_DATE);
         Assert.assertEquals(1, oldProviderPatients.size());
         Assert.assertEquals(new Integer(2), oldProviderPatients.get(0).getId());
+        Assert.assertEquals(1, newProviderPatients.size());
+        Assert.assertEquals(new Integer(8), newProviderPatients.get(0).getId());
+    }
+
+    @Test
+    public void transferAllPatients_shouldTransferAllPatientsOfSpecifiedRelationshipTypeFromOneProviderToAnotherOnSpecifiedDate() throws Exception {
+        // first, assign a couple patients to a provider
+        Person oldProvider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // first patient
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // for the second patient and third patients, use a different relationship type
+        patient = Context.getPatientService().getPatient(8);
+        relationshipType = Context.getPersonService().getRelationshipType(1002);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, FURTHER_PAST_DATE);
+
+        patient = Context.getPatientService().getPatient(7);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        // now move the patient from the second relationship type to the new provider
+        Person newProvider = Context.getProviderService().getProvider(1005).getPerson();
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType, PAST_DATE);
+
+        // on some future date, only patient #8 should now be associated with the new provider
+        List<Patient> oldProviderPatients = providerManagementService.getPatientsOfProvider(oldProvider, null, FUTURE_DATE);
+        List<Patient> newProviderPatients = providerManagementService.getPatientsOfProvider(newProvider, null, FUTURE_DATE);
+        Assert.assertEquals(2, oldProviderPatients.size());
         Assert.assertEquals(1, newProviderPatients.size());
         Assert.assertEquals(new Integer(8), newProviderPatients.get(0).getId());
     }
@@ -1991,19 +2053,25 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.transferAllPatients(oldProvider, null, relationshipType);
     }
 
-    @Test(expected = APIException.class)
-    public void transferAllPatients_shouldFailIfRelationshipTypeNull() throws Exception {
-        Person oldProvider = Context.getProviderService().getProvider(1004).getPerson();
-        Person newProvider = Context.getProviderService().getProvider(1005).getPerson();
-        providerManagementService.transferAllPatients(oldProvider, newProvider, null);
-    }
-
     @Test(expected = SourceProviderSameAsDestinationProviderException.class)
     public void transferAllPatients_shouldFailIfSourceProviderEqualsDestinationProvider() throws Exception {
         Person oldProvider = Context.getProviderService().getProvider(1004).getPerson();
         Person newProvider = Context.getProviderService().getProvider(1004).getPerson();
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
         providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType);
+    }
+
+    @Test(expected = DateCannotBeInFutureException.class)
+    public void transferAllPatients_shouldFailIfFutureDate() throws Exception {
+        Person oldProvider = Context.getProviderService().getProvider(1005).getPerson();
+        Person newProvider = Context.getProviderService().getProvider(1004).getPerson();
+        RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1001);
+
+        // assign a patient
+        Patient patient = Context.getPatientService().getPatient(2);
+        providerManagementService.assignPatientToProvider(patient, oldProvider, relationshipType, DATE);
+
+        providerManagementService.transferAllPatients(oldProvider, newProvider, relationshipType, FUTURE_DATE);
     }
 
     @Test(expected = ProviderDoesNotSupportRelationshipTypeException.class)
@@ -2616,6 +2684,47 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(0, supervisees.size());
 
     }
+
+    @Test
+    public void transferAllSupervisees_shouldTransferAllSuperviseesOnSpecifiedDate() throws Exception {
+
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person oldSupervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person newSupervisor = Context.getPersonService().getPerson(501); // a community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, oldSupervisor, FURTHER_PAST_DATE);
+        providerManagementService.assignProviderToSupervisor(provider2, oldSupervisor, DATE);
+
+        // now transfer the supervisees to the new supervisor
+        // note that since the second provider was not assigned to provider on the past date, should not be transfser
+        providerManagementService.transferAllSupervisees(oldSupervisor, newSupervisor, PAST_DATE);
+
+        Assert.assertEquals(1, providerManagementService.getSuperviseesForSupervisor(oldSupervisor, new Date()).size());
+        Assert.assertEquals(1, providerManagementService.getSuperviseesForSupervisor(newSupervisor, new Date()).size());
+        Assert.assertEquals(new Integer(7), providerManagementService.getSuperviseesForSupervisor(oldSupervisor, new Date()).get(0).getId());
+        Assert.assertEquals(new Integer(6), providerManagementService.getSuperviseesForSupervisor(newSupervisor, new Date()).get(0).getId());
+
+    }
+
+    @Test(expected = DateCannotBeInFutureException.class)
+    public void transferAllSupervisees_shouldFailIfTransferDateInFuture() throws Exception {
+
+        // first, assign a couple providers to a supervisor
+        Person provider1 = Context.getPersonService().getPerson(6);    // binome
+        Person provider2 = Context.getPersonService().getPerson(7);    // binome
+        Person oldSupervisor = Context.getPersonService().getPerson(8);  // binome supervisor
+        Person newSupervisor = Context.getPersonService().getPerson(501); // a community health nurse
+
+        // do the assignments
+        providerManagementService.assignProviderToSupervisor(provider1, oldSupervisor);
+        providerManagementService.assignProviderToSupervisor(provider2, oldSupervisor);
+
+        providerManagementService.transferAllSupervisees(oldSupervisor, newSupervisor, FUTURE_DATE);
+    }
+
 
     @Test
     public void getSupervisorRelationships_shouldGetAllSupervisorRelationshipsForProvider() throws Exception {

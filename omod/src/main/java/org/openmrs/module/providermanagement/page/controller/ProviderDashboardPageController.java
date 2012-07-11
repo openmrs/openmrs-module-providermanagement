@@ -18,7 +18,6 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
@@ -27,15 +26,13 @@ import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
+import org.openmrs.module.providermanagement.command.PatientAndRelationship;
+import org.openmrs.module.providermanagement.command.ProviderAndRelationship;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.ui.framework.UiUtils;
-import org.openmrs.ui.framework.WebConstants;
-import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.page.PageModel;
-import org.openmrs.ui.framework.page.PageRequest;
-import org.openmrs.ui.framework.session.Session;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,50 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ProviderDashboardPageController {
-
-    // command object for adding a patient and a relationship to the model as a unit
-    public class PatientAndRelationship {
-
-        private Integer id;
-
-        private Patient patient;
-
-        private Relationship relationship;
-
-        public PatientAndRelationship() {
-        }
-
-        public PatientAndRelationship(Patient patient, Relationship relationship) {
-            this.patient = patient;
-            this.relationship = relationship;
-            this.id = relationship.getId();
-        }
-
-        public Integer getId() {
-            return id;
-        }
-
-        public void setId(Integer id) {
-            this.id = id;
-        }
-
-        public Patient getPatient() {
-            return patient;
-        }
-
-        public void setPatient(Patient patient) {
-            this.patient = patient;
-        }
-
-        public Relationship getRelationship() {
-            return relationship;
-        }
-
-        public void setRelationship(Relationship relationship) {
-            this.relationship = relationship;
-        }
-
-    }
 
     public void controller (HttpServletRequest request, PageModel pageModel,
                             @RequestParam(value = "person", required = false) Person personParam,
@@ -154,18 +107,55 @@ public class ProviderDashboardPageController {
             pageModel.addAttribute("patientCount", patientCount);
         }
 
-       List<Person> supervisors = pmService.getSupervisorsForProvider(person, new Date());
-       pageModel.addAttribute("supervisors", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisors, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0]) ));
+        // add the supervisors of the provider
 
-       List<Person> supervisees = pmService.getSuperviseesForSupervisor(person, new Date());
-       pageModel.addAttribute("supervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(supervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
+        List<ProviderAndRelationship> currentSupervisors = new ArrayList<ProviderAndRelationship>();
+        List<ProviderAndRelationship> historicalSupervisors = new ArrayList<ProviderAndRelationship>();
+
+        for (Relationship relationship : pmService.getSupervisorRelationshipsForProvider(person, null)) {
+
+            Provider p = ProviderManagementWebUtil.getProvider(relationship.getPersonA());
+
+            if (ProviderManagementUtils.isRelationshipActive(relationship)) {
+                currentSupervisors.add(new ProviderAndRelationship(p, relationship));
+            }
+            else {
+                historicalSupervisors.add(new ProviderAndRelationship(p, relationship));
+            }
+        }
+
+        pageModel.addAttribute("currentSupervisors", currentSupervisors);
+        pageModel.addAttribute("historicalSupervisors", historicalSupervisors);
+
+        // add the supervisees of the provider
+
+        if (provider.getProviderRole() != null && provider.getProviderRole().isSupervisorRole()) {
+            List<ProviderAndRelationship> currentSupervisees = new ArrayList<ProviderAndRelationship>();
+            List<ProviderAndRelationship> historicalSupervisees = new ArrayList<ProviderAndRelationship>();
+
+            for (Relationship relationship : pmService.getSuperviseeRelationshipsForSupervisor(person, null)) {
+
+                Provider p = ProviderManagementWebUtil.getProvider(relationship.getPersonB());
+
+                if (ProviderManagementUtils.isRelationshipActive(relationship)) {
+                    currentSupervisees.add(new ProviderAndRelationship(p, relationship));
+                }
+                else {
+                    historicalSupervisees.add(new ProviderAndRelationship(p, relationship));
+                }
+            }
+
+            pageModel.addAttribute("currentSupervisees", currentSupervisees);
+            pageModel.addAttribute("historicalSupervisees", historicalSupervisees);
+        }
+
 
         if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_EDIT_PROVIDERS_PRIVILEGE)) {
             // calculate suggested supervisees
             if (provider.getProviderRole() != null && provider.getProviderRole().isSupervisorRole()) {
                 List<Person> suggestedSupervisees = Context.getService(ProviderSuggestionService.class).suggestSuperviseesForProvider(person);
                 if (suggestedSupervisees != null && suggestedSupervisees.size() > 0) {
-                    pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
+                    pageModel.addAttribute("suggestedSupervisees", ProviderManagementWebUtil.convertPersonListToSimpleObjectList(suggestedSupervisees, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS().values().toArray(new String[0])));
                 }
                 else {
                     pageModel.addAttribute("suggestedSupervisees", null);

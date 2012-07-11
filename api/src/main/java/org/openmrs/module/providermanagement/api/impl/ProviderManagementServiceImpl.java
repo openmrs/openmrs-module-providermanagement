@@ -538,11 +538,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
         
         if (!isProvider(provider)) {
-             throw new PersonIsNotProviderException(provider + " is not a provider");
+             throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
         
         if (!supportsRelationshipType(provider, relationshipType)) {
-            throw new ProviderDoesNotSupportRelationshipTypeException(provider + " cannot support " + relationshipType);
+            throw new ProviderDoesNotSupportRelationshipTypeException(provider.getPersonName() + " cannot support " + relationshipType);
         }
 
         // use current date if no date specified
@@ -557,7 +557,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // test to mark sure the relationship doesn't already exist
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships != null && relationships.size() > 0) {
-            throw new PatientAlreadyAssignedToProviderException("Provider " + provider + " is already assigned to " + patient + " with a " + relationshipType + "relationship");
+            throw new PatientAlreadyAssignedToProviderException("Provider " + provider.getPersonName() + " is already assigned to " + patient.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
         }
         
         // go ahead and create the relationship
@@ -623,10 +623,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // find the existing relationship
         List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
         if (relationships == null || relationships.size() == 0) {
-            throw new PatientNotAssignedToProviderException("Provider " + provider + " is not assigned to " + patient + " with a " + relationshipType + " relationship");
+            throw new PatientNotAssignedToProviderException("Provider " + provider.getPersonName() + " is not assigned to " + patient.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
         }
         if (relationships.size() > 1) {
-            throw new APIException("Duplicate " + relationshipType + " between " + provider + " and " + patient);
+            throw new APIException("Duplicate " + relationshipType + " between " + provider.getPersonName() + " and " + patient.getPersonName());
         }
 
         // go ahead and set the end date of the relationship
@@ -663,7 +663,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
         // we don't need to assure that the person supports the relationship type, but we need to make sure this a provider/patient relationship type
@@ -714,7 +714,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
         if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
@@ -775,7 +775,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
         if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
@@ -812,7 +812,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
         
         if (provider != null && !isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
         
         if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
@@ -858,7 +858,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         for (Relationship relationship : relationships) {
             if (!isProvider(relationship.getPersonA()))   {
                 // something has gone really wrong here
-                throw new APIException(relationship.getPersonA() + " is not a provider");
+                throw new APIException(relationship.getPersonA().getPersonName() + " is not a provider");
             }
             else {
                 providers.add(relationship.getPersonA());
@@ -877,9 +877,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional
-    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException {
+            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException,
+            DateCannotBeInFutureException {
 
         if (sourceProvider == null) {
             throw new APIException("Source provider cannot be null");
@@ -890,15 +891,15 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(sourceProvider)) {
-            throw new PersonIsNotProviderException(sourceProvider + " is not a provider");
+            throw new PersonIsNotProviderException(sourceProvider.getPersonName() + " is not a provider");
         }
 
         if (!isProvider(destinationProvider)) {
-            throw new PersonIsNotProviderException(destinationProvider + " is not a provider");
+            throw new PersonIsNotProviderException(destinationProvider.getPersonName() + " is not a provider");
         }
 
         if (sourceProvider.equals(destinationProvider)) {
-            throw new SourceProviderSameAsDestinationProviderException("Provider " + sourceProvider + " is the same as provider " + destinationProvider);
+            throw new SourceProviderSameAsDestinationProviderException("Provider " + sourceProvider.getPersonName() + " is the same as provider " + destinationProvider.getPersonName());
         }
 
         if (relationshipType == null) {
@@ -908,24 +909,33 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // assign these patients to the new provider, unassign them from the old provider
         for (Patient patient : patients) {
             try {
-                assignPatientToProvider(patient, destinationProvider, relationshipType);
+                assignPatientToProvider(patient, destinationProvider, relationshipType, date);
             }
             catch (PatientAlreadyAssignedToProviderException e) {
                 // we can ignore this exception; no need to assign patient if already assigned
             }
 
-            unassignPatientFromProvider(patient, sourceProvider, relationshipType);
+            unassignPatientFromProvider(patient, sourceProvider, relationshipType, date);
         }
     }
 
     @Override
+    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException,
+            DateCannotBeInFutureException{
+
+        transferPatients(patients, sourceProvider, destinationProvider, relationshipType, new Date());
+    }
+
+    @Override
     @Transactional
-    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
-        throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-        PersonIsNotProviderException, InvalidRelationshipTypeException {
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, InvalidRelationshipTypeException, DateCannotBeInFutureException {
 
         try {
-            transferPatients(getPatientsOfProvider(sourceProvider, relationshipType, new Date()), sourceProvider, destinationProvider, relationshipType);
+            transferPatients(getPatientsOfProvider(sourceProvider, relationshipType, date), sourceProvider, destinationProvider, relationshipType, date);
         }
         catch (PatientNotAssignedToProviderException e) {
             // we should fail hard here, because getPatientsOfProvider should only return patients of the provider,
@@ -933,15 +943,24 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("All patients here should be assigned to provider,", e);
         }
     }
-    
+
     @Override
     @Transactional
-    public void transferAllPatients(Person sourceProvider, Person destinationProvider)
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+        throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+        PersonIsNotProviderException, InvalidRelationshipTypeException, DateCannotBeInFutureException {
+
+        transferAllPatients(sourceProvider, destinationProvider, relationshipType, new Date());
+    }
+
+    @Override
+    @Transactional
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, PersonIsNotProviderException,
-            SourceProviderSameAsDestinationProviderException {
+            SourceProviderSameAsDestinationProviderException, DateCannotBeInFutureException {
         for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes(false)) {
             try {
-                transferAllPatients(sourceProvider, destinationProvider, relationshipType);
+                transferAllPatients(sourceProvider, destinationProvider, relationshipType, date);
             }
             catch (InvalidRelationshipTypeException e) {
                 // we should never get this exception, since getAlProviderRoleRelationshipTypes
@@ -950,6 +969,15 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
                 throw new APIException(e);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider)
+            throws ProviderDoesNotSupportRelationshipTypeException, PersonIsNotProviderException,
+            SourceProviderSameAsDestinationProviderException, DateCannotBeInFutureException {
+
+        transferAllPatients(sourceProvider, destinationProvider, new Date());
     }
 
     @Override
@@ -983,15 +1011,15 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(supervisor)) {
-            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+            throw new PersonIsNotProviderException(supervisor.getPersonName() + " is not a provider");
         }
 
         if (!isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
         if (!canSupervise(supervisor, provider)) {
-            throw new InvalidSupervisorException(supervisor + " is not a valid supervisor for " + provider);
+            throw new InvalidSupervisorException(supervisor.getPersonName() + " is not a valid supervisor for " + provider.getPersonName());
         }
         
         // if no date specified, use today's date
@@ -1006,7 +1034,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // test to mark sure the relationship doesn't already exist
         List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, getSupervisorRelationshipType(), date);
         if (relationships != null && relationships.size() > 0) {
-            throw new ProviderAlreadyAssignedToSupervisorException(provider + " is already assigned to " + supervisor);
+            throw new ProviderAlreadyAssignedToSupervisorException(provider.getPersonName() + " is already assigned to " + supervisor.getPersonName());
         }
 
         // go ahead and create the relationship
@@ -1048,11 +1076,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(supervisor)) {
-            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+            throw new PersonIsNotProviderException(supervisor.getPersonName() + " is not a provider");
         }
 
         if (!isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
         // if no date specified, use today's date
@@ -1067,7 +1095,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // find the existing relationship
         List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, getSupervisorRelationshipType(), date);
         if (relationships == null || relationships.size() == 0) {
-            throw new ProviderNotAssignedToSupervisorException("Provider " + provider + " is not assigned to supervisor " + supervisor);
+            throw new ProviderNotAssignedToSupervisorException("Provider " + provider.getPersonName() + " is not assigned to supervisor " + supervisor.getPersonName() + " on " + Context.getDateFormat().format(date));
         }
         if (relationships.size() > 1) {
             throw new APIException("Duplicate supervisor relationship between " + provider + " and " + supervisor);
@@ -1102,7 +1130,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
         // go ahead and end each relationship on the current date
@@ -1125,7 +1153,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(supervisor)) {
-            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+            throw new PersonIsNotProviderException(supervisor.getPersonName() + " is not a provider");
         }
 
         // go ahead and end each relationship on the current date
@@ -1149,7 +1177,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(provider)) {
-            throw new PersonIsNotProviderException(provider + " is not a provider");
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
         return Context.getPersonService().getRelationships(null, provider, getSupervisorRelationshipType(), date);
@@ -1174,7 +1202,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         for (Relationship relationship : relationships) {
             if (!isProvider(relationship.getPersonA()))   {
                 // something has gone really wrong here
-                throw new APIException(relationship.getPersonA() + " is not a provider");
+                throw new APIException(relationship.getPersonA().getPersonName() + " is not a provider");
             }
             else {
                 providers.add(relationship.getPersonA());
@@ -1201,7 +1229,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(supervisor)) {
-            throw new PersonIsNotProviderException(supervisor + " is not a provider");
+            throw new PersonIsNotProviderException(supervisor.getPersonName() + " is not a provider");
         }
 
         return Context.getPersonService().getRelationships(supervisor, null, getSupervisorRelationshipType(), date);
@@ -1226,7 +1254,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         for (Relationship relationship : relationships) {
             if (!isProvider(relationship.getPersonA()))   {
                 // something has gone really wrong here
-                throw new APIException(relationship.getPersonA() + " is not a provider");
+                throw new APIException(relationship.getPersonA().getPersonName() + " is not a provider");
             }
             else {
                 providers.add(relationship.getPersonB());
@@ -1245,9 +1273,9 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional
-    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor)
+    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor, Date date)
             throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
-            ProviderNotAssignedToSupervisorException {
+            ProviderNotAssignedToSupervisorException, DateCannotBeInFutureException {
 
         if (sourceSupervisor == null) {
             throw new APIException("Source supervisor cannot be null");
@@ -1258,21 +1286,21 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         if (!isProvider(sourceSupervisor)) {
-            throw new PersonIsNotProviderException(sourceSupervisor + " is not a provider");
+            throw new PersonIsNotProviderException(sourceSupervisor.getPersonName() + " is not a provider");
         }
 
         if (!isProvider(destinationSupervisor)) {
-            throw new PersonIsNotProviderException(destinationSupervisor + " is not a provider");
+            throw new PersonIsNotProviderException(destinationSupervisor.getPersonName() + " is not a provider");
         }
 
         if (sourceSupervisor.equals(destinationSupervisor)) {
-            throw new SourceProviderSameAsDestinationProviderException("Provider " + sourceSupervisor + " is the same as provider " + destinationSupervisor);
+            throw new SourceProviderSameAsDestinationProviderException("Provider " + sourceSupervisor.getPersonName() + " is the same as provider " + destinationSupervisor.getPersonName());
         }
 
         for (Person supervisee : supervisees) {
             // first assign the supervisee to the new superviser
             try {
-                assignProviderToSupervisor(supervisee, destinationSupervisor);
+                assignProviderToSupervisor(supervisee, destinationSupervisor, date);
             }
             catch (ProviderAlreadyAssignedToSupervisorException e) {
                 // don't worry about doing anything here, no need to worry about assigning if already assigned
@@ -1280,20 +1308,38 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             }
 
             // now unassign the supervisee from the old supervisor
-            unassignProviderFromSupervisor(supervisee, sourceSupervisor);
+            unassignProviderFromSupervisor(supervisee, sourceSupervisor, date);
         }
     }
 
     @Override
-    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor)
-            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException {
+    @Transactional
+    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            ProviderNotAssignedToSupervisorException, DateCannotBeInFutureException {
+
+         transferSupervisees(supervisees, sourceSupervisor, destinationSupervisor, new Date());
+    }
+
+    @Override
+    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor, Date date)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            DateCannotBeInFutureException {
         try {
-            transferSupervisees(getSuperviseesForSupervisor(sourceSupervisor), sourceSupervisor, destinationSupervisor);
+            transferSupervisees(getSuperviseesForSupervisor(sourceSupervisor, date), sourceSupervisor, destinationSupervisor, date);
         }
         catch (ProviderNotAssignedToSupervisorException e) {
             // we can fail hard here because getSuperviseesForSupervisor should never return providers who aren't supervisees of sourceSupervisor
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            DateCannotBeInFutureException {
+
+        transferAllSupervisees(sourceSupervisor, destinationSupervisor, new Date());
     }
 
     /**

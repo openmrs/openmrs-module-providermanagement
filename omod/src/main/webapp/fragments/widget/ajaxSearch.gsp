@@ -57,12 +57,15 @@
                                 jq('#searchTable_${ id } > tbody > tr').click(function() {
                                     window.location = '${ config.selectAction }' + ${ config.selectAction.contains('?') ? '' : '\'?\' + ' }
                                             <% if (config.selectParams) { %>
-                                            '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
+                                                '&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
                                             <% } %>
                                             <% if (config.selectForm) { %>
-                                            '&' + jq('#${ config.selectForm }').serialize() +
+                                                '&' + jq('#${ config.selectForm }').serialize() +
                                             <% } %>
-                                            '&${ selectIdParam }=' + jq(this).children('input').val();
+                                            <% if (config.showDateField) { %>
+                                                '&date=' + jq('[name="date_${id}"]').val() +
+                                            <% } %>
+                                                '&${ selectIdParam }=' + jq(this).children('input').val();
                                 });
                             }
                                     <% if (config.emptyMessage) { %>
@@ -109,6 +112,10 @@
             <tr>
                 <td colspan="${ config.resultFields.size() }">
                     <input id="searchField_${ id }" class="searchField" type="text" size="40"/>
+                    <% if (config.showDateField) { %>
+                        ${config.dateLabel}: ${ ui.includeFragment("widget/field", [ class: java.util.Date,
+                                                                                     formFieldName: "date_" + id ]) }
+                    <% } %>
                     <% if (config.retiredToggle) { %>
                         <input id="includeRetired_${id}" type="checkbox"/> ${ ui.message("providermanagement.includeRetired") }
                     <% } %>

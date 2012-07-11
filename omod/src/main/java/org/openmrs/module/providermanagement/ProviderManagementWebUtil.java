@@ -13,6 +13,7 @@ package org.openmrs.module.providermanagement;/*
  */
 
 import org.openmrs.Person;
+import org.openmrs.Relationship;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
@@ -88,12 +89,7 @@ public class ProviderManagementWebUtil {
         return providers.get(0);
     }
 
-
-    // TODO: unit test and comment thss
-    public static List<SimpleObject> convertRelationshipListToSimpleObjectList(List<Relationship> relationships, UiUtils ui, String [] resultFields) {
-
-    }
-
+    // TODO: we may not need this anymore?
 
     /**
      * Converts a list of persons to a SimpleObject with the specified result fields

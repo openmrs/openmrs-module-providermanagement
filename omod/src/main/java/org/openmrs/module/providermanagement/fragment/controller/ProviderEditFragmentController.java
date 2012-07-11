@@ -47,6 +47,7 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -240,10 +241,17 @@ public class ProviderEditFragmentController {
     }
 
     public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
-                                              @RequestParam(value = "supervisee", required=true) Person supervisee) {
+                                              @RequestParam(value = "supervisee", required = true) Person supervisee,
+                                              @RequestParam(value = "date", required = false) Date date) {
 
         try {
-            Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
+
+            // if no date specified, add on the current date
+            if (date == null) {
+                date = new Date();
+            }
+
+            Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor, date);
             return new SuccessResult();
         }
         catch (Exception e) {
@@ -268,11 +276,11 @@ public class ProviderEditFragmentController {
     }
 
     public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
-                                                  @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
+                                                  @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships) {
 
         try {
-            for (Person supervisee : supervisees) {
-                Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(supervisee, supervisor);
+            for (Relationship relationship : superviseeRelationships) {
+                Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(relationship.getPersonB(), supervisor);
             }
             return new SuccessResult();
         }
@@ -284,10 +292,16 @@ public class ProviderEditFragmentController {
 
     public FragmentActionResult addPatient(@RequestParam(value = "provider", required = true) Person provider,
                                            @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                           @RequestParam(value = "patient", required = true) Patient patient) {
+                                           @RequestParam(value = "patient", required = true) Patient patient,
+                                           @RequestParam(value = "date", required = false) Date date) {
 
         try {
-            Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType);
+            // if no date specified, add on the current date
+            if (date == null) {
+                date = new Date();
+            }
+
+            Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType, date);
             return new SuccessResult();
         }
         catch (Exception e) {
@@ -315,16 +329,22 @@ public class ProviderEditFragmentController {
     public FragmentActionResult transferPatients(@RequestParam(value = "oldProvider", required = true) Person oldProvider,
                                                  @RequestParam(value = "newProvider", required = true) Person newProvider,
                                                  @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                                 @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships) {
+                                                 @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
+                                                 @RequestParam(value = "date", required = false) Date date) {
 
         try {
+            // if no date specified, transfer on the current date
+            if (date == null) {
+                date = new Date();
+            }
+
             List<Patient> patients = new ArrayList<Patient>();
 
             for (Relationship patientRelationship : patientRelationships) {
                 patients.add(Context.getPatientService().getPatient(patientRelationship.getPersonB().getId()));
             }
 
-            Context.getService(ProviderManagementService.class).transferPatients(patients,oldProvider, newProvider, relationshipType);
+            Context.getService(ProviderManagementService.class).transferPatients(patients,oldProvider, newProvider, relationshipType, date);
             return new SuccessResult();
         }
         catch (Exception e) {
@@ -335,9 +355,21 @@ public class ProviderEditFragmentController {
 
     public FragmentActionResult transferSupervisees(@RequestParam(value = "oldSupervisor", required = true) Person oldSupervisor,
                                                     @RequestParam(value = "newSupervisor", required = true) Person newSupervisor,
-                                                    @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
+                                                    @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
+                                                    @RequestParam(value = "date", required = false) Date date) {
 
         try {
+            // if no date specified, transfer on the current date
+            if (date == null) {
+                date = new Date();
+            }
+
+            List<Person> supervisees = new ArrayList<Person>();
+
+            for (Relationship relationship : superviseeRelationships) {
+                supervisees.add(relationship.getPersonB());
+            }
+
             Context.getService(ProviderManagementService.class).transferSupervisees(supervisees, oldSupervisor, newSupervisor);
             return new SuccessResult();
         }

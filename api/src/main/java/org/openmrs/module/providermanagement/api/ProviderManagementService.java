@@ -539,6 +539,27 @@ public interface ProviderManagementService extends OpenmrsService {
 
 
     /**
+     * Transfers the selected patients from the source provider to the destination provider for the specified relationship type on the specified date)
+     * (ie., unassigns patients with the specified relationship type from the source provider and assigns them to the destination provider)
+     * (uses current date if date = null)
+     *
+     * @param patients
+     * @param sourceProvider
+     * @param destinationProvider
+     * @param relationshipType
+     * @param date
+     * @throws ProviderDoesNotSupportRelationshipTypeException
+     * @throws SourceProviderSameAsDestinationProviderException
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
+    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException,
+            DateCannotBeInFutureException;
+
+    /**
      * Transfers the selected patients from the source provider to the destination provider for the specified relationship type (on the current date)
      * (ie., unassigns patients with the specified relationship type from the source provider and assigns them to the destination provider)
      *
@@ -554,7 +575,28 @@ public interface ProviderManagementService extends OpenmrsService {
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException;
+            PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException,
+            DateCannotBeInFutureException;
+
+    /**
+     * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider on the specified date
+     * (ie., unassigns all patients with the specified relationship type from the source provider and assigns them to the destination provider)
+     * (uses current date if date = null)
+     *
+     * @param sourceProvider
+     * @param destinationProvider
+     * @param relationshipType
+     * @param date
+     * @should fail if sourceProvider is null
+     * @should fail if destinationProvider is null
+     * @should fail if sourceProvider is not associated with a person
+     * @should fail if destinationProvider is not associated with a person
+     * @should fail if relationshipType is null
+     */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, InvalidRelationshipTypeException, DateCannotBeInFutureException;
 
     /**
      * Transfers all patients currently assigned to the source provider with the specified relationship type to the destination provider (on the current date)
@@ -572,7 +614,30 @@ public interface ProviderManagementService extends OpenmrsService {
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-            PersonIsNotProviderException, InvalidRelationshipTypeException;
+            PersonIsNotProviderException, InvalidRelationshipTypeException, DateCannotBeInFutureException;
+
+    /**
+     * Transfers all patients (of any relationship type) currently assigned to the source provider to the destination provider on the specified date
+     * (ie., unassigns all patients from the source provider and assigns them to the destination provider)
+     * (uses current date if date = null)
+     *
+     * @param sourceProvider
+     * @param destinationProvider
+     * @param date
+     * @should fail if sourceProvider is null
+     * @should fail if destinationProvider is null
+     * @should fail if sourceProvider is not associated with a person
+     * @should fail if destinationProvider is not associated with a person
+     * @should fail if relationshipType is null
+     * @should fail if source provider equals destination provider
+     * @should fail if destination provider dose not support a relationship type that exists between source provider and patient
+     * @should not fail if destination provider is already associated with patient
+     */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
+    public void transferAllPatients(Person sourceProvider, Person destinationProvider, Date date)
+            throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
+            PersonIsNotProviderException, DateCannotBeInFutureException;
+
 
     /**
      * Transfers all patients (of any relationship type) currently assigned to the source provider to the destination provider (on the current date)
@@ -589,10 +654,10 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if destination provider dose not support a relationship type that exists between source provider and patient
      * @should not fail if destination provider is already associated with patient
      */
-    
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void transferAllPatients(Person sourceProvider, Person destinationProvider)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
-            PersonIsNotProviderException;
+            PersonIsNotProviderException, DateCannotBeInFutureException;
 
 
     /**
@@ -799,6 +864,21 @@ public interface ProviderManagementService extends OpenmrsService {
 
 
     /**
+     * Transfers the specified supervises from the source supervisor to the destination supervisor on the specified date
+     * (uses current date if date = null)
+     *
+     * @param supervisees
+     * @param sourceSupervisor
+     * @param destinationSupervisor
+     * @param date
+     */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
+    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor, Date date)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            ProviderNotAssignedToSupervisorException, DateCannotBeInFutureException;
+
+
+    /**
      * Transfers the specified supervises from the source supervisor to the destination supervisor (on the current date)
      *
      * @param supervisees
@@ -808,7 +888,20 @@ public interface ProviderManagementService extends OpenmrsService {
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor)
             throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
-            ProviderNotAssignedToSupervisorException;
+            ProviderNotAssignedToSupervisorException, DateCannotBeInFutureException;
+
+    /**
+     * Transfers all supervisees from the source supervisor to the destination supervisor on the specified date
+     * (uses current date if date = null)
+     *
+     * @param sourceSupervisor
+     * @param destinationSupervisor
+     * @param date
+     */
+    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
+    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor, Date date)
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            DateCannotBeInFutureException;
 
     /**
      * Transfers all supervisees from the source supervisor to the destination supervisor (on the current date)
@@ -818,7 +911,8 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
     public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor)
-            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException;
+            throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
+            DateCannotBeInFutureException;
 
     /**
      * Replacement for ProviderService.getProvidersByPerson to fetch new expanded provider model
