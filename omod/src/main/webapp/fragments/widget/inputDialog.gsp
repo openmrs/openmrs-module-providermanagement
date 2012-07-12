@@ -15,7 +15,7 @@
                     <% if (config.submitForm) { %>
                     '&' + jq('#${ config.submitForm }').serialize() +
                     <% } %>
-                    '&date=' + jq('[name="date_${id}"]').val();
+                    '&${ config.formFieldName }=' + jq('[name="${ config.formFieldName }_${ id }"]').val();
         });
     });
 </script>
@@ -33,7 +33,7 @@
         <tbody>
             <tr>
                 <td>
-                    ${ config.dateLabel }: ${ ui.includeFragment("widget/field", [ class: java.util.Date, formFieldName: "date_" + id ]) }
+                    ${ config.dateLabel }: ${ ui.includeFragment("widget/field", [ class: config.class, formFieldName: config.formFieldName + "_" +  id ]) }
                 </td>
             </tr>
 

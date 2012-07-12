@@ -296,6 +296,46 @@ public class ProviderEditFragmentController {
 
     }
 
+    public FragmentActionResult transferSupervisees(@RequestParam(value = "oldSupervisor", required = true) Person oldSupervisor,
+                                                    @RequestParam(value = "newSupervisor", required = true) Person newSupervisor,
+                                                    @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
+                                                    @RequestParam(value = "date", required = false) Date date) {
+
+        try {
+            // if no date specified, transfer on the current date
+            if (date == null) {
+                date = new Date();
+            }
+
+            List<Person> supervisees = new ArrayList<Person>();
+
+            for (Relationship relationship : superviseeRelationships) {
+                supervisees.add(relationship.getPersonB());
+            }
+
+            Context.getService(ProviderManagementService.class).transferSupervisees(supervisees, oldSupervisor, newSupervisor);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
+    public FragmentActionResult voidSupervisees(@RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
+                                             @RequestParam(value = "voidReason", required = true) String voidReason) {
+
+        try {
+            for (Relationship patientRelationship : superviseeRelationships) {
+                Context.getPersonService().voidRelationship(patientRelationship, voidReason);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
     public FragmentActionResult addPatient(@RequestParam(value = "provider", required = true) Person provider,
                                            @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
                                            @RequestParam(value = "patient", required = true) Patient patient,
@@ -365,30 +405,18 @@ public class ProviderEditFragmentController {
 
     }
 
-    public FragmentActionResult transferSupervisees(@RequestParam(value = "oldSupervisor", required = true) Person oldSupervisor,
-                                                    @RequestParam(value = "newSupervisor", required = true) Person newSupervisor,
-                                                    @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
-                                                    @RequestParam(value = "date", required = false) Date date) {
+    public FragmentActionResult voidPatients(@RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
+                                              @RequestParam(value = "voidReason", required = true) String voidReason) {
 
         try {
-            // if no date specified, transfer on the current date
-            if (date == null) {
-                date = new Date();
+            for (Relationship patientRelationship : patientRelationships) {
+                Context.getPersonService().voidRelationship(patientRelationship, voidReason);
             }
-
-            List<Person> supervisees = new ArrayList<Person>();
-
-            for (Relationship relationship : superviseeRelationships) {
-                supervisees.add(relationship.getPersonB());
-            }
-
-            Context.getService(ProviderManagementService.class).transferSupervisees(supervisees, oldSupervisor, newSupervisor);
             return new SuccessResult();
         }
         catch (Exception e) {
             return new FailureResult(e.getLocalizedMessage());
         }
-
     }
 
     public FragmentActionResult retireProvider(@RequestParam(value = "provider", required = true) Person provider) {

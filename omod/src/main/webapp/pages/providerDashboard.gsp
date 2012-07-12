@@ -16,11 +16,12 @@
 
         var resetActionDialogs = function () {
 
-            // hide the add, suggest, transfer, and remove sections
+            // hide the add, suggest, transfer, remove, and void sections
             jq('.add').hide();
             jq('.suggest').hide();
             jq('.transfer').hide();
             jq('.remove').hide();
+            jq('.void').hide();
 
             // clear out any existing search values
             jq('.searchField').val('');
@@ -74,11 +75,6 @@
             jq('#transfer_' + id).show();
         }) ;
 
-        // handles clicking the transfer cancel button
-        jq('.transferCancelButton').click(function() {
-            resetActionDialogs();
-        });
-
         // handles clicking on the add buttons
         jq('.addButton').click(function() {
 
@@ -89,11 +85,6 @@
 
             // show the appropriate add div
             jq('#add_' + id).show();
-        });
-
-        // handles clicking the add cancel button
-        jq('.addCancelButton').click(function() {
-            resetActionDialogs();
         });
 
         // handles displaying the remove divs
@@ -107,10 +98,16 @@
             jq('#remove_' + id).show();
         }) ;
 
-        // handles clicking the cancel remove button
-        jq('.removeCancelButton').click(function() {
+        // handles displaying the void divs
+        jq('.voidButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
             resetActionDialogs();
-        });
+
+            // show the appropriate transfer div
+            jq('#void_' + id).show();
+        }) ;
 
         // handles clicking on the suggest button
         jq('.suggestButton').click(function() {
@@ -124,8 +121,8 @@
             jq('#suggest_' + id).show();
         })
 
-        // handles clicking on the suggest cancel
-        jq('.suggestCancelButton').click(function() {
+        // handles clicking cancel buttons
+        jq('.cancelButton').click(function() {
             resetActionDialogs();
         });
 
@@ -237,7 +234,8 @@
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("providermanagement.transfer"), id: "transferButton_${ it.key.uuid }", class: "transferButton", type: "button"],
-                                            [label: ui.message("general.remove"), id: "removeButton_${ it.key.uuid }", class: "removeButton", type: "button"]] : [])
+                                            [label: ui.message("general.remove"), id: "removeButton_${ it.key.uuid }", class: "removeButton", type: "button"],
+                                            [label: ui.message("general.void"), id: "voidButton_${ it.key.uuid }", class: "voidButton", type: "button"]] : [])
                     ]) %>
                 </div>
 
@@ -255,7 +253,7 @@
                                 showDateField: true,
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
-                                actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
+                                actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "cancelButton"]]
                         ])  %>
                     </div>
 
@@ -271,19 +269,35 @@
                                 showDateField: true,
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
-                                actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "addCancelButton"]]
+                                actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
                     </div>
 
                     <div id="remove_${ it.key.uuid }" class="remove">
-                        <%=  ui.includeFragment("widget/dateDialog", [title: ui.message("providermanagement.confirmRemoval"),
+                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmRemovalPatients"),
                                   submitAction: ui.actionLink('providerEdit', 'removePatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                   submitParams: [ provider: person.id, relationshipType: it.key.id ],
                                   submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
                                   submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
+                                  class: java.util.Date,
+                                  formFieldName: "date",
                                   dateLabel: ui.message("providermanagement.stopDate"),
                                   actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ it.key.uuid }", class: "confirmRemoveButton"],
-                                                  [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "removeCancelButton"]]
+                                                  [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                        ])  %>
+                    </div>
+
+                    <div id="void_${ it.key.uuid }" class="void">
+                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmVoidPatients"),
+                                submitAction: ui.actionLink('providerEdit', 'voidPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                submitParams: [ provider: person.id ],
+                                submitButtonId: "confirmVoidButton_${ it.key.uuid }",
+                                submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
+                                class: java.lang.String,
+                                formFieldName: "voidReason",
+                                dateLabel: ui.message("providermanagement.voidReason"),
+                                actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ it.key.uuid }", class: "confirmVoidButton"],
+                                        [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
                     </div>
                 <% } %>
@@ -319,7 +333,8 @@
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
                                 [label: ui.message("providermanagement.suggest"), id: "suggestButton_${ superviseesId }", class: "suggestButton", type: "button"],
-                                [label: ui.message("general.remove"), id: "removeButton_${ superviseesId }", class: "removeButton", type: "button"]] : [])
+                                [label: ui.message("general.remove"), id: "removeButton_${ superviseesId }", class: "removeButton", type: "button"],
+                                [label: ui.message("general.void"), id: "voidButton_${ superviseesId }", class: "voidButton", type: "button"]] : [])
                 ]) %>
 
             </div>
@@ -338,7 +353,7 @@
                             showDateField: true,
                             dateLabel: ui.message("providermanagement.onDate"),
                             emptyMessage: ui.message("providermanagement.noMatches"),
-                            actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "transferCancelButton"]]
+                            actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "cancelButton"]]
                     ])  %>
                 </div>
 
@@ -355,19 +370,35 @@
                             showDateField: true,
                             dateLabel: ui.message("providermanagement.onDate"),
                             emptyMessage: ui.message("providermanagement.noMatches"),
-                            actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]]
+                            actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "cancelButton"]]
                     ])  %>
                 </div>
 
                 <div id="remove_${ superviseesId }" class="remove">
-                    <%=  ui.includeFragment("widget/dateDialog", [title: ui.message("providermanagement.confirmRemoval"),
+                    <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmRemovalSupervisees"),
                             submitAction: ui.actionLink('providerEdit', 'removeSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                             submitParams: [ supervisor: person.id ],
                             submitButtonId: "confirmRemoveButton_${ superviseesId }",
                             submitForm: "multiSelectCheckboxForm_${ superviseesId }",
+                            class: java.util.Date,
+                            formFieldName: "date",
                             dateLabel: ui.message("providermanagement.stopDate"),
                             actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ superviseesId }", class: "confirmRemoveButton"],
-                                    [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "removeCancelButton"]]
+                                    [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
+                    ])  %>
+                </div>
+
+                <div id="void_${ superviseesId }" class="void">
+                    <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmVoidSupervisees"),
+                            submitAction: ui.actionLink('providerEdit', 'voidSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                            submitParams: [ supervisor: person.id ],
+                            submitButtonId: "confirmVoidButton_${ superviseesId }",
+                            submitForm: "multiSelectCheckboxForm_${ superviseesId }",
+                            class: java.lang.String,
+                            formFieldName: "voidReason",
+                            dateLabel: ui.message("providermanagement.voidReason"),
+                            actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ superviseesId }", class: "confirmVoidButton"],
+                                    [label: ui.message("general.cancel"), id: "voidCancelButton_${ superviseesId }", class: "cancelButton"]]
                     ])  %>
                 </div>
 
@@ -383,7 +414,7 @@
                             formFieldName: "supervisees",
                             emptyMessage: ui.message("providermanagement.none"),
                             actionButtons: [[label: ui.message("general.add"), type: "submit"],
-                                            [label: ui.message("general.cancel"), id: "suggestCancelButton_${ superviseesId}", class:"suggestCancelButton", type: "reset"]]
+                                            [label: ui.message("general.cancel"), id: "suggestCancelButton_${ superviseesId}", class:"cancelButton", type: "reset"]]
                     ]) %>
                 </div>
                 <% } %>
