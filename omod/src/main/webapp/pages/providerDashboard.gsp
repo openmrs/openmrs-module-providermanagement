@@ -406,8 +406,8 @@
                 <div id="suggest_${ superviseesId }" class="suggest">
                     <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
                             title: ui.message("providermanagement.suggestedSupervisees"),
-                            columns: providerListDisplayFields.values(),
-                            columnLabels: providerListDisplayFields.keySet(),
+                            columns: providerSearchDisplayFields.values(),
+                            columnLabels: providerSearchDisplayFields.keySet(),
                             selectAction: ui.pageLink('providerDashboard'),
                             selectIdParam: "personId",
                             formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
