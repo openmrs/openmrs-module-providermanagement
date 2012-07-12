@@ -15,7 +15,9 @@
                     <% if (config.submitForm) { %>
                     '&' + jq('#${ config.submitForm }').serialize() +
                     <% } %>
-                    '&${ config.formFieldName }=' + jq('[name="${ config.formFieldName }_${ id }"]').val();
+                    <% config.formFields.each { %>
+                        '&${ it.name }=' + jq('[name="${ it.name }_${ id }"]').val();
+                    <% } %>
         });
     });
 </script>
@@ -31,11 +33,14 @@
         </thead>
 
         <tbody>
-            <tr>
-                <td>
-                    ${ config.dateLabel }: ${ ui.includeFragment("widget/field", [ class: config.class, formFieldName: config.formFieldName + "_" +  id ]) }
-                </td>
-            </tr>
+
+            <% config.formFields.each { %>
+                <tr>
+                    <td>
+                        ${ it.label }: ${ ui.includeFragment("widget/field", [ class: it.class, formFieldName: it.name + "_" +  id ]) }
+                    </td>
+                </tr>
+            <% } %>
 
             <% if (config.actionButtons) { %>
                 <tr>

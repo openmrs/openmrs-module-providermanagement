@@ -279,9 +279,7 @@
                                   submitParams: [ provider: person.id, relationshipType: it.key.id ],
                                   submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
                                   submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                  class: java.util.Date,
-                                  formFieldName: "date",
-                                  dateLabel: ui.message("providermanagement.stopDate"),
+                                  formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate")] ],
                                   actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ it.key.uuid }", class: "confirmRemoveButton"],
                                                   [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
@@ -293,9 +291,7 @@
                                 submitParams: [ provider: person.id ],
                                 submitButtonId: "confirmVoidButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                class: java.lang.String,
-                                formFieldName: "voidReason",
-                                dateLabel: ui.message("providermanagement.voidReason"),
+                                formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
                                 actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ it.key.uuid }", class: "confirmVoidButton"],
                                         [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
@@ -380,9 +376,7 @@
                             submitParams: [ supervisor: person.id ],
                             submitButtonId: "confirmRemoveButton_${ superviseesId }",
                             submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                            class: java.util.Date,
-                            formFieldName: "date",
-                            dateLabel: ui.message("providermanagement.stopDate"),
+                            formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate")] ],
                             actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ superviseesId }", class: "confirmRemoveButton"],
                                     [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
                     ])  %>
@@ -394,9 +388,7 @@
                             submitParams: [ supervisor: person.id ],
                             submitButtonId: "confirmVoidButton_${ superviseesId }",
                             submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                            class: java.lang.String,
-                            formFieldName: "voidReason",
-                            dateLabel: ui.message("providermanagement.voidReason"),
+                            formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
                             actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ superviseesId }", class: "confirmVoidButton"],
                                     [label: ui.message("general.cancel"), id: "voidCancelButton_${ superviseesId }", class: "cancelButton"]]
                     ])  %>
