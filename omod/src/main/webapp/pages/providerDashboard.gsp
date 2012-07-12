@@ -280,8 +280,8 @@
                                   submitAction: ui.actionLink('providerEdit', 'removePatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                   submitParams: [ provider: person.id, relationshipType: it.key.id ],
                                   submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
-                                  submitForm: "multiSelectCheckboxForm_" + it.key.uuid,
-                                  dateLabel: ui.message("providermanagement.endDate"),
+                                  submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
+                                  dateLabel: ui.message("providermanagement.stopDate"),
                                   actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ it.key.uuid }", class: "confirmRemoveButton"],
                                                   [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "removeCancelButton"]]
                         ])  %>
@@ -319,7 +319,7 @@
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
                                 [label: ui.message("providermanagement.suggest"), id: "suggestButton_${ superviseesId }", class: "suggestButton", type: "button"],
-                                [label: ui.message("general.remove"), type: "submit"]] : [])
+                                [label: ui.message("general.remove"), id: "removeButton_${ superviseesId }", class: "removeButton", type: "button"]] : [])
                 ]) %>
 
             </div>
@@ -356,6 +356,18 @@
                             dateLabel: ui.message("providermanagement.onDate"),
                             emptyMessage: ui.message("providermanagement.noMatches"),
                             actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "addCancelButton"]]
+                    ])  %>
+                </div>
+
+                <div id="remove_${ superviseesId }" class="remove">
+                    <%=  ui.includeFragment("widget/dateDialog", [title: ui.message("providermanagement.confirmRemoval"),
+                            submitAction: ui.actionLink('providerEdit', 'removeSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                            submitParams: [ supervisor: person.id ],
+                            submitButtonId: "confirmRemoveButton_${ superviseesId }",
+                            submitForm: "multiSelectCheckboxForm_${ superviseesId }",
+                            dateLabel: ui.message("providermanagement.stopDate"),
+                            actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ superviseesId }", class: "confirmRemoveButton"],
+                                    [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "removeCancelButton"]]
                     ])  %>
                 </div>
 

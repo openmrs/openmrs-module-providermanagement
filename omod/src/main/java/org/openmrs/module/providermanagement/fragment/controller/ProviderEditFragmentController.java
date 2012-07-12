@@ -276,11 +276,17 @@ public class ProviderEditFragmentController {
     }
 
     public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
-                                                  @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships) {
+                                                  @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
+                                                  @RequestParam(value = "date", required = false) Date date) {
 
         try {
+            // if no date specified, remove on the current date
+            if (date == null) {
+                date = new Date();
+            }
+
             for (Relationship relationship : superviseeRelationships) {
-                Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(relationship.getPersonB(), supervisor);
+                Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(relationship.getPersonB(), supervisor, date);
             }
             return new SuccessResult();
         }
