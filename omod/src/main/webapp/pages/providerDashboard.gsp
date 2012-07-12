@@ -16,8 +16,9 @@
 
         var resetActionDialogs = function () {
 
-            // hide the add, suggest, transfer, remove, and void sections
+            // hide the add, edit, suggest, transfer, remove, and void sections
             jq('.add').hide();
+            jq('.edit').hide();
             jq('.suggest').hide();
             jq('.transfer').hide();
             jq('.remove').hide();
@@ -77,7 +78,6 @@
 
         // handles clicking on the add buttons
         jq('.addButton').click(function() {
-
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
@@ -85,6 +85,17 @@
 
             // show the appropriate add div
             jq('#add_' + id).show();
+        });
+
+        // handles clicking on the add buttons
+        jq('.editButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
+            resetActionDialogs();
+
+            // show the appropriate add div
+            jq('#edit_' + id).show();
         });
 
         // handles displaying the remove divs
@@ -233,6 +244,7 @@
                             footer: it.value.size + " " + (it.value.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
+                                            [label: ui.message("general.edit"), id: "editButton_${ it.key.uuid }", class: "editButton", type: "button"],
                                             [label: ui.message("providermanagement.transfer"), id: "transferButton_${ it.key.uuid }", class: "transferButton", type: "button"],
                                             [label: ui.message("general.remove"), id: "removeButton_${ it.key.uuid }", class: "removeButton", type: "button"],
                                             [label: ui.message("general.void"), id: "voidButton_${ it.key.uuid }", class: "voidButton", type: "button"]] : [])
@@ -270,6 +282,17 @@
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                        ])  %>
+                    </div>
+
+                    <div id="edit_${ it.key.uuid }" class="edit">
+                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDatePatients"),
+                                submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                submitButtonId: "updateButton_${ it.key.uuid }",
+                                submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
+                                formFields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
+                                actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton"],
+                                        [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
                     </div>
 
@@ -327,6 +350,7 @@
                         footer: currentSupervisees.size + " " + (currentSupervisees.size != 1 ? ui.message("providermanagement.totalSupervisees") : ui.message("providermanagement.totalSupervisee")),
                         actionButtons: (context.hasPrivilege("Provider Management Dashboard - Edit Providers") ?
                                 [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
+                                [label: ui.message("general.edit"), id: "editButton_${ superviseesId }", class: "editButton", type: "button"],
                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
                                 [label: ui.message("providermanagement.suggest"), id: "suggestButton_${ superviseesId }", class: "suggestButton", type: "button"],
                                 [label: ui.message("general.remove"), id: "removeButton_${ superviseesId }", class: "removeButton", type: "button"],
@@ -367,6 +391,17 @@
                             dateLabel: ui.message("providermanagement.onDate"),
                             emptyMessage: ui.message("providermanagement.noMatches"),
                             actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ superviseesId }", class: "cancelButton"]]
+                    ])  %>
+                </div>
+
+                <div id="edit_${ superviseesId }" class="edit">
+                    <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDateSupervisees"),
+                            submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                            submitButtonId: "updateButton_${ superviseesId }",
+                            submitForm: "multiSelectCheckboxForm_${ superviseesId }",
+                            formFields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
+                            actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ superviseesId }", class: "updateButton"],
+                                    [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
                     ])  %>
                 </div>
 

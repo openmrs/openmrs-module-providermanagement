@@ -275,6 +275,28 @@ public class ProviderEditFragmentController {
 
     }
 
+    public FragmentActionResult editSupervisees(@RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
+                                                @RequestParam(value = "startDate", required = true) Date startDate,
+                                                @RequestParam(value = "endDate", required = false) Date endDate) {
+
+        try {
+            for (Relationship superviseeRelationship : superviseeRelationships) {
+
+                superviseeRelationship.setStartDate(startDate);
+
+                if (endDate != null) {
+                    superviseeRelationship.setEndDate(endDate);
+                }
+
+                Context.getPersonService().saveRelationship(superviseeRelationship);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
     public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                                   @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
                                                   @RequestParam(value = "date", required = false) Date date) {
@@ -326,8 +348,8 @@ public class ProviderEditFragmentController {
                                              @RequestParam(value = "voidReason", required = true) String voidReason) {
 
         try {
-            for (Relationship patientRelationship : superviseeRelationships) {
-                Context.getPersonService().voidRelationship(patientRelationship, voidReason);
+            for (Relationship superviseeRelationship : superviseeRelationships) {
+                Context.getPersonService().voidRelationship(superviseeRelationship, voidReason);
             }
             return new SuccessResult();
         }
@@ -348,6 +370,28 @@ public class ProviderEditFragmentController {
             }
 
             Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType, date);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
+    public FragmentActionResult editPatients(@RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
+                                             @RequestParam(value = "startDate", required = true) Date startDate,
+                                             @RequestParam(value = "endDate", required = false) Date endDate) {
+
+        try {
+            for (Relationship patientRelationship : patientRelationships) {
+
+                patientRelationship.setStartDate(startDate);
+
+                if (endDate != null) {
+                    patientRelationship.setEndDate(endDate);
+                }
+
+                Context.getPersonService().saveRelationship(patientRelationship);
+            }
             return new SuccessResult();
         }
         catch (Exception e) {
