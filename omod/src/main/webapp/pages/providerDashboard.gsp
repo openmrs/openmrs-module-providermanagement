@@ -64,32 +64,6 @@
             jq('#pane_' + id).show();
         });
 
-        // handles showing the historical lists
-        jq('.historicalListShow').click(function() {
-            // first fetch the id we are dealing with
-            var id = jq(this).attr('id').split("_")[1];
-
-            // hide this div
-            jq('#historicalListShow_' + id).hide();
-
-            // show the historical list and the hide divs
-            jq('#historicalList_' + id).show();
-            jq('#historicalListHide_' + id).show();
-        });
-
-        // handles hiding the historical lists
-        jq('.historicalListHide').click(function() {
-            // first fetch the id we are dealing with
-            var id = jq(this).attr('id').split("_")[1];
-
-            // hide this div and the historical list
-            jq('#historicalListHide_' + id).hide();
-            jq('#historicalList_' + id).hide();
-
-            // show the "show" div
-            jq('#historicalListShow_' + id).show();
-        });
-
         // handles displaying the transfer divs
         jq('.transferButton').click(function() {
 
@@ -273,6 +247,7 @@
                 <div id="list_${ it.key.uuid }" class="list">
                     <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.currentPatients.sort { item -> item.patient.personName?.toString() },
                             id: it.key.uuid,
+                            title: ui.message("providermanagement.currentPatients"),
                             columns: patientListDisplayFields.values(),
                             columnLabels: patientListDisplayFields.keySet(),
                             formAction: ui.actionLink("providerEdit","removePatients", [provider: person.id, relationshipType: it.key.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
@@ -360,15 +335,6 @@
                 <% } %>
 
                 <br/><br/>
-
-                <div id="historicalListShow_${ it.key.uuid }" class="historicalListShow">
-                    <a id="historicalListShowLink_${ it.key.uuid}" class="historicalListShowLink">${ ui.message("providermanagement.showHistoricalPatients") }</a>
-                </div>
-
-                <div id="historicalListHide_${ it.key.uuid }" class="historicalListHide">
-                    <a id="historicalListHideLink_${ it.key.uuid}" class="historicalListHideLink">${ ui.message("providermanagement.hideHistoricalPatients") }</a>
-                </div>
-
 
                 <div id="historicalList_${ it.key.uuid }" class="historicalList">
                     <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.historicalPatients.sort { item -> item.patient.personName?.toString() },
