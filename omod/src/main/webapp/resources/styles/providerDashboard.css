@@ -69,6 +69,13 @@
     text-align: right;
 }
 
+.historicalListShow,.historicalListHide {
+    background-color: #00A391;
+    color: #FFFFFF;
+    text-decoration: underline;
+    text-align: right;
+}
+
 .transfer {
     display: none;
 }
@@ -90,5 +97,13 @@
 }
 
 .void {
+    display: none;
+}
+
+.historicalList {
+    display: none;
+}
+
+.historicalListHide {
     display: none;
 }

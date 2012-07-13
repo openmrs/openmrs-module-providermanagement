@@ -85,6 +85,14 @@
     </globalProperty>
 
     <globalProperty>
+        <property>providermanagement.historicalPatientListDisplayFields</property>
+        <defaultValue>Name:personName</defaultValue>
+        <description>
+            Fields to display in the historical patient lists; specified as a pipe-delimited list of label/field pairs
+        </description>
+    </globalProperty>
+
+    <globalProperty>
         <property>providermanagement.personSearchDisplayFields</property>
         <defaultValue>Name:personName</defaultValue>
         <description>

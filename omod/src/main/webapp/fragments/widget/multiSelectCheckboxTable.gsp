@@ -29,8 +29,8 @@
 
 <div class="content multiSelectCheckboxTable">
     
-    <% if (config.formAction && !disabled) { %>
-        <form id="multiSelectCheckboxForm_${ id }" method="post" action="${ config.formAction }" >
+    <% if (!disabled) { %>
+        <form id="multiSelectCheckboxForm_${ id }" method="post" action="${ config.formAction ?: '' }" >
     <% } %>
     
         <table id="multiSelectCheckboxTable_${ id }">

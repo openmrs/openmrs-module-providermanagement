@@ -64,25 +64,28 @@ public class ProviderDashboardPageController {
         // if the provider has the appropriate privilege, add the patients of the provider
         if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_VIEW_PATIENTS_PRIVILEGE)) {
             // add the patients of this provider, grouped by relationship type
-            Map<RelationshipType, List<PatientAndRelationship>> currentPatientMap = new HashMap<RelationshipType,List<PatientAndRelationship>>();
-            Map<RelationshipType, List<PatientAndRelationship>> historicalPatientMap = new HashMap<RelationshipType, List<PatientAndRelationship>>();
+            Map<RelationshipType, Map<String,List<PatientAndRelationship>>> patientMap = new HashMap<RelationshipType,Map<String, List<PatientAndRelationship>>>();
+
+
 
             if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
                 for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
 
                     if (!relationshipType.isRetired()) {
-                        currentPatientMap.put(relationshipType, new ArrayList<PatientAndRelationship>());
-                        historicalPatientMap.put(relationshipType, new ArrayList<PatientAndRelationship>());
+                        patientMap.put(relationshipType, new HashMap<String,List<PatientAndRelationship>>());
+                        patientMap.get(relationshipType).put("currentPatients", new ArrayList<PatientAndRelationship>());
+                        patientMap.get(relationshipType).put("historicalPatients", new ArrayList<PatientAndRelationship>());
+
 
                         for (Relationship relationship : pmService.getPatientRelationshipsForProvider(person, relationshipType, null)) {
 
                             Patient patient = Context.getPatientService().getPatient(relationship.getPersonB().getId());
 
                             if (ProviderManagementUtils.isRelationshipActive(relationship)) {
-                                currentPatientMap.get(relationshipType).add(new PatientAndRelationship(patient, relationship));
+                                patientMap.get(relationshipType).get("currentPatients").add(new PatientAndRelationship(patient, relationship));
                             }
                             else {
-                                historicalPatientMap.get(relationshipType).add(new PatientAndRelationship(patient, relationship));
+                                patientMap.get(relationshipType).get("historicalPatients").add(new PatientAndRelationship(patient, relationship));
                             }
 
                         }
@@ -91,8 +94,7 @@ public class ProviderDashboardPageController {
 
                 }
             }
-            pageModel.addAttribute("currentPatientMap", currentPatientMap);
-            pageModel.addAttribute("historicalPatientMap", historicalPatientMap);
+            pageModel.addAttribute("patientMap", patientMap);
         }
         // otherwise, if the patient does not have view patient privileges, calculate an aggregate patient count
         else {
@@ -174,5 +176,6 @@ public class ProviderDashboardPageController {
         pageModel.addAttribute("providerListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS());
         pageModel.addAttribute("patientSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS());
         pageModel.addAttribute("patientListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PATIENT_LIST_DISPLAY_FIELDS());
+        pageModel.addAttribute("historicalPatientListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_HISTORICAL_PATIENT_LIST_DISPLAY_FIELDS());
     }
 }

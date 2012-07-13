@@ -19,6 +19,7 @@
             // hide the add, edit, suggest, transfer, remove, and void sections
             jq('.add').hide();
             jq('.edit').hide();
+            jq('.editHistorical').hide();
             jq('.suggest').hide();
             jq('.transfer').hide();
             jq('.remove').hide();
@@ -63,6 +64,31 @@
             jq('#pane_' + id).show();
         });
 
+        // handles showing the historical lists
+        jq('.historicalListShow').click(function() {
+            // first fetch the id we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
+            // hide this div
+            jq('#historicalListShow_' + id).hide();
+
+            // show the historical list and the hide divs
+            jq('#historicalList_' + id).show();
+            jq('#historicalListHide_' + id).show();
+        });
+
+        // handles hiding the historical lists
+        jq('.historicalListHide').click(function() {
+            // first fetch the id we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
+            // hide this div and the historical list
+            jq('#historicalListHide_' + id).hide();
+            jq('#historicalList_' + id).hide();
+
+            // show the "show" div
+            jq('#historicalListShow_' + id).show();
+        });
 
         // handles displaying the transfer divs
         jq('.transferButton').click(function() {
@@ -97,6 +123,18 @@
             // show the appropriate add div
             jq('#edit_' + id).show();
         });
+
+        // handles clicking on the add buttons
+        jq('.editHistoricalButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
+            resetActionDialogs();
+
+            // show the appropriate add div
+            jq('#editHistorical_' + id).show();
+        });
+
 
         // handles displaying the remove divs
         jq('.removeButton').click(function() {
@@ -180,7 +218,7 @@
                 <td class="borderCell">&nbsp;</td>
 
                 <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
-                    <% currentPatientMap?.each { %>
+                    <% patientMap?.each { %>
                         <td id="paneSelectTop_${ it.key.uuid }" class="paneSelectTop paneSelect"> <img src=" ${ ui.resourceLink ("images/patient-nested.png") }"/></td>
                     <% } %>
                 <% } else { %>
@@ -201,7 +239,7 @@
                 <td>&nbsp;</td>
 
                 <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
-                    <% currentPatientMap?.each { %>
+                    <% patientMap?.each { %>
                         <td id="paneSelectBottom_${ it.key.uuid }" class="paneSelectBottom paneSelect">${ it.key.aIsToB }<br/>${ ui.message("providermanagement.patients") }</td>
                     <% } %>
                 <% } else { %>
@@ -228,12 +266,12 @@
 
     <% if (context.hasPrivilege("Provider Management Dashboard - View Patients")) { %>
         <!-- this map is keyed on relationship types; value is a list of patients associated with the provider for that relationship type -->
-        <% currentPatientMap?.each {   %>
+        <% patientMap?.each {   %>
 
             <div id="pane_${ it.key.uuid }" class="pane">
 
                 <div id="list_${ it.key.uuid }" class="list">
-                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.sort { item -> item.patient.personName?.toString() },
+                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.currentPatients.sort { item -> item.patient.personName?.toString() },
                             id: it.key.uuid,
                             columns: patientListDisplayFields.values(),
                             columnLabels: patientListDisplayFields.keySet(),
@@ -241,7 +279,7 @@
                             formFieldName: "patientRelationships",
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             emptyMessage: ui.message("providermanagement.none"),
-                            footer: it.value.size + " " + (it.value.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
+                            footer: it.value.currentPatients.size + " " + (it.value.currentPatients.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("general.edit"), id: "editButton_${ it.key.uuid }", class: "editButton", type: "button"],
@@ -292,7 +330,7 @@
                                 submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
                                 formFields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
                                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton"],
-                                        [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                                        [label: ui.message("general.cancel"), id: "editCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
                     </div>
 
@@ -320,6 +358,45 @@
                         ])  %>
                     </div>
                 <% } %>
+
+                <br/><br/>
+
+                <div id="historicalListShow_${ it.key.uuid }" class="historicalListShow">
+                    <a id="historicalListShowLink_${ it.key.uuid}" class="historicalListShowLink">${ ui.message("providermanagement.showHistoricalPatients") }</a>
+                </div>
+
+                <div id="historicalListHide_${ it.key.uuid }" class="historicalListHide">
+                    <a id="historicalListHideLink_${ it.key.uuid}" class="historicalListHideLink">${ ui.message("providermanagement.hideHistoricalPatients") }</a>
+                </div>
+
+
+                <div id="historicalList_${ it.key.uuid }" class="historicalList">
+                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.historicalPatients.sort { item -> item.patient.personName?.toString() },
+                            id: "historical_${ it.key.uuid }",
+                            title: ui.message("providermanagement.historicalPatients"),
+                            columns: historicalPatientListDisplayFields.values(),
+                            columnLabels: historicalPatientListDisplayFields.keySet(),
+                            formFieldName: "patientRelationships",
+                            disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
+                            emptyMessage: ui.message("providermanagement.none"),
+                            footer: it.value.historicalPatients.size + " " + (it.value.historicalPatients.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
+                            actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
+                                [ [label: ui.message("general.edit"), id: "editHistoricalButton_${ it.key.uuid }", class: "editHistoricalButton", type: "button"],
+                                  [label: ui.message("general.void"), id: "voidHistoricalButton_${ it.key.uuid }", class: "voidHistoricalButton", type: "button"]] : [])
+                    ]) %>
+                </div>
+
+                <div id="editHistorical_${ it.key.uuid }" class="edit">
+                    <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDatePatients"),
+                            submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                            submitButtonId: "updateHistoricalButton_${ it.key.uuid }",
+                            submitForm: "multiSelectCheckboxForm_historical_${ it.key.uuid }",
+                            formFields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")] ],
+                            actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ it.key.uuid }", class: "updateHistoricalButton"],
+                                    [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                    ])  %>
+                </div>
+
             </div>
         <% } %>
     <% } else { %>

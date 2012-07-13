@@ -54,6 +54,10 @@ public class ProviderManagementGlobalProperties {
         return globalPropertyToMap("providermanagement.patientListDisplayFields");
     }
 
+    public static final Map<String,String> GLOBAL_PROPERTY_HISTORICAL_PATIENT_LIST_DISPLAY_FIELDS() {
+        return globalPropertyToMap("providermanagement.historicalPatientListDisplayFields");
+    }
+
     public static final Map<String,String> GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS() {
         return globalPropertyToMap("providermanagement.patientSearchDisplayFields");
     }
