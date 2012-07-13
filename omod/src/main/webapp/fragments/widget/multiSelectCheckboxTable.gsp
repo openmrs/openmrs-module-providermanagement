@@ -117,7 +117,7 @@
             <% } %>
         </table>
 
-    <% if (config.formAction && !disabled) { %>
+    <% if (!disabled) { %>
         </form>
      <% } %>
 </div>

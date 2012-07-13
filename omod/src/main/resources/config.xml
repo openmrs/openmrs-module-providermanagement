@@ -69,6 +69,14 @@
     </globalProperty>
 
     <globalProperty>
+        <property>providermanagement.historicalProviderListDisplayFields</property>
+        <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
+        <description>
+            Fields to display in the historical provider lists; specified as a pipe-delimited list of label/field pairs
+        </description>
+    </globalProperty>
+
+    <globalProperty>
         <property>providermanagement.patientSearchDisplayFields</property>
         <defaultValue>Name:personName</defaultValue>
         <description>

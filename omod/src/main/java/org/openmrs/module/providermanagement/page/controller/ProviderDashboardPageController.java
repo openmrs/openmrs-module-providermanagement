@@ -177,5 +177,6 @@ public class ProviderDashboardPageController {
         pageModel.addAttribute("patientSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS());
         pageModel.addAttribute("patientListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PATIENT_LIST_DISPLAY_FIELDS());
         pageModel.addAttribute("historicalPatientListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_HISTORICAL_PATIENT_LIST_DISPLAY_FIELDS());
+        pageModel.addAttribute("historicalProviderListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_HISTORICAL_PROVIDER_LIST_DISPLAY_FIELDS());
     }
 }
