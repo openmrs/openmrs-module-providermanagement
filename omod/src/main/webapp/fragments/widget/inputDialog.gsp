@@ -16,8 +16,9 @@
                     '&' + jq('#${ config.submitForm }').serialize() +
                     <% } %>
                     <% config.formFields.each { %>
-                        '&${ it.name }=' + jq('[name="${ it.name }_${ id }"]').val();
+                        '&${ it.name }=' + jq('[name="${ it.name }_${ id }"]').val() +
                     <% } %>
+                    '';
         });
     });
 </script>

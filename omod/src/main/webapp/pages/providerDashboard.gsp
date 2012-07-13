@@ -24,6 +24,7 @@
             jq('.transfer').hide();
             jq('.remove').hide();
             jq('.void').hide();
+            jq('.voidHistorical').hide();
 
             // clear out any existing search values
             jq('.searchField').val('');
@@ -130,6 +131,17 @@
 
             // show the appropriate transfer div
             jq('#void_' + id).show();
+        }) ;
+
+        // handles displaying the historical void divs
+        jq('.voidHistoricalButton').click(function() {
+            // first fetch the id of the pane we are dealing with
+            var id = jq(this).attr('id').split("_")[1];
+
+            resetActionDialogs();
+
+            // show the appropriate transfer div
+            jq('#voidHistorical_' + id).show();
         }) ;
 
         // handles clicking on the suggest button
@@ -304,8 +316,8 @@
                                 submitButtonId: "updateButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
                                 formFields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
-                                actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton"],
-                                        [label: ui.message("general.cancel"), id: "editCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                                actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton", type: "button"],
+                                                [label: ui.message("general.cancel"), id: "editCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
                     </div>
 
@@ -328,8 +340,8 @@
                                 submitButtonId: "confirmVoidButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
                                 formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
-                                actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ it.key.uuid }", class: "confirmVoidButton"],
-                                        [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                                actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ it.key.uuid }", class: "confirmVoidButton", type: "button"],
+                                        [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
                     </div>
                 <% } %>
@@ -357,9 +369,22 @@
                             submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                             submitButtonId: "updateHistoricalButton_${ it.key.uuid }",
                             submitForm: "multiSelectCheckboxForm_historical_${ it.key.uuid }",
-                            formFields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")] ],
-                            actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ it.key.uuid }", class: "updateHistoricalButton"],
-                                    [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                            formFields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")],
+                                          [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate")]  ],
+                            actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ it.key.uuid }", class: "updateHistoricalButton", type: "button"],
+                                             [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ it.key.uuid }", class: "cancelButton",type: "button"]]
+                    ])  %>
+                </div>
+
+                <div id="voidHistorical_${ it.key.uuid }" class="void">
+                    <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmVoidPatients"),
+                            submitAction: ui.actionLink('providerEdit', 'voidPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                            submitParams: [ provider: person.id ],
+                            submitButtonId: "confirmHistoricalVoidButton_${ it.key.uuid }",
+                            submitForm: "multiSelectCheckboxForm_historical_${ it.key.uuid }",
+                            formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                            actionButtons: [[label: ui.message("general.void"), id: "confirmHistoricalVoidButton_${ it.key.uuid }", class: "confirmHistoricalVoidButton", type: "button"],
+                                    [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                     ])  %>
                 </div>
 
