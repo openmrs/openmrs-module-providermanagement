@@ -43,7 +43,7 @@ public class ProviderManagementGlobalProperties {
     }
 
     public static final Map<String,String> GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS() {
-        return globalPropertyToMap("providermanagement.providerSearchDisplayFields");
+        return stripLeadingPersonReferences(globalPropertyToMap("providermanagement.providerSearchDisplayFields"));
     }
 
     public static final Map<String,String> GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS() {
@@ -63,11 +63,11 @@ public class ProviderManagementGlobalProperties {
     }
 
     public static final Map<String,String> GLOBAL_PROPERTY_PATIENT_SEARCH_DISPLAY_FIELDS() {
-        return globalPropertyToMap("providermanagement.patientSearchDisplayFields");
+        return stripLeadingPatientReferences(globalPropertyToMap("providermanagement.patientSearchDisplayFields"));
     }
 
     public static final Map<String,String> GLOBAL_PROPERTY_PERSON_SEARCH_DISPLAY_FIELDS() {
-        return globalPropertyToMap("providermanagement.personSearchDisplayFields");
+        return stripLeadingPersonReferences(globalPropertyToMap("providermanagement.personSearchDisplayFields"));
     }
 
     public static final PersonAttributeType GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE() {
@@ -118,6 +118,47 @@ public class ProviderManagementGlobalProperties {
         // if for some reason we have no entries, add name as a default
         if (map.size() == 0) {
             map.put("Name","personName");
+        }
+
+        return map;
+    }
+
+    /**
+     * Specific utility method used to strip off any leading "patient." string from a global property map
+     * Provided so that person and patient search global properties can be in the same format
+     * as list global properties (which need to explicitly specify patient, provider, etc because
+     * they work with command objects that contain multiple Openmrs objects (see PatientAndRelationship and
+     * ProviderAndRelationship classes))
+     *
+     * @param map
+     * @return
+     */
+    public static Map<String,String> stripLeadingPatientReferences(Map<String,String> map) {
+
+        for (String key : map.keySet()) {
+            String value = map.get(key);
+            if (value.startsWith("patient.")) {
+                map.put(key, value.substring(8));
+            }
+        }
+
+        return map;
+    }
+
+    /**
+     * Specific utility method used to strip off any leading "person." string from a global property map
+     * Provided so that person and patient search global properties can be in the same format
+     * as list global properties (which need to explicitly specify patient, provider, etc because
+     * they work with command objects that contain multiple Openmrs objects (see PatientAndRelationship and
+     * ProviderAndRelationship classes))
+     */
+    public static final Map<String,String> stripLeadingPersonReferences(Map<String,String> map) {
+
+        for (String key : map.keySet()) {
+            String value = map.get(key);
+            if (value.startsWith("person.")) {
+                map.put(key, value.substring(7));
+            }
         }
 
         return map;

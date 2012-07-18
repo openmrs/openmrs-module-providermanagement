@@ -54,7 +54,7 @@
 
     <globalProperty>
         <property>providermanagement.providerSearchDisplayFields</property>
-        <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
+        <defaultValue>Identifier:provider.identifier|Given Name:person.personName.givenName|Family Name:person.personName.familyName|Role:provider.providerRole|Gender:person.gender</defaultValue>
         <description>
             Fields to display in the provider search results; specified as a pipe-delimited list of label/field pairs
         </description>
@@ -62,7 +62,7 @@
 
     <globalProperty>
         <property>providermanagement.providerListDisplayFields</property>
-        <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
+        <defaultValue>Identifier:provider.identifier|Given Name:provider.person.personName.givenName|Family Name:provider.person.personName.familyName|Role:provider.providerRole|Gender:provider.person.gender|Start Date:relationship.startDate</defaultValue>
         <description>
             Fields to display in the provider lists; specified as a pipe-delimited list of label/field pairs
         </description>
@@ -70,7 +70,7 @@
 
     <globalProperty>
         <property>providermanagement.historicalProviderListDisplayFields</property>
-        <defaultValue>Name:personName|Identifier:provider.identifier|Role:provider.providerRole</defaultValue>
+        <defaultValue>Identifier:provider.identifier|Given Name:provider.person.personName.givenName|Family Name:provider.person.personName.familyName|Role:provider.providerRole|Gender:provider.person.gender|Start Date:relationship.startDate|End Date:relationship.endDate</defaultValue>
         <description>
             Fields to display in the historical provider lists; specified as a pipe-delimited list of label/field pairs
         </description>
@@ -78,7 +78,7 @@
 
     <globalProperty>
         <property>providermanagement.patientSearchDisplayFields</property>
-        <defaultValue>Name:personName</defaultValue>
+        <defaultValue>Identifier:patient.patientIdentifier.identifier|Given Name:patient.personName.givenName|Family Name:patient.personName.familyName|Age:patient.age|Gender:patient.gender</defaultValue>
         <description>
             Fields to display in the patient search results; specified as a pipe-delimited list of label/field pairs
         </description>
@@ -86,7 +86,7 @@
 
     <globalProperty>
         <property>providermanagement.patientListDisplayFields</property>
-        <defaultValue>Name:personName</defaultValue>
+        <defaultValue>Identifier:patient.patientIdentifier.identifier|Given Name:patient.personName.givenName|Family Name:patient.personName.familyName|Age:patient.age|Gender:patient.gender|Start Date:relationship.startDate</defaultValue>
         <description>
             Fields to display in the patient lists; specified as a pipe-delimited list of label/field pairs
         </description>
@@ -94,7 +94,7 @@
 
     <globalProperty>
         <property>providermanagement.historicalPatientListDisplayFields</property>
-        <defaultValue>Name:personName</defaultValue>
+        <defaultValue>Identifier:patient.patientIdentifier.identifier|Given Name:patient.personName.givenName|Family Name:patient.personName.familyName|Age:patient.age|Gender:patient.gender|Start Date:relationship.startDate|End Date:relationship.endDate</defaultValue>
         <description>
             Fields to display in the historical patient lists; specified as a pipe-delimited list of label/field pairs
         </description>
@@ -102,7 +102,7 @@
 
     <globalProperty>
         <property>providermanagement.personSearchDisplayFields</property>
-        <defaultValue>Name:personName</defaultValue>
+        <defaultValue>Given Name:person.personName.givenName|Family Name:person.personName.familyName|Age:person.age|Gender:person.gender</defaultValue>
         <description>
             Fields to display in the person search results; specified as a pipe-delimited list of label/field pairs
         </description>
