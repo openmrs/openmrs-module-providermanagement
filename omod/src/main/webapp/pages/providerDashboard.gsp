@@ -409,6 +409,7 @@
                         columns: providerListDisplayFields.values(),
                         columnLabels: providerListDisplayFields.keySet(),
                         selectAction: ui.pageLink('providerDashboard'),
+                        selectId: "provider.person.id",
                         selectIdParam: "personId",
                         formFieldName: "superviseeRelationships",
                         disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
@@ -521,6 +522,9 @@
                             columns: historicalProviderListDisplayFields.values(),
                             columnLabels: historicalProviderListDisplayFields.keySet(),
                             formFieldName: "superviseeRelationships",
+                            selectAction: ui.pageLink('providerDashboard'),
+                            selectIdParam: "personId",
+                            selectId: "provider.person.id",
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             emptyMessage: ui.message("providermanagement.none"),
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
@@ -563,6 +567,7 @@
                 columnLabels: providerListDisplayFields.keySet(),
                 selectAction: ui.pageLink('providerDashboard'),
                 selectIdParam: "personId",
+                selectId: "provider.person.id",
                 emptyMessage: ui.message("providermanagement.none"),
                 disabled: true ]) %>
 

@@ -2,7 +2,8 @@
 <%  ui.includeCss("providermanagement", "widget/multiSelectCheckboxTable.css")
     def id = config.id ?: ui.randomId()
     def selectIdParam = config.selectIdParam ?: 'id'
-    def disabled = config.disabled ?: false %>
+    def disabled = config.disabled ?: false
+%>
 
 <script>
     jq(function() {
@@ -62,11 +63,29 @@
             <tbody>
                 <% if (config.items) {
                     config.items?.each { item -> %>
+
+                    <%
+                            def selectId
+
+                            if (config.selectAction) {
+                                if (config.selectId) {
+                                    selectId = item
+
+                                    config.selectId.split("\\.").each { field ->
+                                        if (selectId) { selectId = selectId[field] }
+                                    }
+                                }
+                                else {
+                                    selectId = item.id
+                                }
+                            }
+                    %>
+
                     <tr>
                         <% config.columns.each { %>
                         <td>
                             <% if (config.selectAction) { %>
-                            <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ item.id }">
+                                    <a href="${ config.selectAction }${ config.selectAction.contains('?') ? '' : '?' }<% if (config.selectParams) { %>&<%= config.selectParams.collect { "${ it.key }=${ it.value }" }.join("&") %><% } %>&${ selectIdParam }=${ selectId }">
                                 <% } %>
 
                                 <%
@@ -79,7 +98,7 @@
                                 %>
 
                                 <% if (config.selectAction) { %>
-                            </a>
+                                    </a>
                             <% } %>
                         </td>
                         <% } %>
