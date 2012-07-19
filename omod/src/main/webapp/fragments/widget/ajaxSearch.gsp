@@ -1,7 +1,13 @@
 
 <%  ui.includeCss("providermanagement", "widget/ajaxSearch.css")
     def id = config.id ?: ui.randomId()
-    def selectIdParam = config.selectIdParam ?: 'id' %>
+    def selectIdParam = config.selectIdParam ?: 'id'
+
+    def today = new Date()
+    today.clearTime()
+
+    def initialValue = config.initialValue ?: today
+%>
 
 <script>
     jq(function() {
@@ -114,7 +120,8 @@
                     <input id="searchField_${ id }" class="searchField" type="text" size="40"/>
                     <% if (config.showDateField) { %>
                         ${config.dateLabel}: ${ ui.includeFragment("widget/field", [ class: java.util.Date,
-                                                                                     formFieldName: "date_" + id ]) }
+                                                                                     formFieldName: "date_" + id,
+                                                                                     initialValue: initialValue ]) }
                     <% } %>
                     <% if (config.retiredToggle) { %>
                         <input id="includeRetired_${id}" type="checkbox"/> ${ ui.message("providermanagement.includeRetired") }

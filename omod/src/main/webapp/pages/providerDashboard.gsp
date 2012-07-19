@@ -8,6 +8,11 @@
     // (note that we remember these so that we know what panel to open on reload
     def superviseesId = "83814a90-9f89-11e1-a8b0-0800200c9a66"
     def supervisorsId = "a4ce1250-9f89-11e1-a8b0-0800200c9a66"
+
+
+   def today = new Date()
+   today.clearTime()
+
 %>
 
 
@@ -314,7 +319,7 @@
                                 submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitButtonId: "updateButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                formFields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
+                                formFields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")] ],
                                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton", type: "button"],
                                                 [label: ui.message("general.cancel"), id: "editCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
@@ -326,7 +331,7 @@
                                   submitParams: [ provider: person.id, relationshipType: it.key.id ],
                                   submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
                                   submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                  formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate")] ],
+                                  formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
                                   actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ it.key.uuid }", class: "confirmRemoveButton"],
                                                   [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
@@ -478,7 +483,7 @@
                             submitParams: [ supervisor: person.id ],
                             submitButtonId: "confirmRemoveButton_${ superviseesId }",
                             submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                            formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate")] ],
+                            formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
                             actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ superviseesId }", class: "confirmRemoveButton"],
                                              [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
                     ])  %>

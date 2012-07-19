@@ -24,7 +24,7 @@
 </script>
 
 
-<div class="content dateDialog">
+<div class="content inputDialog">
     <table>
         <thead>
             <tr>
@@ -38,7 +38,7 @@
             <% config.formFields.each { %>
                 <tr>
                     <td>
-                        ${ it.label }: ${ ui.includeFragment("widget/field", [ class: it.class, formFieldName: it.name + "_" +  id ]) }
+                        ${ it.label }: ${ ui.includeFragment("widget/field", [ class: it.class, formFieldName: it.name + "_" +  id, initialValue: it.initialValue ]) }
                     </td>
                 </tr>
             <% } %>
