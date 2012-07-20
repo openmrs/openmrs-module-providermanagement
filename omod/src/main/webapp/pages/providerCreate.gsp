@@ -4,8 +4,9 @@
 <% ui.includeCss("providermanagement", "providerCreate.css") %>
 
 <div id="providerEdit">
-    ${ ui.includeFragment("providerEdit", [ actionButtons: [ [label: ui.message("general.save"), type: "submit"],
-            [label: ui.message("general.cancel"), link: ui.pageLink("providerHome")] ] ]) }
+    ${ ui.includeFragment("providerEdit", [ successUrl: ui.pageLink("providerDashboard"),
+                                            actionButtons: [ [label: ui.message("general.save"), type: "submit"],
+                                                            [label: ui.message("general.cancel"), link: ui.pageLink("providerHome")] ] ]) }
 </div>
 
 

@@ -38,6 +38,7 @@ import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.ObjectResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.HandlerUtil;
@@ -237,7 +238,8 @@ public class ProviderEditFragmentController {
         Context.getPersonService().savePerson(person);
         Context.getProviderService().saveProvider(provider);
 
-        return new SuccessResult();
+        // return the id of the person we have saved
+        return new ObjectResult(person.getId());
     }
 
     public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,

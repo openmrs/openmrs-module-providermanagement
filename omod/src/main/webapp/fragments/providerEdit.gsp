@@ -15,7 +15,11 @@
                 dataType: "json"
             })
                     .success(function(data) {
-                        location.reload();
+                        <% if (!config.successUrl) { %>
+                            location.reload();
+                        <% } else { %>
+                            window.location = "${ config.successUrl }?personId=" + data;
+                        <% } %>
                     })
                     .error(function(xhr, status, err) {
                         var errors = jq.parseJSON(xhr.responseText);
