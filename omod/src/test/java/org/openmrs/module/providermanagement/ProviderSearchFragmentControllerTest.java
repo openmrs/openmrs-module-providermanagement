@@ -17,6 +17,10 @@ package org.openmrs.module.providermanagement;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Person;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.fragment.controller.ProviderSearchFragmentController;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.ui.framework.SimpleObject;
@@ -63,4 +67,68 @@ public class ProviderSearchFragmentControllerTest extends BaseModuleContextSensi
         Assert.assertEquals("2a7", ((Map<String,Object>) results.get(0).get("provider")).get("identifier"));
         Assert.assertEquals("Binome", ((Map<String,Object>) results.get(0).get("provider")).get("providerRole"));
     }
+
+    @Test
+    public void getProviders_shouldExcludeProvidersWithoutProviderRoleIfGlobalPropSetToFalse() throws Exception {
+
+        // first, let's remove the role from the provider
+        Provider provider = Context.getService(ProviderManagementService.class).getProvidersByPerson(Context.getPersonService().getPerson(7), false).get(0);
+        provider.setProviderRole(null);
+        Context.getProviderService().saveProvider(provider);
+
+        // set the global property
+        GlobalProperty prop = new GlobalProperty();
+        prop.setProperty("providermanagement.restrictSearchToProvidersWithProviderRoles");
+        prop.setPropertyValue("true");
+        Context.getAdministrationService().saveGlobalProperty(prop);
+
+        ProviderSearchFragmentController controller = new ProviderSearchFragmentController();
+        String [] resultFields = new String[] {"gender", "personName.givenName", "personAddress.cityVillage"};
+
+        List<SimpleObject> results = controller.getProviders("2a7", null, null, null, null, resultFields, ui);
+        Assert.assertEquals(0, results.size());
+    }
+
+    @Test
+    public void getProviders_shouldIncludeProvidersWithoutProviderRoleIfGlobalPropNull() throws Exception {
+
+        // first, let's remove the role from the provider
+        Provider provider = Context.getService(ProviderManagementService.class).getProvidersByPerson(Context.getPersonService().getPerson(7), false).get(0);
+        provider.setProviderRole(null);
+        Context.getProviderService().saveProvider(provider);
+
+        ProviderSearchFragmentController controller = new ProviderSearchFragmentController();
+        String [] resultFields = new String[] {"gender", "personName.givenName", "personAddress.cityVillage"};
+
+        List<SimpleObject> results = controller.getProviders("2a7", null, null, null, null, resultFields, ui);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("F", results.get(0).get("gender"));
+        Assert.assertEquals("Collet", ((Map<String,Object>) results.get(0).get("personName")).get("givenName"));
+        Assert.assertEquals("Kapina", ((Map<String,Object>) results.get(0).get("personAddress")).get("cityVillage"));
+    }
+
+    @Test
+    public void getProviders_shouldIncludeProvidersWithoutProviderRoleIfGlobalPropSetToFalse() throws Exception {
+
+        // first, let's remove the role from the provider
+        Provider provider = Context.getService(ProviderManagementService.class).getProvidersByPerson(Context.getPersonService().getPerson(7), false).get(0);
+        provider.setProviderRole(null);
+        Context.getProviderService().saveProvider(provider);
+
+        // set the global property
+        GlobalProperty prop = new GlobalProperty();
+        prop.setProperty("providermanagement.restrictSearchToProvidersWithProviderRoles");
+        prop.setPropertyValue("false");
+        Context.getAdministrationService().saveGlobalProperty(prop);
+
+        ProviderSearchFragmentController controller = new ProviderSearchFragmentController();
+        String [] resultFields = new String[] {"gender", "personName.givenName", "personAddress.cityVillage"};
+
+        List<SimpleObject> results = controller.getProviders("2a7", null, null, null, null, resultFields, ui);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("F", results.get(0).get("gender"));
+        Assert.assertEquals("Collet", ((Map<String,Object>) results.get(0).get("personName")).get("givenName"));
+        Assert.assertEquals("Kapina", ((Map<String,Object>) results.get(0).get("personAddress")).get("cityVillage"));
+    }
+
 }

@@ -122,6 +122,11 @@ public class ProviderAdvancedSearchFragmentController {
         if (command.getProviderRole() != null) {
             roles.add(command.getProviderRole());
         }
+        else if (ProviderManagementGlobalProperties.GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES() != null
+                && ProviderManagementGlobalProperties.GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES()) {
+            roles.addAll(Context.getService(ProviderManagementService.class).getAllProviderRoles(true));
+        }
+
         List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(command.getName(), command.getIdentifier(), command.getPersonAddress(), command.getAttribute(), roles, false);
 
          // convert to a simple object list

@@ -124,6 +124,14 @@
         </description>
     </globalProperty>
 
+    <globalProperty>
+        <property>providermanagement.restrictSearchToProvidersWithProviderRoles</property>
+        <defaultValue>false</defaultValue>
+        <description>
+            True/false whether to restrict providers to those with roles
+        </description>
+    </globalProperty>
+
     <!--  Extension Points -->
      <extension>
          <point>org.openmrs.patientDashboard.overviewBox</point>

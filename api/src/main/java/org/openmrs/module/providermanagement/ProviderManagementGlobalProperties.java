@@ -91,6 +91,11 @@ public class ProviderManagementGlobalProperties {
         }
     }
 
+    public static final Boolean GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES() {
+        String propertyValue = Context.getAdministrationService().getGlobalProperty("providermanagement.restrictSearchToProvidersWithProviderRoles");
+        return stringToBoolean(propertyValue);
+    }
+
     public static final Map<String,String> globalPropertyToMap(String globalPropertyName) {
 
         // load the appropriate global property
@@ -162,5 +167,21 @@ public class ProviderManagementGlobalProperties {
         }
 
         return map;
+    }
+
+    public static final Boolean stringToBoolean(String str) {
+
+        if (str == null) {
+            return null;
+        }
+        else if (str.compareToIgnoreCase("true") == 0) {
+            return true;
+        }
+        else if (str.compareToIgnoreCase("false") == 0) {
+            return false;
+        }
+        else {
+            return null;
+        }
     }
 }

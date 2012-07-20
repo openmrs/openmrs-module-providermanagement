@@ -66,6 +66,16 @@
             </td>
         </tr>
 
+        <tr>
+            <td>${ ui.message("providermanagement.selectToRestrictSearchToProvidersWithProviderRoles")}
+                <br/>
+                ${ ui.includeFragment("globalPropertyUpdater", [propertyName: "providermanagement.restrictSearchToProvidersWithProviderRoles", type: "selectList",
+                        options: [[name: ui.message("providermanagement.restrictSearchResults"), value: "true"],
+                                    [name: ui.message("providermanagement.doNotRestrictSearchResults"), value: "false"]],
+                        optionsKey: "name", optionsValue: "value", multiple: false] ) }
+            </td>
+        </tr>
+
     </table>
 </div>
 

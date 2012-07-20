@@ -16,6 +16,7 @@ package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
@@ -52,8 +53,17 @@ public class ProviderSearchFragmentController {
         // default is to not include retired providers
         includeRetired = includeRetired != null ? includeRetired : false;
 
+        List<ProviderRole> providerRoleList = null;
+        if (providerRoles != null && providerRoles.length > 0) {
+            providerRoleList = Arrays.asList(providerRoles);
+        }
+        else if (ProviderManagementGlobalProperties.GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES() != null
+                && ProviderManagementGlobalProperties.GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES()) {
+            providerRoleList = Context.getService(ProviderManagementService.class).getAllProviderRoles(true);
+        }
+
         // now fetch the results
-        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoles != null ? Arrays.asList(providerRoles) : null, includeRetired);
+        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoleList, includeRetired);
 
         // exclude supervisees of a provider if needed
         if (excludeSuperviseesOf != null) {
