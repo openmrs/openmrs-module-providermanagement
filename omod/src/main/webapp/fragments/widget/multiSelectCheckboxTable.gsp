@@ -12,16 +12,29 @@
             jq(this).addClass('highlighted');
         });
         jq('#multiSelectCheckboxTable_${ id } > tbody > tr').mouseout(function() {
-            jq(this).removeClass('highlighted');
+            if (!jq(this).find('.checkbox_${ id }').attr('checked')) {
+                jq(this).removeClass('highlighted');
+            }
         });
+        jq('.checkbox_${ id }').click(function () {
+            if (jq(this).attr('checked')) {
+                jq(this).closest('tr').addClass('highlighted');
+            }
+            else {
+                jq(this).closest('tr').removeClass('highlighted');
+            }
+        });
+
 
         // handle the select all function
         jq('#selectAll_${ id }').click(function() {
            if(jq(this).attr('checked')) {
                jq('.checkbox_${ id }').attr('checked', true);
+               jq('#multiSelectCheckboxTable_${ id } > tbody > tr').addClass('highlighted');
            }
            else {
                jq('.checkbox_${ id }').attr('checked', false);
+               jq('#multiSelectCheckboxTable_${ id } > tbody > tr').removeClass('highlighted');
            }
         });
     });
