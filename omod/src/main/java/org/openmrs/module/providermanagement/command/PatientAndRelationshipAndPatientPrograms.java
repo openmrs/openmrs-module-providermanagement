@@ -15,10 +15,14 @@
 package org.openmrs.module.providermanagement.command;
 
 import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
 import org.openmrs.Relationship;
 
+import java.util.Iterator;
+import java.util.List;
+
 // command object for adding a patient and a relationship to the model as a unit
-public class PatientAndRelationship {
+public class PatientAndRelationshipAndPatientPrograms {
 
     private Integer id;
 
@@ -26,14 +30,42 @@ public class PatientAndRelationship {
 
     private Relationship relationship;
 
-    public PatientAndRelationship() {
+    private List<PatientProgram> patientPrograms;
+
+    public PatientAndRelationshipAndPatientPrograms() {
     }
 
-    public PatientAndRelationship(Patient patient, Relationship relationship) {
+    public PatientAndRelationshipAndPatientPrograms(Patient patient, Relationship relationship, List<PatientProgram> patientPrograms) {
         this.patient = patient;
         this.relationship = relationship;
+        this.patientPrograms = patientPrograms;
         this.id = relationship.getId();
     }
+
+    /**
+     * Convenient method that providers a string list of all patient programs for display in UI
+     *
+     * @return
+     */
+    public String getPatientProgramNames() {
+        StringBuffer buffer = new StringBuffer();
+
+        Iterator<PatientProgram> i = patientPrograms.iterator();
+
+        while (i.hasNext()) {
+            buffer.append(i.next().getProgram().getName());
+            if (i.hasNext()) {
+                buffer.append(", ");
+            }
+        }
+
+        return buffer.toString();
+    }
+
+    /**
+     * Getters and Setters
+     * @return
+     */
 
     public Integer getId() {
         return id;
@@ -59,4 +91,12 @@ public class PatientAndRelationship {
         this.relationship = relationship;
     }
 
+    public List<PatientProgram> getPatientPrograms() {
+        return patientPrograms;
+    }
+
+    public void setPatientPrograms(List<PatientProgram> patientPrograms) {
+        this.patientPrograms = patientPrograms;
+    }
 }
+

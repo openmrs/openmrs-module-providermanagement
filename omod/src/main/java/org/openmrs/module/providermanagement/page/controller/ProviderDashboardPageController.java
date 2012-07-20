@@ -15,6 +15,7 @@
 package org.openmrs.module.providermanagement.page.controller;
 
 import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
@@ -26,7 +27,7 @@ import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
-import org.openmrs.module.providermanagement.command.PatientAndRelationship;
+import org.openmrs.module.providermanagement.command.PatientAndRelationshipAndPatientPrograms;
 import org.openmrs.module.providermanagement.command.ProviderAndRelationship;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
@@ -64,7 +65,7 @@ public class ProviderDashboardPageController {
         // if the provider has the appropriate privilege, add the patients of the provider
         if (Context.hasPrivilege(ProviderManagementConstants.PROVIDER_MANAGEMENT_DASHBOARD_VIEW_PATIENTS_PRIVILEGE)) {
             // add the patients of this provider, grouped by relationship type
-            Map<RelationshipType, Map<String,List<PatientAndRelationship>>> patientMap = new HashMap<RelationshipType,Map<String, List<PatientAndRelationship>>>();
+            Map<RelationshipType, Map<String,List<PatientAndRelationshipAndPatientPrograms>>> patientMap = new HashMap<RelationshipType,Map<String, List<PatientAndRelationshipAndPatientPrograms>>>();
 
 
 
@@ -72,20 +73,23 @@ public class ProviderDashboardPageController {
                 for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
 
                     if (!relationshipType.isRetired()) {
-                        patientMap.put(relationshipType, new HashMap<String,List<PatientAndRelationship>>());
-                        patientMap.get(relationshipType).put("currentPatients", new ArrayList<PatientAndRelationship>());
-                        patientMap.get(relationshipType).put("historicalPatients", new ArrayList<PatientAndRelationship>());
+                        patientMap.put(relationshipType, new HashMap<String,List<PatientAndRelationshipAndPatientPrograms>>());
+                        patientMap.get(relationshipType).put("currentPatients", new ArrayList<PatientAndRelationshipAndPatientPrograms>());
+                        patientMap.get(relationshipType).put("historicalPatients", new ArrayList<PatientAndRelationshipAndPatientPrograms>());
 
 
                         for (Relationship relationship : pmService.getPatientRelationshipsForProvider(person, relationshipType, null)) {
 
                             Patient patient = Context.getPatientService().getPatient(relationship.getPersonB().getId());
 
+                            // gets all programs for the patient
+                            List<PatientProgram> programs = Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, null, null, null, false);
+
                             if (ProviderManagementUtils.isRelationshipActive(relationship)) {
-                                patientMap.get(relationshipType).get("currentPatients").add(new PatientAndRelationship(patient, relationship));
+                                patientMap.get(relationshipType).get("currentPatients").add(new PatientAndRelationshipAndPatientPrograms(patient, relationship, programs));
                             }
                             else {
-                                patientMap.get(relationshipType).get("historicalPatients").add(new PatientAndRelationship(patient, relationship));
+                                patientMap.get(relationshipType).get("historicalPatients").add(new PatientAndRelationshipAndPatientPrograms(patient, relationship, programs));
                             }
 
                         }
