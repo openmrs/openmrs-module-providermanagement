@@ -7,6 +7,28 @@
 
 <script>
     jq(function() {
+
+        var toggleDisableOnMultiSelectButtons = function () {
+
+            if(jq('.checkbox_${ id }:checked').length > 1) {
+                // set up the action buttons we want to disable
+                <% config.actionButtons.each  {
+                    if (it.disableOnMultiSelect) { %>
+                        jq('#${ it.id }').hide();
+                <%  }
+                 } %>
+            }
+            else {
+                // set up the action buttons we want to enable
+                <% config.actionButtons.each  {
+                    if (it.disableOnMultiSelect) { %>
+                        jq('#${ it.id }').show();
+                <%  }
+                } %>
+            }
+
+        }
+
         // configure highlighting
         jq('#multiSelectCheckboxTable_${ id } > tbody > tr').mouseover(function() {
             jq(this).addClass('highlighted');
@@ -16,15 +38,19 @@
                 jq(this).removeClass('highlighted');
             }
         });
+
+        // configure what happens when a checkbox is checked
         jq('.checkbox_${ id }').click(function () {
+            // handle highlighting
             if (jq(this).attr('checked')) {
                 jq(this).closest('tr').addClass('highlighted');
             }
             else {
                 jq(this).closest('tr').removeClass('highlighted');
             }
+            // toggle any buttons as needed
+            toggleDisableOnMultiSelectButtons();
         });
-
 
         // handle the select all function
         jq('#selectAll_${ id }').click(function() {
@@ -37,6 +63,8 @@
                jq('#multiSelectCheckboxTable_${ id } > tbody > tr').removeClass('highlighted');
            }
         });
+
+
     });
 </script>
 
