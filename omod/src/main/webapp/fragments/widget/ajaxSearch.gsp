@@ -126,17 +126,11 @@
                     <% if (config.retiredToggle) { %>
                         <input id="includeRetired_${id}" type="checkbox"/> ${ ui.message("providermanagement.includeRetired") }
                     <% } %>
+                    <% if (config.actionButtons) { %>
+                        ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
+                    <% } %>
                 </td>
             </tr>
-
-            <% if (config.actionButtons) { %>
-            <tr>
-                <td colspan="${ config.resultFields.size() }">
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
-                </td>
-            </tr>
-            <% } %>
-
         </thead>
 
         <tbody>

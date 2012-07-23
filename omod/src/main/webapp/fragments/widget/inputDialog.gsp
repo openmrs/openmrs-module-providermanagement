@@ -34,22 +34,17 @@
         </thead>
 
         <tbody>
-
-            <% config.formFields.each { %>
-                <tr>
-                    <td>
+            <tr>
+                <td>
+                    <% config.formFields.each { %>
                         ${ it.label }: ${ ui.includeFragment("widget/field", [ class: it.class, formFieldName: it.name + "_" +  id, initialValue: it.initialValue ]) }
-                    </td>
-                </tr>
-            <% } %>
+                    <% } %>
 
-            <% if (config.actionButtons) { %>
-                <tr>
-                    <td>
+                    <% if (config.actionButtons) { %>
                         ${ ui.includeFragment("widget/actionButtons", [ actionButtons: config.actionButtons ]) }
-                    </td>
-                </tr>
-            <% } %>
+                    <% } %>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
