@@ -32,8 +32,13 @@
             jq('.voidHistorical').hide();
 
             // clear out any existing search values
+            jq('.searchValue').val('');
             jq('.searchField').val('');
             jq('.searchTable > tbody > tr').remove();
+
+            // hide add & transfer submit buttons
+            jq('.confirmAddButton').hide();
+            jq('.confirmTransferButton').hide();
 
         }
 
@@ -288,14 +293,18 @@
                                 searchParams: [ providerRoles: [ provider.providerRole?.id ], excludeProvider: person.id ],
                                 resultFields: providerSearchDisplayFields.values(),
                                 resultFieldLabels: providerSearchDisplayFields.keySet(),
-                                selectAction: ui.actionLink('providerEdit', 'transferPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
-                                selectIdParam: "newProvider",
-                                selectParams: [ oldProvider: person.id, relationshipType: it.key.id],
-                                selectForm: "multiSelectCheckboxForm_" + it.key.uuid,
+                                selectDisplayFields: ["personName.givenName","personName.middleName","personName.familyName"],
+                                submitAction: ui.actionLink('providerEdit', 'transferPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                submitIdParam: "newProvider",
+                                submitButtonId: "confirmTransferButton_${ it.key.uuid }",
+                                cancelButtonId: "addTransferButton_${ it.key.uuid }",
+                                submitParams: [ oldProvider: person.id, relationshipType: it.key.id],
+                                submitForm: "multiSelectCheckboxForm_" + it.key.uuid,
                                 showDateField: true,
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
-                                actionButtons: [[label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "cancelButton"]]
+                                actionButtons: [[label: ui.message("general.submit"), id: "confirmTransferButton_${ it.key.uuid }", class: "confirmTransferButton"],
+                                                [label: ui.message("general.cancel"), id: "transferCancelButton_${ superviseesId }", class: "cancelButton"]]
                         ])  %>
                     </div>
 
@@ -305,13 +314,17 @@
                                 searchParams: [excludePatientsOf: person.id, existingRelationshipTypeToExclude: it.key.id ],
                                 resultFields: patientSearchDisplayFields.values(),
                                 resultFieldLabels: patientSearchDisplayFields.keySet(),
-                                selectAction: ui.actionLink('providerEdit', 'addPatient', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
-                                selectIdParam: "patient",
-                                selectParams: [ provider: person.id, relationshipType: it.key.id],
+                                selectDisplayFields: ["personName.givenName","personName.middleName","personName.familyName"],
+                                submitAction: ui.actionLink('providerEdit', 'addPatient', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                submitIdParam: "patient",
+                                submitButtonId: "confirmAddButton_${ it.key.uuid }",
+                                cancelButtonId: "addCancelButton_${ it.key.uuid }",
+                                submitParams: [ provider: person.id, relationshipType: it.key.id],
                                 showDateField: true,
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
-                                actionButtons: [[label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "cancelButton"]]
+                                actionButtons: [[ label: ui.message("general.submit"), id: "confirmAddButton_${ it.key.uuid }", class: "confirmAddButton"],
+                                                [ label: ui.message("general.cancel"), id: "addCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
                     </div>
 
