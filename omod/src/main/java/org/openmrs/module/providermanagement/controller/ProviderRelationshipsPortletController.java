@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
+// TODO: note that this portlet is currently not in use, see https://tickets.openmrs.org/browse/PROV-24
+
 public class ProviderRelationshipsPortletController extends PortletController {
 
     protected void populateModel(HttpServletRequest request, Map<String, Object> model) {

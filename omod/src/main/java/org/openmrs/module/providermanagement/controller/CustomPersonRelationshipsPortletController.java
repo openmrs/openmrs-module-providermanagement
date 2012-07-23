@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+// TODO: note that this portlet is currently not in use, see https://tickets.openmrs.org/browse/PROV-24
+
 /**
  * Overrides the standard relationship portlet controller so that the relationships
  * managed by the provider management module are not shown within this portlet
