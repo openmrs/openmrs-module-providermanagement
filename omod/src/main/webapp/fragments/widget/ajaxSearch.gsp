@@ -1,7 +1,7 @@
-
 <%  ui.includeCss("providermanagement", "widget/ajaxSearch.css")
     def id = config.id ?: ui.randomId()
     def selectIdParam = config.selectIdParam ?: 'id'
+    def minSearchCharacters = context.getAdministrationService().getGlobalProperty("minSearchCharacters") ?: 3
 
     def today = new Date()
     today.clearTime()
@@ -22,7 +22,7 @@
 
             jq('#searchValue_${ id }').val('');
 
-            if (jq('#searchField_${ id }').val()) {
+            if (jq('#searchField_${ id }').val() && jq('#searchField_${ id }').val().length >= ${ minSearchCharacters }) {
                 jq.getJSON('${ config.searchAction }',
                         { 'returnFormat': 'json',
                             'searchValue': jq('#searchField_${ id }').val(),

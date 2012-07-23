@@ -41,11 +41,6 @@ public class ProviderSearchFragmentController {
                                           UiUtils ui)
                 throws PersonIsNotProviderException {
 
-        // NOTE that by default we return an empty list if the searchValue size < 2
-        if (searchValue == null || searchValue.length() < 3) {
-            return new ArrayList<SimpleObject>();
-        }
-
         if (resultFields == null || resultFields.length == 0) {
             resultFields = new String[] {"personName"};
         }
