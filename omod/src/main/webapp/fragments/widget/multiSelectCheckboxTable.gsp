@@ -8,7 +8,10 @@
 <script>
     jq(function() {
 
-        var toggleDisableOnMultiSelectButtons = function () {
+        // checks how many checkboxes are currently checked
+        // if more than one are checked, disable any buttons flagged as "disableOnMultiSelect"
+        // and hide any objects passed to the hideOnMultiSelect parameter
+        var handleMultiSelect = function () {
 
             if(jq('.checkbox_${ id }:checked').length > 1) {
                 // set up the action buttons we want to disable
@@ -17,6 +20,12 @@
                         jq('#${ it.id }').hide();
                 <%  }
                  } %>
+
+                // hide any objects passed to the hideOnMultiSelect parameter
+                <% config.hideOnMultiSelect.each { %>
+                    jq('#${ it }').hide();
+                <% } %>
+
             }
             else {
                 // set up the action buttons we want to enable
@@ -48,8 +57,8 @@
             else {
                 jq(this).closest('tr').removeClass('highlighted');
             }
-            // toggle any buttons as needed
-            toggleDisableOnMultiSelectButtons();
+            // toggle any buttons and hide any divs as needed
+            handleMultiSelect();
         });
 
         // handle the select all function
@@ -62,6 +71,8 @@
                jq('.checkbox_${ id }').attr('checked', false);
                jq('#multiSelectCheckboxTable_${ id } > tbody > tr').removeClass('highlighted');
            }
+            // toggle any buttons and hide any divs as needed
+            handleMultiSelect();
         });
 
 

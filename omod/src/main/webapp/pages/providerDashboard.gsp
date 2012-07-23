@@ -271,6 +271,7 @@
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             emptyMessage: ui.message("providermanagement.none"),
                             footer: it.value.currentPatients.size + " " + (it.value.currentPatients.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
+                            hideOnMultiSelect: ["edit_${ it.key.uuid }"],
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("general.edit"), id: "editButton_${ it.key.uuid }", class: "editButton", type: "button", disableOnMultiSelect: true],
@@ -361,6 +362,7 @@
                             formFieldName: "patientRelationships",
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             emptyMessage: ui.message("providermanagement.none"),
+                            hideOnMultiSelect: ["editHistorical_${ it.key.uuid }"],
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                 [ [label: ui.message("general.edit"), id: "editHistoricalButton_${ it.key.uuid }", class: "editHistoricalButton", type: "button", disableOnMultiSelect: true],
                                   [label: ui.message("general.void"), id: "voidHistoricalButton_${ it.key.uuid }", class: "voidHistoricalButton", type: "button"]] : [])
