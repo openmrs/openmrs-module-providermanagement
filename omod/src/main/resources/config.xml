@@ -133,10 +133,13 @@
     </globalProperty>
 
     <!--  Extension Points -->
+    <!-- we are not overridding the patient dashboard at this point -->
+    <!--
      <extension>
          <point>org.openmrs.patientDashboard.overviewBox</point>
          <class>org.openmrs.module.providermanagement.extension.html.PatientDashboardOverviewExt</class>
      </extension>
+    -->
 
     <!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->
