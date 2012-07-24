@@ -28,6 +28,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
+import org.openmrs.module.providermanagement.ProviderManagementUtils;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
@@ -242,229 +243,6 @@ public class ProviderEditFragmentController {
         return new ObjectResult(person.getId());
     }
 
-    public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
-                                              @RequestParam(value = "supervisee", required = true) Person supervisee,
-                                              @RequestParam(value = "date", required = false) Date date) {
-
-        try {
-
-            // if no date specified, add on the current date
-            if (date == null) {
-                date = new Date();
-            }
-
-            Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor, date);
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-
-    }
-
-    public FragmentActionResult addSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
-                                              @RequestParam(value = "supervisees", required = true) List<Person> supervisees) {
-
-        try {
-            for (Person supervisee : supervisees) {
-                Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
-            }
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-
-    }
-
-    public FragmentActionResult editSupervisees(@RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
-                                                @RequestParam(value = "startDate", required = true) Date startDate,
-                                                @RequestParam(value = "endDate", required = false) Date endDate) {
-
-        try {
-            for (Relationship superviseeRelationship : superviseeRelationships) {
-
-                superviseeRelationship.setStartDate(startDate);
-
-                if (endDate != null) {
-                    superviseeRelationship.setEndDate(endDate);
-                }
-
-                Context.getPersonService().saveRelationship(superviseeRelationship);
-            }
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-    }
-
-    public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
-                                                  @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
-                                                  @RequestParam(value = "date", required = false) Date date) {
-
-        try {
-            // if no date specified, remove on the current date
-            if (date == null) {
-                date = new Date();
-            }
-
-            for (Relationship relationship : superviseeRelationships) {
-                Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(relationship.getPersonB(), supervisor, date);
-            }
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-
-    }
-
-    public FragmentActionResult transferSupervisees(@RequestParam(value = "oldSupervisor", required = true) Person oldSupervisor,
-                                                    @RequestParam(value = "newSupervisor", required = true) Person newSupervisor,
-                                                    @RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
-                                                    @RequestParam(value = "date", required = false) Date date) {
-
-        try {
-            // if no date specified, transfer on the current date
-            if (date == null) {
-                date = new Date();
-            }
-
-            List<Person> supervisees = new ArrayList<Person>();
-
-            for (Relationship relationship : superviseeRelationships) {
-                supervisees.add(relationship.getPersonB());
-            }
-
-            Context.getService(ProviderManagementService.class).transferSupervisees(supervisees, oldSupervisor, newSupervisor);
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-
-    }
-
-    public FragmentActionResult voidSupervisees(@RequestParam(value = "superviseeRelationships", required = true) List<Relationship> superviseeRelationships,
-                                             @RequestParam(value = "voidReason", required = true) String voidReason) {
-
-        try {
-            for (Relationship superviseeRelationship : superviseeRelationships) {
-                Context.getPersonService().voidRelationship(superviseeRelationship, voidReason);
-            }
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-    }
-
-    public FragmentActionResult addPatient(@RequestParam(value = "provider", required = true) Person provider,
-                                           @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                           @RequestParam(value = "patient", required = true) Patient patient,
-                                           @RequestParam(value = "date", required = false) Date date) {
-
-        try {
-            // if no date specified, add on the current date
-            if (date == null) {
-                date = new Date();
-            }
-
-            Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType, date);
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-    }
-
-    public FragmentActionResult editPatients(@RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
-                                             @RequestParam(value = "startDate", required = true) Date startDate,
-                                             @RequestParam(value = "endDate", required = false) Date endDate) {
-
-        try {
-            for (Relationship patientRelationship : patientRelationships) {
-
-                patientRelationship.setStartDate(startDate);
-
-                if (endDate != null) {
-                    patientRelationship.setEndDate(endDate);
-                }
-
-                Context.getPersonService().saveRelationship(patientRelationship);
-            }
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-    }
-
-    public FragmentActionResult removePatients(@RequestParam(value = "provider", required = true) Person provider,
-                                                @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                                @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
-                                                @RequestParam(value = "date", required = false) Date date) {
-
-
-        try {
-            // if no date specified, add on the current date
-            if (date == null) {
-                date = new Date();
-            }
-
-            for (Relationship patientRelationship : patientRelationships) {
-                Patient patient = Context.getPatientService().getPatient(patientRelationship.getPersonB().getId());
-                Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType, date);
-            }
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-    }
-
-    public FragmentActionResult transferPatients(@RequestParam(value = "oldProvider", required = true) Person oldProvider,
-                                                 @RequestParam(value = "newProvider", required = true) Person newProvider,
-                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
-                                                 @RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
-                                                 @RequestParam(value = "date", required = false) Date date) {
-
-        try {
-            // if no date specified, transfer on the current date
-            if (date == null) {
-                date = new Date();
-            }
-
-            List<Patient> patients = new ArrayList<Patient>();
-
-            for (Relationship patientRelationship : patientRelationships) {
-                patients.add(Context.getPatientService().getPatient(patientRelationship.getPersonB().getId()));
-            }
-
-            Context.getService(ProviderManagementService.class).transferPatients(patients,oldProvider, newProvider, relationshipType, date);
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-
-    }
-
-    public FragmentActionResult voidPatients(@RequestParam(value = "patientRelationships", required = true) List<Relationship> patientRelationships,
-                                              @RequestParam(value = "voidReason", required = true) String voidReason) {
-
-        try {
-            for (Relationship patientRelationship : patientRelationships) {
-                Context.getPersonService().voidRelationship(patientRelationship, voidReason);
-            }
-            return new SuccessResult();
-        }
-        catch (Exception e) {
-            return new FailureResult(e.getLocalizedMessage());
-        }
-    }
-
     public FragmentActionResult retireProvider(@RequestParam(value = "provider", required = true) Person provider) {
 
         try {
@@ -483,6 +261,325 @@ public class ProviderEditFragmentController {
         }
 
         return new SuccessResult();
+    }
+
+    public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
+                                              @RequestParam(value = "supervisee", required = false) Person supervisee,
+                                              @RequestParam(value = "date", required = false) Date date) {
+
+        // validate input
+        if (supervisee == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisee.required"));
+        }
+        else if (date == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.notInFuture"));
+        }
+
+        // if validation passes, try to assign the supervisee to the supervisor
+        try {
+            Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor, date);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
+    public FragmentActionResult addSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
+                                              @RequestParam(value = "supervisees", required = false) List<Person> supervisees) {
+
+        // validate input
+        if (supervisees == null || supervisees.size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
+        }
+
+        // if validation passed, try to assign the supervisees to the supervisor
+        try {
+            for (Person supervisee : supervisees) {
+                Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
+    public FragmentActionResult editSupervisees(@RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
+                                                @RequestParam(value = "startDate", required = false) Date startDate,
+                                                @RequestParam(value = "endDate", required = false) Date endDate) {
+
+        // validate input
+        if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisee.required"));
+        }
+        else if (startDate == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(startDate).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.notInFuture"));
+        }
+        else if (endDate != null && ProviderManagementUtils.clearTimeComponent(endDate).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.notInFuture"));
+        }
+        else if (endDate != null && startDate.after(endDate)) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDateAfterEndDate"));
+        }
+
+        // try to update the start and end date on all the selected relationships
+        try {
+            for (Relationship superviseeRelationship : superviseeRelationships) {
+                superviseeRelationship.setStartDate(startDate);
+                superviseeRelationship.setEndDate(endDate);
+                Context.getPersonService().saveRelationship(superviseeRelationship);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
+    public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
+                                                  @RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
+                                                  @RequestParam(value = "date", required = false) Date date) {
+
+        // validate input
+        if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
+        }
+        else if (date == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.notInFuture"));
+        }
+
+        // attempt to unassign each supervisee from supervisor
+        try {
+            for (Relationship relationship : superviseeRelationships) {
+                Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(relationship.getPersonB(), supervisor, date);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
+    public FragmentActionResult transferSupervisees(@RequestParam(value = "oldSupervisor", required = true) Person oldSupervisor,
+                                                    @RequestParam(value = "newSupervisor", required = false) Person newSupervisor,
+                                                    @RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
+                                                    @RequestParam(value = "date", required = false) Date date) {
+
+        // validate input
+        if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
+        }
+        else if (newSupervisor == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.newSupervisor.required"));
+        }
+        else if (date == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.transferDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.transferDate.notInFuture"));
+        }
+
+        // attempt to transfer all the supervisees
+        try {
+            List<Person> supervisees = new ArrayList<Person>();
+
+            for (Relationship relationship : superviseeRelationships) {
+                supervisees.add(relationship.getPersonB());
+            }
+
+            Context.getService(ProviderManagementService.class).transferSupervisees(supervisees, oldSupervisor, newSupervisor);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
+    public FragmentActionResult voidSupervisees(@RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
+                                             @RequestParam(value = "voidReason", required = false) String voidReason) {
+
+        // validate input
+        if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
+        }
+        else if (StringUtils.isBlank(voidReason)) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.voidReason.required"));
+        }
+
+        // attempt to void all the supervisee relationships
+        try {
+            for (Relationship superviseeRelationship : superviseeRelationships) {
+                Context.getPersonService().voidRelationship(superviseeRelationship, voidReason);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
+    public FragmentActionResult addPatient(@RequestParam(value = "provider", required = true) Person provider,
+                                           @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
+                                           @RequestParam(value = "patient", required = false) Patient patient,
+                                           @RequestParam(value = "date", required = false) Date date) {
+
+        // validate input
+        if (patient == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patient.required"));
+        }
+        else if (date == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.notInFuture"));
+        }
+
+        // attempt to assign the patient to the provider
+        try {
+            Context.getService(ProviderManagementService.class).assignPatientToProvider(patient, provider, relationshipType, date);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
+    public FragmentActionResult editPatients(@RequestParam(value = "patientRelationships", required = false) List<Relationship> patientRelationships,
+                                             @RequestParam(value = "startDate", required = false) Date startDate,
+                                             @RequestParam(value = "endDate", required = false) Date endDate) {
+
+        // check for required fields
+        if (patientRelationships == null || patientRelationships.size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patient.required"));
+        }
+        else if (startDate == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(startDate).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDate.notInFuture"));
+        }
+        else if (endDate != null && ProviderManagementUtils.clearTimeComponent(endDate).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.notInFuture"));
+        }
+        else if (endDate != null && startDate.after(endDate)) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.startDateAfterEndDate"));
+        }
+
+        // otherwise, try to update the start and end dates for the patient
+        try {
+            for (Relationship patientRelationship : patientRelationships) {
+                patientRelationship.setStartDate(startDate);
+                patientRelationship.setEndDate(endDate);
+                Context.getPersonService().saveRelationship(patientRelationship);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
+    public FragmentActionResult removePatients(@RequestParam(value = "provider", required = true) Person provider,
+                                                @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
+                                                @RequestParam(value = "patientRelationships", required = false) List<Relationship> patientRelationships,
+                                                @RequestParam(value = "date", required = false) Date date) {
+
+        // validate input
+        if (patientRelationships == null || patientRelationships.size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patients.required"));
+        }
+        else if (date == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.notInFuture"));
+        }
+
+        // try to unassign all the patients from the provider
+        try {
+            for (Relationship patientRelationship : patientRelationships) {
+                Patient patient = Context.getPatientService().getPatient(patientRelationship.getPersonB().getId());
+                Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType, date);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
+    public FragmentActionResult transferPatients(@RequestParam(value = "oldProvider", required = true) Person oldProvider,
+                                                 @RequestParam(value = "newProvider", required = false) Person newProvider,
+                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
+                                                 @RequestParam(value = "patientRelationships", required = false) List<Relationship> patientRelationships,
+                                                 @RequestParam(value = "date", required = false) Date date) {
+
+        // validate input
+        if (patientRelationships == null || patientRelationships.size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patients.required"));
+        }
+        else if (newProvider == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.newProvider.required"));
+        }
+        else if (date == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.transferDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.transferDate.notInFuture"));
+        }
+
+        // attempt to transfer all the patients
+        try {
+            List<Patient> patients = new ArrayList<Patient>();
+
+            for (Relationship patientRelationship : patientRelationships) {
+                patients.add(Context.getPatientService().getPatient(patientRelationship.getPersonB().getId()));
+            }
+
+            Context.getService(ProviderManagementService.class).transferPatients(patients,oldProvider, newProvider, relationshipType, date);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
+    public FragmentActionResult voidPatients(@RequestParam(value = "patientRelationships", required = false) List<Relationship> patientRelationships,
+                                              @RequestParam(value = "voidReason", required = false) String voidReason) {
+
+        // validate input
+        if (patientRelationships == null || patientRelationships.size() == 0) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patients.required"));
+        }
+        else if (StringUtils.isBlank(voidReason)) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.voidReason.required"));
+        }
+
+        // attempt to void all the patient relationships
+        try {
+            for (Relationship patientRelationship : patientRelationships) {
+                Context.getPersonService().voidRelationship(patientRelationship, voidReason);
+            }
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
     }
 }
 

@@ -10,12 +10,12 @@
 
             window.location = '${ config.submitAction }' + ${ config.submitAction.contains('?') ? '' : '\'?\' + ' }
                     <% if (config.submitParams) { %>
-                    '&<%= config.submitParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
+                        '&<%= config.submitParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
                     <% } %>
                     <% if (config.submitForm) { %>
-                    '&' + jq('#${ config.submitForm }').serialize() +
+                        '&' + jq('#${ config.submitForm }').serialize() +
                     <% } %>
-                    <% config.formFields.each { %>
+                    <% config.fields.each { %>
                         '&${ it.name }=' + jq('[name="${ it.name }_${ id }"]').val() +
                     <% } %>
                     '';
@@ -36,7 +36,7 @@
         <tbody>
             <tr>
                 <td>
-                    <% config.formFields.each { %>
+                    <% config.fields.each { %>
                         ${ it.label }: ${ ui.includeFragment("widget/field", [ class: it.class, formFieldName: it.name + "_" +  id, initialValue: it.initialValue ]) }
                     <% } %>
 

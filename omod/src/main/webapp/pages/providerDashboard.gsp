@@ -9,7 +9,6 @@
     def superviseesId = "83814a90-9f89-11e1-a8b0-0800200c9a66"
     def supervisorsId = "a4ce1250-9f89-11e1-a8b0-0800200c9a66"
 
-
    def today = new Date()
    today.clearTime()
 
@@ -330,10 +329,11 @@
 
                     <div id="edit_${ it.key.uuid }" class="edit">
                         <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDatePatients"),
-                                submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid])]),
+                                submitParams: [ paneId: it.key.uuid ],
                                 submitButtonId: "updateButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                formFields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")] ],
+                                fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")] ],
                                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton", type: "button"],
                                                 [label: ui.message("general.cancel"), id: "editCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
@@ -345,7 +345,7 @@
                                   submitParams: [ provider: person.id, relationshipType: it.key.id ],
                                   submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
                                   submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                  formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
+                                  fields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
                                   actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ it.key.uuid }", class: "confirmRemoveButton"],
                                                   [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
@@ -357,7 +357,7 @@
                                 submitParams: [ provider: person.id ],
                                 submitButtonId: "confirmVoidButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
                                 actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ it.key.uuid }", class: "confirmVoidButton", type: "button"],
                                         [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
@@ -388,7 +388,7 @@
                                 submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitButtonId: "updateHistoricalButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_historical_${ it.key.uuid }",
-                                formFields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")],
+                                fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")],
                                               [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate")]  ],
                                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ it.key.uuid }", class: "updateHistoricalButton", type: "button"],
                                                  [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ it.key.uuid }", class: "cancelButton",type: "button"]]
@@ -401,7 +401,7 @@
                                 submitParams: [ provider: person.id ],
                                 submitButtonId: "confirmHistoricalVoidButton_${ it.key.uuid }",
                                 submitForm: "multiSelectCheckboxForm_historical_${ it.key.uuid }",
-                                formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
                                 actionButtons: [[label: ui.message("general.void"), id: "confirmHistoricalVoidButton_${ it.key.uuid }", class: "confirmHistoricalVoidButton", type: "button"],
                                         [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
@@ -494,7 +494,7 @@
                 submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                 submitButtonId: "updateButton_${ superviseesId }",
                 submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                formFields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
+                fields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ superviseesId }", class: "updateButton"],
                         [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
         ])  %>
@@ -506,7 +506,7 @@
                 submitParams: [ supervisor: person.id ],
                 submitButtonId: "confirmRemoveButton_${ superviseesId }",
                 submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                formFields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
+                fields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
                 actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ superviseesId }", class: "confirmRemoveButton"],
                         [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
         ])  %>
@@ -518,7 +518,7 @@
                 submitParams: [ supervisor: person.id ],
                 submitButtonId: "confirmVoidButton_${ superviseesId }",
                 submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
                 actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ superviseesId }", class: "confirmVoidButton"],
                         [label: ui.message("general.cancel"), id: "voidCancelButton_${ superviseesId }", class: "cancelButton"]]
         ])  %>
@@ -568,7 +568,7 @@
                         submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         submitButtonId: "updateHistoricalButton_${ superviseesId }",
                         submitForm: "multiSelectCheckboxForm_historical_${ superviseesId }",
-                        formFields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")],
+                        fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")],
                                 [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate")]  ],
                         actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ superviseesId }", class: "updateHistoricalButton", type: "button"],
                                 [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ superviseesId }", class: "cancelButton",type: "button"]]
@@ -581,7 +581,7 @@
                         submitParams: [ provider: person.id ],
                         submitButtonId: "confirmHistoricalVoidButton_${ superviseesId }",
                         submitForm: "multiSelectCheckboxForm_historical_${ superviseesId }",
-                        formFields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                        fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
                         actionButtons: [[label: ui.message("general.void"), id: "confirmHistoricalVoidButton_${ superviseesId }", class: "confirmHistoricalVoidButton", type: "button"],
                                 [label: ui.message("general.cancel"), id: "voidCancelButton_${ superviseesId }", class: "cancelButton", type: "button"]]
                 ])  %>
