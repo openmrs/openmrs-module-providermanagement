@@ -98,7 +98,9 @@
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
                 <td>${ ui.includeFragment("widget/field", [ class: java.util.Date,
                         formFieldName: "birthdate",
-                        initialValue: person?.birthdate ]) }
+                        initialValue: person?.birthdate, maxDate: "+0d" ]) }
+                    ${ ui.message('Person.birthdateEstimated') }:
+                    <input name="birthdateEstimated" type="checkbox" ${ person?.birthdateEstimated ? ' checked' : '' }/>
                 </td>
             </tr>
 

@@ -32,7 +32,7 @@
 
         <tr>
             <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
-            <td>${ ui.format(person.birthdate) }</td>
+            <td>${ ui.format(person.birthdate) } ${ person.birthdateEstimated ? '(' + ui.message('Person.birthdateEstimated') + ')' : ''}</td>
         </tr>
 
         <!-- display person attribute types: assumption is only one attribute per person per type -->
