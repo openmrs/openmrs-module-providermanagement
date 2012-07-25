@@ -113,8 +113,8 @@
              </tr>
             <% } %>
 
-            <!-- TODO: NOTE THAT, FOR NOW, THIS ONLY ALLOWS ONE ATTRIBUTE OF EACH TYPE -->
-            <!-- TODO: NOTE THAT RIGHT NOW THIS ONLY WORKS FOR STRINGS! -->
+            <!-- TODO: NOTE THAT, FOR NOW, THIS ONLY ALLOWS ONE ATTRIBUTE OF EACH TYPE (see PROV-11) -->
+            <!-- TODO: NOTE THAT RIGHT NOW THIS ONLY WORKS FOR STRINGS (see PROV-10) -->
             <% provider?.providerRole?.providerAttributeTypes?.each { if (!it.retired) { %>
             <tr>
                 <td><span class="label">${ it.name }:</span></td>

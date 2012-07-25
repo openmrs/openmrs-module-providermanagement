@@ -156,7 +156,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         }
 
         // handle querying by person attribute if an attribute has been specified
-        // TODO: create functionality to allow searching against multiple attributes (see Hibernate ticket https://hibernate.onjira.com/browse/HHH-879 for why this will take a little work)
+        // TODO: create functionality to allow searching against multiple attributes(see PROV-11) (see Hibernate ticket https://hibernate.onjira.com/browse/HHH-879 for why this will take a little work)
         if (personAttribute != null && StringUtils.isNotBlank(personAttribute.getValue())) {
             criteria.createAlias("attributes", "attribute");
             criteria.add(Restrictions.and(Restrictions.eq("attribute.attributeType", personAttribute.getAttributeType()),

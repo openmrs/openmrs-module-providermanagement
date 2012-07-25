@@ -29,7 +29,8 @@ import java.util.List;
 
 public class PersonSearchFragmentController {
 
-    // TODO: are we still using this method?
+    // TODO: I believe this method (and therefore this controller) is no longer in use; it was originally used
+    // TODO: when be explicitly had the functionality for searching for a person to promote to a provider
 
     public List<SimpleObject> getPeople(@RequestParam(value="searchValue", required=true) String searchValue,
                                           @RequestParam(value="resultFields[]", required=true) String[] resultFields,
@@ -46,7 +47,6 @@ public class PersonSearchFragmentController {
         List<Person> people = Context.getPersonService().getPeople(searchValue, false);
 
         // exclude anyone who is already a provider
-
         Iterator<Person> i = people.iterator();
         while (i.hasNext()) {
             Person p = i.next();

@@ -29,8 +29,6 @@ import java.util.List;
 
 public class ProviderManagementUtils {
 
-    // TODO: update these comments
-
     /**
      * Returns true/false whether the relationship is active on the current date
      *

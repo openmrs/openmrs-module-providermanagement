@@ -422,14 +422,36 @@ public interface ProviderManagementService extends OpenmrsService {
 
     // TODO: we will probably need a "purge" option for purging relationships created by accident, (will need to be implemented when we take on PROV-1)
 
-    // TODO: comment this and unit test this!!!!
-    // TODO: in the comments, note that these only return non-voided relationships (which is what we want)
-    // TODO: unit test that it ignores voied relationships
+    // TODO: unit test these two methods (see PROV-51)
 
+    /**
+     * Returns the (non-voided) patient relationships for a specified provider on the specified date
+     *
+     * @param provider the provider
+     * @param relationshipType the relationshipType (if null, tests against all provider/patient relationship types--ie, relationship types associated wtih at least one provider role)
+     * @param date the date the relationship (if null, return all relationships of the given type regardless of date)
+     * @return
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     * @should fail if provider null
+     * @should fail if relationshipType is not a valid provider/patient relationship type
+     * @should return all patient relationships of the specified relationshipType if date is null
+     */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
+    /**
+     * Returns the (non-voided) patient relationships for a specified provider on the specified date
+     *
+     * @param provider the provider
+     * @param relationshipType the relationshipType (if null, tests against all provider/patient relationship types--ie, relationship types associated wtih at least one provider role)
+     * @return
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     * @should fail if provider null
+     * @should fail if relationshipType is not a valid provider/patient relationship type
+     */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;

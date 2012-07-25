@@ -3,7 +3,7 @@
 
 <% ui.includeCss("providermanagement", "patientProviderDashboard.css") %>
 
-<!--TODO: not currently complete -->
+<!--TODO: not currently complete (see PROV-3) -->
 
 <div id="providers">
 

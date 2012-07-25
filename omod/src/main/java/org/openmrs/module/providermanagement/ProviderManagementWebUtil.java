@@ -26,7 +26,7 @@ import java.util.List;
 
 public class ProviderManagementWebUtil {
 
-    // TODO: unit test web utility methods
+    // TODO: unit test web utility methods (see PROV-52)
 
     /**
      * Utility method that, given a model, a person param, and a person id, fetches a
@@ -88,8 +88,6 @@ public class ProviderManagementWebUtil {
 
         return providers.get(0);
     }
-
-    // TODO: we may not need this anymore?
 
     /**
      * Converts a list of persons to a SimpleObject with the specified result fields

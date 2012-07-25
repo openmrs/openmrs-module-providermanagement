@@ -61,7 +61,7 @@ import java.util.Set;
  */
 public class ProviderManagementServiceImpl extends BaseOpenmrsService implements ProviderManagementService {
 
-    // TODO: (???) add checks to make sure person is not voided automatically when appropriate (in the assignment classes?)
+    // TODO: (??? --not sure what this comment means anymore?) add checks to make sure person is not voided automatically when appropriate (in the assignment classes?)
 
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
@@ -791,7 +791,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             ProviderManagementUtils.filterNonProviderRelationships(relationships);
         }
 
-        // TODO: the one flaw here is that this counts voided patients (but hopefully any relationships for voided patients will also be voided)
+        // TODO: the one flaw here is that this counts relationships with voided patients (but hopefully any relationships for voided patients will also be voided)
         return relationships != null ? relationships.size() : 0;
     }
 

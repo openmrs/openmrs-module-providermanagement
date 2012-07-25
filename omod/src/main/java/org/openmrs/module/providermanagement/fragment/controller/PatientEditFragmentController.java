@@ -28,7 +28,7 @@ import java.util.List;
 
 public class PatientEditFragmentController {
 
-    // TODO: still a work-in-progress
+    // TODO: still a work-in-progress, and not in use (see PROV-3)
 
     public FragmentActionResult addProviders(@RequestParam(value = "patient", required = true) Patient patient,
                                                 @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
