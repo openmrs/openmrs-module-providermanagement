@@ -28,6 +28,31 @@
 <script>
     jq(function() {
 
+        var hideActionButtons = function () {
+            // hides all the action buttons
+            // (we use the visibility attribute because we don't want the containing row to collapse)
+            jq('.addButton').css('visibility','hidden');
+            jq('.editButton').css('visibility','hidden');
+            jq('.transferButton').css('visibility','hidden');
+            jq('.removeButton').css('visibility','hidden');
+            jq('.suggestButton').css('visibility','hidden');
+            jq('.voidButton').css('visibility','hidden');
+            jq('.editHistoricalButton').css('visibility','hidden');
+            jq('.voidHistoricalButton').css('visibility','hidden');
+        }
+
+        var showActionButtons = function () {
+            // hides all the action buttons
+            jq('.addButton').css('visibility','visible');
+            jq('.editButton').css('visibility','visible');
+            jq('.transferButton').css('visibility','visible');
+            jq('.removeButton').css('visibility','visible');
+            jq('.suggestButton').css('visibility','visible');
+            jq('.voidButton').css('visibility','visible');
+            jq('.editHistoricalButton').css('visibility','visible');
+            jq('.voidHistoricalButton').css('visibility','visible');
+        }
+
         var resetActionDialogs = function () {
 
             // hide the add, edit, suggest, transfer, remove, and void sections
@@ -77,6 +102,7 @@
             jq('.pane').hide();
 
             resetActionDialogs();
+            showActionButtons();
 
             // highlight selection and show the appropriate patient pane
             jq('#paneSelectTop_' + id).addClass('selected');
@@ -86,10 +112,10 @@
 
         // handles displaying the transfer divs
         jq('.transferButton').click(function() {
-
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate transfer div
@@ -101,28 +127,31 @@
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate add div
             jq('#add_' + id).show();
         });
 
-        // handles clicking on the add buttons
+        // handles clicking on the edit buttons
         jq('.editButton').click(function() {
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate add div
             jq('#edit_' + id).show();
         });
 
-        // handles clicking on the add buttons
+        // handles clicking on the edit historical buttons
         jq('.editHistoricalButton').click(function() {
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate add div
@@ -135,6 +164,7 @@
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate transfer div
@@ -146,6 +176,7 @@
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate transfer div
@@ -157,6 +188,7 @@
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate transfer div
@@ -169,6 +201,7 @@
             // first fetch the id of the pane we are dealing with
             var id = jq(this).attr('id').split("_")[1];
 
+            hideActionButtons();
             resetActionDialogs();
 
             // show the appropriate div
@@ -178,6 +211,7 @@
         // handles clicking cancel buttons
         jq('.cancelButton').click(function() {
             resetActionDialogs();
+            showActionButtons();
         });
 
         jq(document).ready(function(){
