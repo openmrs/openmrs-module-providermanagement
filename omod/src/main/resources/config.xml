@@ -190,6 +190,11 @@
     </privilege>
 
     <privilege>
+        <name>Provider Management Dashboard - View Historical</name>
+        <description>Allows access to viewing historical patient (if user has view patients right) and supervisee information on the provider management dashboard</description>
+    </privilege>
+
+    <privilege>
         <name>Provider Management - Admin</name>
         <description>Allows access to admin pages of the provider management module</description>
     </privilege>

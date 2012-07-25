@@ -409,7 +409,7 @@
 
                 <br/><br/>
 
-                <% if (it.value.historicalPatients) { %>
+                <% if (it.value.historicalPatients && context.hasPrivilege("Provider Management Dashboard - View Historical")) { %>
                     <div id="historicalList_${ it.key.uuid }" class="historicalList">
                         <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.historicalPatients.sort { item -> item.patient.personName?.toString() },
                                 id: "historical_${ it.key.uuid }",
@@ -586,7 +586,7 @@
 
     <br/><br/>
 
-        <% if (historicalSupervisees) { %>
+        <% if (historicalSupervisees && context.hasPrivilege("Provider Management Dashboard - View Historical")) { %>) { %>
             <div id="historicalList_${ superviseesId }" class="historicalList">
 
                 <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: historicalSupervisees.sort { item -> item.provider.person.personName?.toString() },
