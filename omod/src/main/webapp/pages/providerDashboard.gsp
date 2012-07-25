@@ -11,7 +11,6 @@
 
    def today = new Date()
    today.clearTime()
-
 %>
 
 
@@ -298,8 +297,8 @@
                                 submitButtonId: "confirmTransferButton_${ it.key.uuid }",
                                 cancelButtonId: "addTransferButton_${ it.key.uuid }",
                                 submitParams: [ oldProvider: person.id, relationshipType: it.key.id],
-                                submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                showDateField: true,
+                                submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
+                                fields: [ [name: "date", class: java.util.Date, label: ui.message("providermanagement.transferDate"), required: true, maxDate: "+0d", initialValue: today] ],
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[label: ui.message("general.submit"), id: "confirmTransferButton_${ it.key.uuid }", class: "confirmTransferButton"],
@@ -319,7 +318,7 @@
                                 submitButtonId: "confirmAddButton_${ it.key.uuid }",
                                 cancelButtonId: "addCancelButton_${ it.key.uuid }",
                                 submitParams: [ provider: person.id, relationshipType: it.key.id],
-                                showDateField: true,
+                                fields: [ [name: "date", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d", initialValue: today] ],
                                 dateLabel: ui.message("providermanagement.onDate"),
                                 emptyMessage: ui.message("providermanagement.noMatches"),
                                 actionButtons: [[ label: ui.message("general.submit"), id: "confirmAddButton_${ it.key.uuid }", class: "confirmAddButton"],
@@ -330,10 +329,9 @@
                     <div id="edit_${ it.key.uuid }" class="edit">
                         <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDatePatients"),
                                 submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid])]),
-                                submitParams: [ paneId: it.key.uuid ],
                                 submitButtonId: "updateButton_${ it.key.uuid }",
-                                submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")] ],
+                                submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patient.required")],
+                                fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"] ],
                                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton", type: "button"],
                                                 [label: ui.message("general.cancel"), id: "editCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
@@ -344,8 +342,8 @@
                                   submitAction: ui.actionLink('providerEdit', 'removePatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                   submitParams: [ provider: person.id, relationshipType: it.key.id ],
                                   submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
-                                  submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                  fields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
+                                  submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
+                                  fields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), required: true, maxDate: "+0d", initialValue: today] ],
                                   actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ it.key.uuid }", class: "confirmRemoveButton"],
                                                   [label: ui.message("general.cancel"), id: "removeCancelButton_${ it.key.uuid }", class: "cancelButton"]]
                         ])  %>
@@ -356,8 +354,8 @@
                                 submitAction: ui.actionLink('providerEdit', 'voidPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitParams: [ provider: person.id ],
                                 submitButtonId: "confirmVoidButton_${ it.key.uuid }",
-                                submitForm: "multiSelectCheckboxForm_${ it.key.uuid }",
-                                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                                submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
+                                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason"), required: true] ],
                                 actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ it.key.uuid }", class: "confirmVoidButton", type: "button"],
                                         [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
@@ -387,9 +385,9 @@
                         <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDatePatients"),
                                 submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitButtonId: "updateHistoricalButton_${ it.key.uuid }",
-                                submitForm: "multiSelectCheckboxForm_historical_${ it.key.uuid }",
-                                fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")],
-                                              [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate")]  ],
+                                submitForm: [name: "multiSelectCheckboxForm_historical_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
+                                fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"],
+                                              [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate"), required: false, maxDate: "+0d"]  ],
                                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ it.key.uuid }", class: "updateHistoricalButton", type: "button"],
                                                  [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ it.key.uuid }", class: "cancelButton",type: "button"]]
                         ])  %>
@@ -400,8 +398,8 @@
                                 submitAction: ui.actionLink('providerEdit', 'voidPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitParams: [ provider: person.id ],
                                 submitButtonId: "confirmHistoricalVoidButton_${ it.key.uuid }",
-                                submitForm: "multiSelectCheckboxForm_historical_${ it.key.uuid }",
-                                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                                submitForm: [name: "multiSelectCheckboxForm_historical_${ it.key.uuid }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
+                                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason"), required: true] ],
                                 actionButtons: [[label: ui.message("general.void"), id: "confirmHistoricalVoidButton_${ it.key.uuid }", class: "confirmHistoricalVoidButton", type: "button"],
                                         [label: ui.message("general.cancel"), id: "voidCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
@@ -459,9 +457,9 @@
                 submitAction: ui.actionLink('providerEdit', 'transferSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                 submitIdParam: "newSupervisor",
                 submitParams: [ oldSupervisor: person.id ],
-                submitForm: "multiSelectCheckboxForm_${ superviseesId }",
+                submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
                 submitButtonId: "confirmTransferButton_${ superviseesId }",
-                showDateField: true,
+                fields: [ [name: "date", class: java.util.Date, label: ui.message("providermanagement.transferDate"), required: true, maxDate: "+0d", initialValue: today] ],
                 dateLabel: ui.message("providermanagement.onDate"),
                 emptyMessage: ui.message("providermanagement.noMatches"),
                 actionButtons: [[label: ui.message("general.submit"), id: "confirmTransferButton_${ superviseesId }", class: "confirmTransferButton"],
@@ -481,7 +479,7 @@
                 submitIdParam: "supervisee",
                 submitParams: [ supervisor: person.id ],
                 submitButtonId: "confirmAddButton_${ superviseesId }",
-                showDateField: true,
+                fields: [ [name: "date", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d", initialValue: today] ],
                 dateLabel: ui.message("providermanagement.onDate"),
                 emptyMessage: ui.message("providermanagement.noMatches"),
                 actionButtons: [[label: ui.message("general.submit"), id: "confirmAddButton_${ superviseesId }", class: "confirmAddButton"],
@@ -493,8 +491,8 @@
         <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDateSupervisees"),
                 submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                 submitButtonId: "updateButton_${ superviseesId }",
-                submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                fields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate")] ],
+                submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisee.required")],
+                fields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"] ],
                 actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ superviseesId }", class: "updateButton"],
                         [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
         ])  %>
@@ -505,8 +503,8 @@
                 submitAction: ui.actionLink('providerEdit', 'removeSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                 submitParams: [ supervisor: person.id ],
                 submitButtonId: "confirmRemoveButton_${ superviseesId }",
-                submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                fields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), initialValue: today] ],
+                submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
+                fields: [ [name: "date", class: java.util.Date, label :ui.message("providermanagement.stopDate"), required: true, maxDate: "+0d", initialValue: today] ],
                 actionButtons: [[label: ui.message("general.remove"), id: "confirmRemoveButton_${ superviseesId }", class: "confirmRemoveButton"],
                         [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
         ])  %>
@@ -517,8 +515,8 @@
                 submitAction: ui.actionLink('providerEdit', 'voidSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                 submitParams: [ supervisor: person.id ],
                 submitButtonId: "confirmVoidButton_${ superviseesId }",
-                submitForm: "multiSelectCheckboxForm_${ superviseesId }",
-                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
+                fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason"), required: true] ],
                 actionButtons: [[label: ui.message("general.void"), id: "confirmVoidButton_${ superviseesId }", class: "confirmVoidButton"],
                         [label: ui.message("general.cancel"), id: "voidCancelButton_${ superviseesId }", class: "cancelButton"]]
         ])  %>
@@ -567,9 +565,9 @@
                 <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDateSupervisees"),
                         submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         submitButtonId: "updateHistoricalButton_${ superviseesId }",
-                        submitForm: "multiSelectCheckboxForm_historical_${ superviseesId }",
-                        fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate")],
-                                [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate")]  ],
+                        submitForm: [name: "multiSelectCheckboxForm_historical_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisee.required")],
+                        fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"],
+                                [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate"), required: false, maxDate: "+0d"]  ],
                         actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ superviseesId }", class: "updateHistoricalButton", type: "button"],
                                 [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ superviseesId }", class: "cancelButton",type: "button"]]
                 ])  %>
@@ -580,8 +578,8 @@
                         submitAction: ui.actionLink('providerEdit', 'voidSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         submitParams: [ provider: person.id ],
                         submitButtonId: "confirmHistoricalVoidButton_${ superviseesId }",
-                        submitForm: "multiSelectCheckboxForm_historical_${ superviseesId }",
-                        fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason")] ],
+                        submitForm: [name: "multiSelectCheckboxForm_historical_${ superviseesId }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
+                        fields: [ [name: "voidReason", class: java.lang.String, label: ui.message("providermanagement.voidReason"), required: true] ],
                         actionButtons: [[label: ui.message("general.void"), id: "confirmHistoricalVoidButton_${ superviseesId }", class: "confirmHistoricalVoidButton", type: "button"],
                                 [label: ui.message("general.cancel"), id: "voidCancelButton_${ superviseesId }", class: "cancelButton", type: "button"]]
                 ])  %>

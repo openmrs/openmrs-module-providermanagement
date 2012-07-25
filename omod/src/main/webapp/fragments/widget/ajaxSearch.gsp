@@ -2,11 +2,6 @@
     def id = config.id ?: ui.randomId()
     def selectIdParam = config.selectIdParam ?: 'id'
     def minSearchCharacters = context.getAdministrationService().getGlobalProperty("minSearchCharacters") ?: 3
-
-    def today = new Date()
-    today.clearTime()
-
-    def initialValue = config.initialValue ?: today
 %>
 
 <script>
@@ -143,17 +138,44 @@
         // handle what happens when you click on the submit button
         <% if (config.submitButtonId) { %>
             jq('#${ config.submitButtonId }').click(function() {
-                window.location = '${ config.submitAction }' + ${ config.submitAction.contains('?') ? '' : '\'?\' + ' }
-                                    <% if (config.submitParams) { %>
-                                        '&<%= config.submitParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
-                                    <% } %>
-                                    <% if (config.submitForm) { %>
-                                        '&' + jq('#${ config.submitForm }').serialize() +
-                                    <% } %>
-                                    <% if (config.showDateField) { %>
-                                        '&date=' + jq('[name="date_${id}"]').val() +
-                                    <% } %>
-                                    '&${ config.submitIdParam }=' + jq('#searchValue_${ id }').val();
+
+                // perform validation
+                var valid = true;
+                var errorMessage = '';
+
+                <%  if (config.submitForm?.required) { %>
+                    if(!jq('#${ config.submitForm.name }').serialize()) {
+                        errorMessage = errorMessage.concat("${ config.submitForm.requiredErrorMessage }\\n");
+                        valid = false;
+                    }
+                <% } %>
+
+                <% config.fields.each {
+                    if (it.required)  { %>
+                        if (!jq('[name="${ it.name }_${ id }"]').val()) {
+                            errorMessage = errorMessage.concat("${ ui.message('providermanagement.errors.isRequired', it.label) }\\n");
+                            valid = false;
+                        }
+                        <% } %>
+                <% } %>
+
+                // do the actual submit
+                if (valid) {
+                    window.location = '${ config.submitAction }' + ${ config.submitAction.contains('?') ? '' : '\'?\' + ' }
+                                        <% if (config.submitParams) { %>
+                                            '&<%= config.submitParams.collect { "${ it.key }=${ it.value }" }.join("&") %>' +
+                                        <% } %>
+                                        <% if (config.submitForm) { %>
+                                            '&' + jq('#${ config.submitForm.name }').serialize() +
+                                        <% } %>
+                                        <% config.fields.each { %>
+                                            '&${ it.name }=' + jq('[name="${ it.name }_${ id }"]').val() +
+                                        <% } %>
+                                        '&${ config.submitIdParam }=' + jq('#searchValue_${ id }').val();
+                }
+                else {
+                    alert(errorMessage);
+                }
             });
         <% } %>
 
@@ -180,19 +202,17 @@
                     <input id="searchField_${ id }" class="searchField" type="text" size="40"/>
                     <input id="searchValue_${ id }" type="hidden"/>
 
-                    <% if (config.showDateField) { %>
-                        ${config.dateLabel}: ${ ui.includeFragment("widget/field", [ class: java.util.Date,
-                                                                                     formFieldName: "date_" + id,
-                                                                                     initialValue: initialValue ]) }
-                    <% } %>
-
                     <% if (config.retiredToggle) { %>
                         <input id="includeRetired_${id}" type="checkbox"/> ${ ui.message("providermanagement.includeRetired") }
                     <% } %>
 
-                <% if (config.actionButtons) { %>
+                     <% config.fields.each { %>
+                        ${ it.label }: ${ ui.includeFragment("widget/field", [ class: it.class, formFieldName: it.name + "_" +  id, initialValue: it.initialValue, maxDate: it.maxDate ?: null, minDate: it.minDate ?: null ]) }
+                     <% } %>
+
+                     <% if (config.actionButtons) { %>
                         ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
-                    <% } %>
+                     <% } %>
                 </td>
             </tr>
         </thead>

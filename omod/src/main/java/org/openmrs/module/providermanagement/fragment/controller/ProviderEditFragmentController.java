@@ -267,7 +267,7 @@ public class ProviderEditFragmentController {
                                               @RequestParam(value = "supervisee", required = false) Person supervisee,
                                               @RequestParam(value = "date", required = false) Date date) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (supervisee == null) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisee.required"));
         }
@@ -292,7 +292,7 @@ public class ProviderEditFragmentController {
     public FragmentActionResult addSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                               @RequestParam(value = "supervisees", required = false) List<Person> supervisees) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (supervisees == null || supervisees.size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
         }
@@ -314,7 +314,7 @@ public class ProviderEditFragmentController {
                                                 @RequestParam(value = "startDate", required = false) Date startDate,
                                                 @RequestParam(value = "endDate", required = false) Date endDate) {
 
-        // validate input
+        // validate input (note that this validation--with the exception of start date after end date--is also handled client-side--this is just a backup)
         if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisee.required"));
         }
@@ -349,7 +349,7 @@ public class ProviderEditFragmentController {
                                                   @RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
                                                   @RequestParam(value = "date", required = false) Date date) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
         }
@@ -378,7 +378,7 @@ public class ProviderEditFragmentController {
                                                     @RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
                                                     @RequestParam(value = "date", required = false) Date date) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
         }
@@ -412,7 +412,7 @@ public class ProviderEditFragmentController {
     public FragmentActionResult voidSupervisees(@RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
                                              @RequestParam(value = "voidReason", required = false) String voidReason) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (superviseeRelationships == null || superviseeRelationships .size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisees.required"));
         }
@@ -437,7 +437,7 @@ public class ProviderEditFragmentController {
                                            @RequestParam(value = "patient", required = false) Patient patient,
                                            @RequestParam(value = "date", required = false) Date date) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (patient == null) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patient.required"));
         }
@@ -462,7 +462,7 @@ public class ProviderEditFragmentController {
                                              @RequestParam(value = "startDate", required = false) Date startDate,
                                              @RequestParam(value = "endDate", required = false) Date endDate) {
 
-        // check for required fields
+        // validate input (note that this validation--with the exception of start date after end date--is also handled client-side--this is just a backup)
         if (patientRelationships == null || patientRelationships.size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patient.required"));
         }
@@ -498,7 +498,7 @@ public class ProviderEditFragmentController {
                                                 @RequestParam(value = "patientRelationships", required = false) List<Relationship> patientRelationships,
                                                 @RequestParam(value = "date", required = false) Date date) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (patientRelationships == null || patientRelationships.size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patients.required"));
         }
@@ -528,7 +528,7 @@ public class ProviderEditFragmentController {
                                                  @RequestParam(value = "patientRelationships", required = false) List<Relationship> patientRelationships,
                                                  @RequestParam(value = "date", required = false) Date date) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (patientRelationships == null || patientRelationships.size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patients.required"));
         }
@@ -562,7 +562,7 @@ public class ProviderEditFragmentController {
     public FragmentActionResult voidPatients(@RequestParam(value = "patientRelationships", required = false) List<Relationship> patientRelationships,
                                               @RequestParam(value = "voidReason", required = false) String voidReason) {
 
-        // validate input
+        // validate input (note that this validation is also handled client-side--this is just a backup)
         if (patientRelationships == null || patientRelationships.size() == 0) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patients.required"));
         }
