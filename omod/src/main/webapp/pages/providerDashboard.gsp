@@ -11,6 +11,17 @@
 
    def today = new Date()
    today.clearTime()
+
+   def retireButton
+
+   if (!provider?.retired) {
+       retireButton = [label: ui.message("general.retire"),id: "retire", confirm: ui.message("providermanagement.confirmRetire"),
+               link: ui.actionLink("providerEdit", "retireProvider", [provider: person.id]) ]
+   }
+   else {
+       retireButton = [label: ui.message("providermanagement.unretire"),id: "retire", confirm: ui.message("providermanagement.confirmUnretire"),
+               link: ui.actionLink("providerEdit", "unretireProvider", [provider: person.id]) ]
+   }
 %>
 
 
@@ -187,10 +198,10 @@
 </script>
 
 <% if (context.hasPrivilege("Provider Management Dashboard - Edit Providers")) { %>
+
+    <!-- note that the appropriate retire button is defined at the top of this file -->
     <div id="providerView">
-        ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEditButton"],
-                [label: ui.message("general.retire"),id: "retire", confirm: ui.message("providermanagement.confirmRetire"),
-                        link: ui.actionLink("providerEdit", "retireProvider", [provider: person.id]) ] ] ]) }
+        ${ ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEditButton"], retireButton ] ]) }
     </div>
 
     <div id="providerEdit">

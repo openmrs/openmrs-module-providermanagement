@@ -263,6 +263,20 @@ public class ProviderEditFragmentController {
         return new SuccessResult();
     }
 
+    public FragmentActionResult unretireProvider(@RequestParam(value = "provider", required = true) Person provider) {
+
+        try {
+            Provider p = ProviderManagementWebUtil.getProvider(provider);   // get actual provider object associated with this provider
+            // (note that we don't assign any patients or supervisees back to the provider; this needs to be done manually)
+            Context.getProviderService().unretireProvider(p);
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+        return new SuccessResult();
+    }
+
     public FragmentActionResult addSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                               @RequestParam(value = "supervisee", required = false) Person supervisee,
                                               @RequestParam(value = "date", required = false) Date date) {
