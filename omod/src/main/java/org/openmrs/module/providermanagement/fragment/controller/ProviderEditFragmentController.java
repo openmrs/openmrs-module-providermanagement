@@ -228,6 +228,15 @@ public class ProviderEditFragmentController {
             return new FailureResult(providerErrors);
         }
 
+        // now manually validate the person
+        Validator personValidator = HandlerUtil.getPreferredHandler(Validator.class, Person.class);
+        BindingResult personErrors = new BeanPropertyBindingResult(provider.getPerson(), "person");  // TODO: is this the correct nomenclature?
+        personValidator.validate(provider.getPerson(),personErrors);
+
+        if (personErrors.hasErrors()) {
+            return new FailureResult(personErrors);
+        }
+
         // need to manually remove any person attributes that have no value
         for (PersonAttributeType attributeType : ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES()) {
             if (person.getAttribute(attributeType) != null  && StringUtils.isBlank(person.getAttribute(attributeType).getValue())) {

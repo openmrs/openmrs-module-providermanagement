@@ -54,7 +54,7 @@
 
     <globalProperty>
         <property>providermanagement.providerSearchDisplayFields</property>
-        <defaultValue>Identifier:provider.identifier|Given Name:person.personName.givenName|Family Name:person.personName.familyName|Role:provider.providerRole|Gender:person.gender</defaultValue>
+        <defaultValue>Identifier:provider.identifier|Given Name:provider.person.personName.givenName|Family Name:provider.person.personName.familyName|Role:provider.providerRole|Gender:provider.person.gender</defaultValue>
         <description>
             Fields to display in the provider search results; specified as a pipe-delimited list of label/field pairs
         </description>

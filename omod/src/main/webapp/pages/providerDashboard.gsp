@@ -455,6 +455,7 @@
         <% } %>
     <% } else { %>
             <!-- this map is keyed on relationship types; value is a count of the patients associated with the provider for that relationship type -->
+            <!-- (simply show a patient count for patients that don't have the view patients privilege) -->
             <% patientCount?.each {   %>
                 <div id="pane_${ it.key.uuid }" class="pane">
                     <div class="content">
