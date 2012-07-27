@@ -26,8 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-// TODO: note that this portlet is currently not in use, see https://tickets.openmrs.org/browse/PROV-24
-
 /**
  * Overrides the standard relationship portlet controller so that the relationships
  * managed by the provider management module are not shown within this portlet
@@ -44,11 +42,16 @@ public class CustomPersonRelationshipsPortletController extends PortletControlle
         relationshipTypes.remove(supervisorRelationshipType);
         model.put("relationshipTypes", relationshipTypes);
 
+        // TODO: note that we are currently NOT filtering the relationships displayed in the relationship portlet--so
+        // TODO: show provider/patient relationships here; we just want to restrict the user from CREATING provider
+        // TODO: see https://tickets.openmrs.org/browse/PROV-24
+
         // relationships to display are all relationships MINUS the provider relationships
         // first fetch the relationships currently in the model (which the relationship portlet would display by default)
-        List<Relationship> personRelationships = (List<Relationship>) model.get("personRelationships");
+        //List<Relationship> personRelationships = (List<Relationship>) model.get("personRelationships");
 
         // iterate through all these relationships and remove any of the provider role type
+        /**
         Iterator<Relationship> i = personRelationships.iterator();
         while (i.hasNext()) {
             Relationship relationship = i.next();
@@ -56,8 +59,9 @@ public class CustomPersonRelationshipsPortletController extends PortletControlle
                 i.remove();
             }
         }
+         */
 
         // overwrite the relationship types in the model with the new types
-        model.put("personRelationships", personRelationships);
+        //model.put("personRelationships", personRelationships);
     }
 }

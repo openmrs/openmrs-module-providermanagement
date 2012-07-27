@@ -25,23 +25,24 @@
     <bean class="org.openmrs.module.providermanagement.converter.StringToProviderAttributeTypeConverter"/>
 
     <!-- URL Mapping -->
-    <!-- TODO: currently the portlets that override the patient dashboard are disabled, see https://tickets.openmrs.org/browse/PROV-24-->
     <!-- override the PersonRelationshipsPortletController defined in core -->
-    <!--
     <bean id="providerManagementUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="order"><value>50</value></property>
         <property name="mappings">
             <props>
                 <prop key="**/personRelationships.portlet">customPersonRelationshipsPortletController</prop>
-                <prop key="**/providerRelationships.portlet">providerRelationshipsPortletController</prop>
+
+                <!-- TODO: currently not using this portlet, see PROV-24 -->
+                <!-- <prop key="**/providerRelationships.portlet">providerRelationshipsPortletController</prop> -->
             </props>
         </property>
     </bean>
-    -->
+
 
     <!--  Controllers -->
-    <bean id="providerRelationshipsPortletController" class="org.openmrs.module.providermanagement.controller.ProviderRelationshipsPortletController"> </bean>
     <bean id="customPersonRelationshipsPortletController" class="org.openmrs.module.providermanagement.controller.CustomPersonRelationshipsPortletController"> </bean>
+
+    <!-- <bean id="providerRelationshipsPortletController" class="org.openmrs.module.providermanagement.controller.ProviderRelationshipsPortletController"> </bean> -->
 
 
 </beans>
