@@ -22,9 +22,9 @@
 	</organization>
 
     <scm>
-        <connection>scm:git:https://github.com/OpenMRS/openmrs-module-htmlformentry/</connection>
-        <developerConnection>scm:git:https://github.com/OpenMRS/openmrs-module-htmlformentry/</developerConnection>
-        <url>https://github.com/OpenMRS/openmrs-module-htmlformentry/</url>
+        <connection>scm:git:https://github.com/mogoodrich/openmrs-module-providermanagement/</connection>
+        <developerConnection>scm:git:https://github.com/mogoodrich/openmrs-module-providermanagement/</developerConnection>
+        <url>https://github.com/mogoodrich/openmrs-module-providermanagement/</url>
     </scm>
 
 	<modules>
