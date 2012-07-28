@@ -15,6 +15,6 @@
 package org.openmrs.module.providermanagement.suggestion;
 
 public enum SupervisionSuggestionType {
-    //SUPERVISOR_SUGGESTION,
+    SUPERVISOR_SUGGESTION,
     SUPERVISEE_SUGGESTION
 }
