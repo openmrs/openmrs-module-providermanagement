@@ -10,7 +10,7 @@
 
         // checks how many checkboxes are currently checked
         // if more than one are checked, disable any buttons flagged as "disableOnMultiSelect"
-        // and hide any objects passed to the hideOnMultiSelect parameter
+        // and hide any objects passed to the disableOnMultiSelect parameter
         var handleMultiSelect = function () {
 
             if(jq('.checkbox_${ id }:checked').length > 1) {
@@ -21,8 +21,8 @@
                 <%  }
                  } %>
 
-                // hide any objects passed to the hideOnMultiSelect parameter
-                <% config.hideOnMultiSelect.each { %>
+                // hide any objects passed to the disableOnMultiSelect parameter
+                <% config.disableOnMultiSelect.each { %>
                     jq('#${ it }').hide();
                 <% } %>
 
@@ -34,6 +34,11 @@
                         jq('#${ it.id }').show();
                 <%  }
                 } %>
+
+                // show any objects passed to the disableOnMultiSelect parameter
+                <% config.disableOnMultiSelect.each { %>
+                    jq('#${ it }').show();
+                <% } %>
             }
 
         }

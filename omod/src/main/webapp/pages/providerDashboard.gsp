@@ -313,7 +313,7 @@
                             disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                             emptyMessage: ui.message("providermanagement.none"),
                             footer: it.value.currentPatients.size + " " + (it.value.currentPatients.size != 1 ? ui.message("providermanagement.totalPatients") : ui.message("providermanagement.totalPatient")),
-                            hideOnMultiSelect: ["edit_${ it.key.uuid }"],
+                            disableOnMultiSelect: ["confirmEditButton_${ it.key.uuid }"],
                             actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                             [[label: ui.message("general.add"), id: "addButton_${ it.key.uuid }", class: "addButton", type: "button"],
                                             [label: ui.message("general.edit"), id: "editButton_${ it.key.uuid }", class: "editButton", type: "button", disableOnMultiSelect: true],
@@ -368,10 +368,10 @@
                     <div id="edit_${ it.key.uuid }" class="edit">
                         <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDatePatients"),
                                 submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid])]),
-                                submitButtonId: "updateButton_${ it.key.uuid }",
+                                submitButtonId: "confirmEditButton_${ it.key.uuid }",
                                 submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patient.required")],
                                 fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"] ],
-                                actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ it.key.uuid }", class: "updateButton", type: "button"],
+                                actionButtons: [[label: ui.message("providermanagement.update"), id: "confirmEditButton_${ it.key.uuid }", class: "confirmEditButton", type: "button"],
                                                 [label: ui.message("general.cancel"), id: "editCancelButton_${ it.key.uuid }", class: "cancelButton", type: "button"]]
                         ])  %>
                     </div>
@@ -413,7 +413,7 @@
                                 formFieldName: "patientRelationships",
                                 disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                                 emptyMessage: ui.message("providermanagement.none"),
-                                hideOnMultiSelect: ["editHistorical_${ it.key.uuid }"],
+                                disableOnMultiSelect: ["confirmEditHistoricalButton_${ it.key.uuid }"],
                                 actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
                                     [ [label: ui.message("general.edit"), id: "editHistoricalButton_${ it.key.uuid }", class: "editHistoricalButton", type: "button", disableOnMultiSelect: true],
                                       [label: ui.message("general.void"), id: "voidHistoricalButton_${ it.key.uuid }", class: "voidHistoricalButton", type: "button"]] : [])
@@ -423,11 +423,11 @@
                     <div id="editHistorical_${ it.key.uuid }" class="edit">
                         <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDatePatients"),
                                 submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
-                                submitButtonId: "updateHistoricalButton_${ it.key.uuid }",
+                                submitButtonId: "confirmEditHistoricalButton_${ it.key.uuid }",
                                 submitForm: [name: "multiSelectCheckboxForm_historical_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
                                 fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"],
                                               [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate"), required: false, maxDate: "+0d"]  ],
-                                actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ it.key.uuid }", class: "updateHistoricalButton", type: "button"],
+                                actionButtons: [[label: ui.message("providermanagement.update"), id: "confirmEditHistoricalButton_${ it.key.uuid }", class: "confirmEditHistoricalButton", type: "button"],
                                                  [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ it.key.uuid }", class: "cancelButton",type: "button"]]
                         ])  %>
                     </div>
@@ -475,11 +475,12 @@
                     formFieldName: "superviseeRelationships",
                     disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
                     emptyMessage: ui.message("providermanagement.none"),
+                    disableOnMultiSelect: ["confirmEditButton_${ superviseesId }"],
                     footer: currentSupervisees.size + " " + (currentSupervisees.size != 1 ? ui.message("providermanagement.totalSupervisees") : ui.message("providermanagement.totalSupervisee")),
                     actionButtons: (context.hasPrivilege("Provider Management Dashboard - Edit Providers") ?
                                     suggestedSupervisees != null ?
                                         [[label: ui.message("general.add"), id: "addButton_${ superviseesId }", class: "addButton", type: "button"],
-                                                [label: ui.message("general.edit"), id: "editButton_${ superviseesId }", class: "editButton", type: "button"],
+                                                [label: ui.message("general.edit"), id: "editButton_${ superviseesId }", class: "editButton", type: "button", disableOnMultiSelect:true],
                                                 [label: ui.message("providermanagement.transfer"), id: "transferButton_${ superviseesId } ", class: "transferButton", type: "button"],
                                                 [label: ui.message("providermanagement.suggest"), id: "suggestButton_${ superviseesId }", class: "suggestButton", type: "button"],
                                                 [label: ui.message("general.remove"), id: "removeButton_${ superviseesId }", class: "removeButton", type: "button"],
@@ -540,10 +541,10 @@
         <div id="edit_${ superviseesId }" class="edit">
             <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDateSupervisees"),
                     submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
-                    submitButtonId: "updateButton_${ superviseesId }",
+                    submitButtonId: "confirmEditButton_${ superviseesId }",
                     submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisee.required")],
                     fields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"] ],
-                    actionButtons: [[label: ui.message("providermanagement.update"), id: "updateButton_${ superviseesId }", class: "updateButton"],
+                    actionButtons: [[label: ui.message("providermanagement.update"), id: "confirmEditButton_${ superviseesId }", class: "confirmEditButton"],
                             [label: ui.message("general.cancel"), id: "removeCancelButton_${ superviseesId }", class: "cancelButton"]]
             ])  %>
         </div>
@@ -604,9 +605,10 @@
                         selectIdParam: "personId",
                         selectId: "provider.person.id",
                         disabled: !context.hasPrivilege("Provider Management Dashboard - Edit Patients"),
+                        disableOnMultiSelect: ["confirmEditHistoricalButton_${ superviseesId }"],
                         emptyMessage: ui.message("providermanagement.none"),
                         actionButtons: ( context.hasPrivilege("Provider Management Dashboard - Edit Patients") ?
-                            [ [label: ui.message("general.edit"), id: "editHistoricalButton_${ superviseesId }", class: "editHistoricalButton", type: "button"],
+                            [ [label: ui.message("general.edit"), id: "editHistoricalButton_${ superviseesId }", class: "editHistoricalButton", type: "button", disableOnMultiSelect:true],
                                     [label: ui.message("general.void"), id: "voidHistoricalButton_${ superviseesId }", class: "voidHistoricalButton", type: "button"]] : [])
                 ]) %>
             </div>
@@ -614,11 +616,11 @@
             <div id="editHistorical_${ superviseesId }" class="edit">
                 <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDateSupervisees"),
                         submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
-                        submitButtonId: "updateHistoricalButton_${ superviseesId }",
+                        submitButtonId: "confirmEditHistoricalButton_${ superviseesId }",
                         submitForm: [name: "multiSelectCheckboxForm_historical_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisee.required")],
                         fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"],
                                 [name: "endDate", class: java.util.Date, label: ui.message("providermanagement.stopDate"), required: false, maxDate: "+0d"]  ],
-                        actionButtons: [[label: ui.message("providermanagement.update"), id: "updateHistoricalButton_${ superviseesId }", class: "updateHistoricalButton", type: "button"],
+                        actionButtons: [[label: ui.message("providermanagement.update"), id: "confirmEditHistoricalButton_${ superviseesId }", class: "confirmEditHistoricalButton", type: "button"],
                                 [label: ui.message("general.cancel"), id: "editHistoricalCancelButton_${ superviseesId }", class: "cancelButton",type: "button"]]
                 ])  %>
             </div>
