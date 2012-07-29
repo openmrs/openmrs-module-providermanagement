@@ -27,7 +27,15 @@
         <url>https://github.com/mogoodrich/openmrs-module-providermanagement/</url>
     </scm>
 
-	<modules>
+    <distributionManagement>
+        <repository>
+            <id>openmrs-repo-modules</id>
+            <name>Modules</name>
+            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
+        </repository>
+    </distributionManagement>
+
+    <modules>
 		<module>api</module>
 		<module>omod</module>
 	</modules>
