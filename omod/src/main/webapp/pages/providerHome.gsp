@@ -1,7 +1,7 @@
 
 <%
    context.requirePrivilege("Provider Management Dashboard - View Providers")
-   ui.decorateWith("providerManagementPage")
+   ui.decorateWith("providermanagement", "providerManagementPage")
    ui.includeCss("providermanagement", "providerHome.css")
    def providerSearchId = ui.randomId()
    def advancedSearchId = ui.randomId() %>
@@ -30,7 +30,7 @@
         // jump to the similar persons page if the user tries to add a provider
         jq('#addNewProviderButton').click(function() {
             var name = jq('#searchField_${ providerSearchId }').val();
-            window.location='${ ui.pageLink("similarPeople") }?name=' + name;
+            window.location='${ ui.pageLink("providermanagement", "similarPeople") }?name=' + name;
         })
 
         // only show the add new provider button if the end user has entered data
@@ -50,13 +50,13 @@
 
 <div id="providerSearch">
 
-    <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.findOrAddProvider"),
+    <%= ui.includeFragment("providermanagement", "widget/ajaxSearch", [title: ui.message("providermanagement.findOrAddProvider"),
             id: providerSearchId,
-            searchAction: ui.actionLink("providerSearch", "getProviders"),
+            searchAction: ui.actionLink("providermanagement", "providerSearch", "getProviders"),
             resultFields: providerSearchDisplayFields.values(),
             resultFieldLabels: providerSearchDisplayFields.keySet(),
             selectIdParam: "personId",
-            selectAction: ui.pageLink("providerDashboard"),
+            selectAction: ui.pageLink("providermanagement", "providerDashboard"),
             emptyMessage: ui.message("providermanagement.noMatches"),
             retiredToggle: true,
             actionButtons: [ [label: ui.message("providermanagement.advancedSearch"),
@@ -68,9 +68,9 @@
 
 <div id="advancedSearch">
 
-    ${ ui.includeFragment("providerAdvancedSearch", [selectIdParam: "personId",
+    ${ ui.includeFragment("providermanagement", "providerAdvancedSearch", [selectIdParam: "personId",
                                                      id: advancedSearchId,
-                                                     selectAction: ui.pageLink('providerDashboard'),
+                                                     selectAction: ui.pageLink("providermanagement", "providerDashboard"),
                                                      emptyMessage: ui.message("providermanagement.noMatches"),
                                                      resultFields: providerSearchDisplayFields.values(),
                                                      resultFieldLabels: providerSearchDisplayFields.keySet()]

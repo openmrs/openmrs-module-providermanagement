@@ -56,7 +56,7 @@
         </tr>
 
         <!-- include the address fragment -->
-        ${ ui.includeFragment("personAddress", [personAddress: person.personAddress, mode: 'view']) }
+        ${ ui.includeFragment("providermanagement", "personAddress", [personAddress: person.personAddress, mode: 'view']) }
 
     </table>
 
@@ -65,7 +65,7 @@
         <table class="providerActionButtonsTable">
             <tr>
                 <td colspan="2">
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
+                    ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: config.actionButtons]) }
                 </td>
             </tr>
         </table>

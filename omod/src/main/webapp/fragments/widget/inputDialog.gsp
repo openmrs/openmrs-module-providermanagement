@@ -63,11 +63,11 @@
             <tr>
                 <td>
                     <% config.fields.each { %>
-                        ${ it.label }: ${ ui.includeFragment("widget/field", [ class: it.class, formFieldName: it.name + "_" +  id, initialValue: it.initialValue, maxDate: it.maxDate ?: null, minDate: it.minDate ?: null ]) }
+                        ${ it.label }: ${ ui.includeFragment("uilibrary", "widget/field", [ class: it.class, formFieldName: it.name + "_" +  id, initialValue: it.initialValue, maxDate: it.maxDate ?: null, minDate: it.minDate ?: null ]) }
                     <% } %>
 
                     <% if (config.actionButtons) { %>
-                        ${ ui.includeFragment("widget/actionButtons", [ actionButtons: config.actionButtons ]) }
+                        ${ ui.includeFragment("providermanagement", "widget/actionButtons", [ actionButtons: config.actionButtons ]) }
                     <% } %>
                 </td>
             </tr>

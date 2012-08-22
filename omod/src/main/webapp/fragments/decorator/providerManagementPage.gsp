@@ -1,4 +1,4 @@
-${ ui.includeFragment("standardIncludes") }
+${ ui.includeFragment("uilibrary", "standardIncludes") }
 
 <% ui.includeCss("providermanagement", "providerManagement.css") %>
 <% ui.includeJavascript("jquery.js") %>

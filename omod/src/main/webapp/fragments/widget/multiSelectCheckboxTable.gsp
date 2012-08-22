@@ -187,7 +187,7 @@
             <% if (config.actionButtons) { %>
                 <tr class="multiSelectActionButtons">
                     <td colspan="${ config.columns.size() + 1 }">
-                        ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
+                        ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: config.actionButtons]) }
                     </td>
                 </tr>
             <% } %>

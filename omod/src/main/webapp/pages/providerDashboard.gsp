@@ -1,7 +1,7 @@
 
 <%
    context.requirePrivilege("Provider Management Dashboard - View Providers")
-   ui.decorateWith("providerManagementPage")
+   ui.decorateWith("providermanagement", "providerManagementPage")
    ui.includeCss("providermanagement", "providerDashboard.css")
 
     // add the uuids we are going to use to identify each panel
@@ -224,22 +224,22 @@
 <% if (context.hasPrivilege("Provider Management Dashboard - Edit Providers")) { %>
 
     <div id="providerView">
-        <%= ui.includeFragment("providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEditButton"],
+        <%= ui.includeFragment("providermanagement", "providerView", [ actionButtons: [ [label: ui.message("general.edit"), id: "showEditButton"],
                                                                  (!provider?.retired ? [label: ui.message("general.retire"),id: "retire", confirm: ui.message("providermanagement.confirmRetire"),
-                                                                                            link: ui.actionLink("providerEdit", "retireProvider", [provider: person.id])] :
+                                                                                            link: ui.actionLink("providermanagement", "providerEdit", "retireProvider", [provider: person.id])] :
                                                                                         [label: ui.message("providermanagement.unretire"),id: "retire", confirm: ui.message("providermanagement.confirmUnretire"),
-                                                                                            link: ui.actionLink("providerEdit", "unretireProvider", [provider: person.id])]) ]
+                                                                                            link: ui.actionLink("providermanagement", "providerEdit", "unretireProvider", [provider: person.id])]) ]
         ])%>
     </div>
 
     <div id="providerEdit">
-        ${ ui.includeFragment("providerEdit", [ actionButtons: [ [label: ui.message("general.save"), type: "submit"],
+        ${ ui.includeFragment("providermanagement", "providerEdit", [ actionButtons: [ [label: ui.message("general.save"), type: "submit"],
                                                                     [label: ui.message("general.cancel"), id: "cancelEditButton", type: "reset"] ] ]) }
     </div>
 <% } else { %>
     <!-- if no edit privileges, just show the provider view panel without the edit and retire action buttons -->
     <div id="providerView">
-        ${ ui.includeFragment("providerView") }
+        ${ ui.includeFragment("providermanagement", "providerView") }
     </div>
 <% } %>
 
@@ -304,7 +304,7 @@
             <div id="pane_${ it.key.uuid }" class="pane">
 
                 <div id="list_${ it.key.uuid }" class="list">
-                    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.currentPatients.sort { item -> item.patient.personName?.toString() },
+                    <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: it.value.currentPatients.sort { item -> item.patient.personName?.toString() },
                             id: it.key.uuid,
                             title: ui.message("providermanagement.currentPatients"),
                             columns: patientListDisplayFields.values(),
@@ -325,13 +325,13 @@
 
                 <% if (context.hasPrivilege("Provider Management Dashboard - Edit Patients")) { %>
                     <div id="transfer_${ it.key.uuid }" class="transfer">
-                        <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferPatients"),
-                                searchAction: ui.actionLink("providerSearch", "getProviders"),
+                        <%=  ui.includeFragment("providermanagement", "widget/ajaxSearch", [title: ui.message("providermanagement.transferPatients"),
+                                searchAction: ui.actionLink("providermanagement", "providerSearch", "getProviders"),
                                 searchParams: [ providerRoles: [ provider.providerRole?.id ], excludeProvider: person.id ],
                                 resultFields: providerSearchDisplayFields.values(),
                                 resultFieldLabels: providerSearchDisplayFields.keySet(),
                                 selectDisplayFields: ["personName.givenName","personName.middleName","personName.familyName"],
-                                submitAction: ui.actionLink('providerEdit', 'transferPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                submitAction: ui.actionLink('providermanagement', 'providerEdit', 'transferPatients', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitIdParam: "newProvider",
                                 submitButtonId: "confirmTransferButton_${ it.key.uuid }",
                                 cancelButtonId: "addTransferButton_${ it.key.uuid }",
@@ -346,13 +346,13 @@
                     </div>
 
                     <div id="add_${ it.key.uuid }" class="add">
-                        <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
-                                searchAction: ui.actionLink("patientSearch", "getPatients"),
+                        <%=  ui.includeFragment("providermanagement","widget/ajaxSearch", [title: ui.message("providermanagement.addPatient"),
+                                searchAction: ui.actionLink("providermanagement", "patientSearch", "getPatients"),
                                 searchParams: [excludePatientsOf: person.id, existingRelationshipTypeToExclude: it.key.id ],
                                 resultFields: patientSearchDisplayFields.values(),
                                 resultFieldLabels: patientSearchDisplayFields.keySet(),
                                 selectDisplayFields: ["personName.givenName","personName.middleName","personName.familyName"],
-                                submitAction: ui.actionLink('providerEdit', 'addPatient', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                                submitAction: ui.actionLink('providermanagement', 'providerEdit', 'addPatient', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitIdParam: "patient",
                                 submitButtonId: "confirmAddButton_${ it.key.uuid }",
                                 cancelButtonId: "addCancelButton_${ it.key.uuid }",
@@ -366,8 +366,8 @@
                     </div>
 
                     <div id="edit_${ it.key.uuid }" class="edit">
-                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDatePatients"),
-                                submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid])]),
+                        <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.newStartDatePatients"),
+                                submitAction: ui.actionLink('providermanagement', 'providerEdit', 'editPatients', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: it.key.uuid])]),
                                 submitButtonId: "confirmEditButton_${ it.key.uuid }",
                                 submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patient.required")],
                                 fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"] ],
@@ -377,8 +377,8 @@
                     </div>
 
                     <div id="remove_${ it.key.uuid }" class="remove">
-                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmRemovalPatients"),
-                                  submitAction: ui.actionLink('providerEdit', 'removePatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                        <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.confirmRemovalPatients"),
+                                  submitAction: ui.actionLink('providermanagement', 'providerEdit', 'removePatients', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                   submitParams: [ provider: person.id, relationshipType: it.key.id ],
                                   submitButtonId: "confirmRemoveButton_${ it.key.uuid }",
                                   submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
@@ -389,8 +389,8 @@
                     </div>
 
                     <div id="void_${ it.key.uuid }" class="void">
-                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmVoidPatients"),
-                                submitAction: ui.actionLink('providerEdit', 'voidPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                        <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.confirmVoidPatients"),
+                                submitAction: ui.actionLink('providermanagement', 'providerEdit', 'voidPatients', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitParams: [ provider: person.id ],
                                 submitButtonId: "confirmVoidButton_${ it.key.uuid }",
                                 submitForm: [name: "multiSelectCheckboxForm_${ it.key.uuid }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
@@ -405,7 +405,7 @@
 
                 <% if (it.value.historicalPatients && context.hasPrivilege("Provider Management Dashboard - View Historical")) { %>
                     <div id="historicalList_${ it.key.uuid }" class="historicalList">
-                        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: it.value.historicalPatients.sort { item -> item.patient.personName?.toString() },
+                        <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: it.value.historicalPatients.sort { item -> item.patient.personName?.toString() },
                                 id: "historical_${ it.key.uuid }",
                                 title: ui.message("providermanagement.historicalPatients"),
                                 columns: historicalPatientListDisplayFields.values(),
@@ -421,8 +421,8 @@
                     </div>
 
                     <div id="editHistorical_${ it.key.uuid }" class="edit">
-                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDatePatients"),
-                                submitAction: ui.actionLink('providerEdit', 'editPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                        <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDatePatients"),
+                                submitAction: ui.actionLink('providermanagement', 'providerEdit', 'editPatients', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitButtonId: "confirmEditHistoricalButton_${ it.key.uuid }",
                                 submitForm: [name: "multiSelectCheckboxForm_historical_${ it.key.uuid }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
                                 fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"],
@@ -433,8 +433,8 @@
                     </div>
 
                     <div id="voidHistorical_${ it.key.uuid }" class="void">
-                        <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmVoidPatients"),
-                                submitAction: ui.actionLink('providerEdit', 'voidPatients', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
+                        <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.confirmVoidPatients"),
+                                submitAction: ui.actionLink('providermanagement', 'providerEdit', 'voidPatients', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: it.key.uuid] )]),
                                 submitParams: [ provider: person.id ],
                                 submitButtonId: "confirmHistoricalVoidButton_${ it.key.uuid }",
                                 submitForm: [name: "multiSelectCheckboxForm_historical_${ it.key.uuid }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.patients.required")],
@@ -464,7 +464,7 @@
 
         <div id="list_${ superviseesId }" class="list">
 
-            <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: currentSupervisees.sort { item -> item.provider.person.personName?.toString() },
+            <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: currentSupervisees.sort { item -> item.provider.person.personName?.toString() },
                     id: superviseesId,
                     title: ui.message("providermanagement.currentSupervisees"),
                     columns: providerListDisplayFields.values(),
@@ -499,13 +499,13 @@
 
         <% if (context.hasPrivilege("Provider Management Dashboard - Edit Providers")) { %>
         <div id="transfer_${ superviseesId }" class="transfer">
-            <%=  ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
-                    searchAction: ui.actionLink("providerSearch", "getProviders"),
+            <%=  ui.includeFragment("providermanagement", "widget/ajaxSearch", [title: ui.message("providermanagement.transferSupervisees"),
+                    searchAction: ui.actionLink("providermanagement", "providerSearch", "getProviders"),
                     searchParams: [ providerRoles: [ provider.providerRole?.id ] ],
                     resultFields: providerSearchDisplayFields.values(),
                     resultFieldLabels: providerSearchDisplayFields.keySet(),
                     selectDisplayFields: ["personName.givenName","personName.middleName","personName.familyName"],
-                    submitAction: ui.actionLink('providerEdit', 'transferSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                    submitAction: ui.actionLink('providermanagement', 'providerEdit', 'transferSupervisees', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                     submitIdParam: "newSupervisor",
                     submitParams: [ oldSupervisor: person.id ],
                     submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
@@ -520,13 +520,13 @@
 
 
         <div id="add_${ superviseesId }" class="add">
-            <%= ui.includeFragment("widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
-                    searchAction: ui.actionLink("providerSearch", "getProviders"),
+            <%= ui.includeFragment("providermanagement", "widget/ajaxSearch", [title: ui.message("providermanagement.addSupervisee"),
+                    searchAction: ui.actionLink("providermanagement", "providerSearch", "getProviders"),
                     searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
                     resultFields: providerSearchDisplayFields.values(),
                     resultFieldLabels: providerSearchDisplayFields.keySet(),
                     selectDisplayFields: ["personName.givenName","personName.middleName","personName.familyName"],
-                    submitAction: ui.actionLink('providerEdit', 'addSupervisee', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                    submitAction: ui.actionLink('providermanagement', 'providerEdit', 'addSupervisee', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                     submitIdParam: "supervisee",
                     submitParams: [ supervisor: person.id ],
                     submitButtonId: "confirmAddButton_${ superviseesId }",
@@ -539,8 +539,8 @@
         </div>
 
         <div id="edit_${ superviseesId }" class="edit">
-            <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartDateSupervisees"),
-                    submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+            <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.newStartDateSupervisees"),
+                    submitAction: ui.actionLink('providermanagement', 'providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                     submitButtonId: "confirmEditButton_${ superviseesId }",
                     submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisee.required")],
                     fields: [ [name: "startDate", class: java.util.Date, label :ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"] ],
@@ -550,8 +550,8 @@
         </div>
 
         <div id="remove_${ superviseesId }" class="remove">
-            <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmRemovalSupervisees"),
-                    submitAction: ui.actionLink('providerEdit', 'removeSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+            <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.confirmRemovalSupervisees"),
+                    submitAction: ui.actionLink('providermanagement', 'providerEdit', 'removeSupervisees', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                     submitParams: [ supervisor: person.id ],
                     submitButtonId: "confirmRemoveButton_${ superviseesId }",
                     submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
@@ -562,8 +562,8 @@
         </div>
 
         <div id="void_${ superviseesId }" class="void">
-            <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmVoidSupervisees"),
-                    submitAction: ui.actionLink('providerEdit', 'voidSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+            <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.confirmVoidSupervisees"),
+                    submitAction: ui.actionLink('providermanagement', 'providerEdit', 'voidSupervisees', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                     submitParams: [ supervisor: person.id ],
                     submitButtonId: "confirmVoidButton_${ superviseesId }",
                     submitForm: [name: "multiSelectCheckboxForm_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
@@ -575,13 +575,13 @@
 
         <% if (suggestedSupervisees != null) { %>
             <div id="suggest_${ superviseesId }" class="suggest">
-                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
+                <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: suggestedSupervisees.sort { item -> item.personName?.toString() },
                         title: ui.message("providermanagement.suggestedSupervisees"),
                         columns: providerSearchDisplayFields.values(),
                         columnLabels: providerSearchDisplayFields.keySet(),
                         selectAction: ui.pageLink('providerDashboard'),
                         selectIdParam: "personId",
-                        formAction: ui.actionLink("providerEdit","addSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                        formAction: ui.actionLink("providermanagement", "providerEdit","addSupervisees", [supervisor: person.id, successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         formFieldName: "supervisees",
                         emptyMessage: ui.message("providermanagement.none"),
                         actionButtons: [[label: ui.message("general.add"), type: "submit"],
@@ -595,7 +595,7 @@
         <% if (historicalSupervisees && context.hasPrivilege("Provider Management Dashboard - View Historical")) { %>
             <div id="historicalList_${ superviseesId }" class="historicalList">
 
-                <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: historicalSupervisees.sort { item -> item.provider.person.personName?.toString() },
+                <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: historicalSupervisees.sort { item -> item.provider.person.personName?.toString() },
                         id: "historical_${ superviseesId }",
                         title: ui.message("providermanagement.historicalSupervisees"),
                         columns: historicalProviderListDisplayFields.values(),
@@ -614,8 +614,8 @@
             </div>
 
             <div id="editHistorical_${ superviseesId }" class="edit">
-                <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDateSupervisees"),
-                        submitAction: ui.actionLink('providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.newStartAndEndDateSupervisees"),
+                        submitAction: ui.actionLink('providermanagement', 'providerEdit', 'editSupervisees', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         submitButtonId: "confirmEditHistoricalButton_${ superviseesId }",
                         submitForm: [name: "multiSelectCheckboxForm_historical_${ superviseesId }", required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisee.required")],
                         fields: [ [name: "startDate", class: java.util.Date, label: ui.message("providermanagement.startDate"), required: true, maxDate: "+0d"],
@@ -626,8 +626,8 @@
             </div>
 
             <div id="voidHistorical_${ superviseesId }" class="void">
-                <%=  ui.includeFragment("widget/inputDialog", [title: ui.message("providermanagement.confirmVoidSupervisees"),
-                        submitAction: ui.actionLink('providerEdit', 'voidSupervisees', [successUrl: ui.pageLink("providerDashboard", [personId: person.id, paneId: superviseesId] )]),
+                <%=  ui.includeFragment("providermanagement", "widget/inputDialog", [title: ui.message("providermanagement.confirmVoidSupervisees"),
+                        submitAction: ui.actionLink('providermanagement', 'providerEdit', 'voidSupervisees', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                         submitParams: [ provider: person.id ],
                         submitButtonId: "confirmHistoricalVoidButton_${ superviseesId }",
                         submitForm: [name: "multiSelectCheckboxForm_historical_${ superviseesId }",  required: true, requiredErrorMessage: ui.message("providermanagement.errors.supervisees.required")],
@@ -643,10 +643,10 @@
 <% } %>
 
     <div id="pane_${ supervisorsId }" class="pane">
-        <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: currentSupervisors.sort { item -> item.provider.person.personName?.toString() },
+        <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: currentSupervisors.sort { item -> item.provider.person.personName?.toString() },
                 columns: providerListDisplayFields.values(),
                 columnLabels: providerListDisplayFields.keySet(),
-                selectAction: ui.pageLink('providerDashboard'),
+                selectAction: ui.pageLink("providermanagement", "providerDashboard"),
                 selectIdParam: "personId",
                 selectId: "provider.person.id",
                 emptyMessage: ui.message("providermanagement.none"),

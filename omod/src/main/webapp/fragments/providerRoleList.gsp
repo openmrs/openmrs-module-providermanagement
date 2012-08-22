@@ -11,7 +11,7 @@
 
     <% providerRoles.each { %>
     <tr>
-        <td><a href="${ ui.pageLink("editProviderRole", [providerRoleId: it.id]) }">${ (it.retired ? '<span class="retired">' + it.name + '</span>': it.name) }</a></td>
+        <td><a href="${ ui.pageLink("providermanagement", "editProviderRole", [providerRoleId: it.id]) }">${ (it.retired ? '<span class="retired">' + it.name + '</span>': it.name) }</a></td>
         <td>
             ${ it.superviseeProviderRoles?.collect { (it.retired ? '<span class="retired">' + it.name + '</span>' : it.name) }.join(', ') }
         </td>
@@ -23,9 +23,9 @@
         </td>
         <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
          <td>
-             ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("editProviderRole", [providerRoleId: it.id])],
-                                                                                [label: ui.message("general.retire"), link: ui.actionLink("providerRoleForm", "retireProviderRole", [providerRoleId: it.id]), confirm: ui.message("providermanagement.confirm")],
-                                                                                [label: ui.message("general.delete"), link: ui.actionLink("providerRoleForm", "deleteProviderRole", [providerRoleId: it.id]), confirm: ui.message("providermanagement.confirm")]]]
+             ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("providermanagement", "editProviderRole", [providerRoleId: it.id])],
+                                                                                [label: ui.message("general.retire"), link: ui.actionLink("providermanagement", "providerRoleForm", "retireProviderRole", [providerRoleId: it.id]), confirm: ui.message("providermanagement.confirm")],
+                                                                                [label: ui.message("general.delete"), link: ui.actionLink("providermanagement", "providerRoleForm", "deleteProviderRole", [providerRoleId: it.id]), confirm: ui.message("providermanagement.confirm")]]]
              )}
          </td>
     </tr>

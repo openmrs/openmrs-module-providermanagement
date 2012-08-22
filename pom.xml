@@ -26,7 +26,7 @@
         <developerConnection>scm:git:https://github.com/mogoodrich/openmrs-module-providermanagement/</developerConnection>
         <url>https://github.com/mogoodrich/openmrs-module-providermanagement/</url>
       <tag>HEAD</tag>
-  </scm>
+     </scm>
 
     <distributionManagement>
         <repository>
@@ -110,7 +110,7 @@
             <dependency>
                 <groupId>org.openmrs.module</groupId>
                 <artifactId>uiframework-api</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
                 <type>jar</type>
                 <scope>provided</scope>
             </dependency>

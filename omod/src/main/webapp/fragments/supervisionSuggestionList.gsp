@@ -30,9 +30,9 @@
             </td>
             <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
             <td>
-                ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("editSupervisionSuggestion", [supervisionSuggestion: it.id])],
-                        [label: ui.message("general.retire"), link: ui.actionLink("supervisionSuggestionForm", "retireSupervisionSuggestion", [supervisionSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")],
-                        [label: ui.message("general.delete"), link: ui.actionLink("supervisionSuggestionForm", "deleteSupervisionSuggestion", [supervisionSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")]]]
+                ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("providermanagement", "editSupervisionSuggestion", [supervisionSuggestion: it.id])],
+                        [label: ui.message("general.retire"), link: ui.actionLink("providermanagement", "supervisionSuggestionForm", "retireSupervisionSuggestion", [supervisionSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")],
+                        [label: ui.message("general.delete"), link: ui.actionLink("providermanagement", "supervisionSuggestionForm", "deleteSupervisionSuggestion", [supervisionSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")]]]
                 )}
             </td>
         </tr>

@@ -57,7 +57,7 @@
         <tr>
             <td>&nbsp;</td>
             <td><button type="submit">${ ui.message("general.submit") }</button>
-                ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons]) }
+                ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: config.actionButtons]) }
             </td>
         </tr>
 

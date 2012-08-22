@@ -69,11 +69,11 @@
         <table class="providerInfoTable">
 
             <!-- include the name fragment -->
-            ${ ui.includeFragment("personName", [personName: person?.personName, mode: 'edit', id: id]) }
+            ${ ui.includeFragment("providermanagement", "personName", [personName: person?.personName, mode: 'edit', id: id]) }
 
             <tr>
                 <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
-                <td> ${ ui.includeFragment("widget/selectList", [ formFieldName: "provider.providerRole",
+                <td> ${ ui.includeFragment("uilibrary", "widget/selectList", [ formFieldName: "provider.providerRole",
                         selected: [provider?.providerRole?.id], options: providerRoles, optionsDisplayField: 'name',
                         optionsValueField: 'id', includeEmptyOption: true] ) }</td>
             </tr>
@@ -96,7 +96,7 @@
 
             <tr>
                 <td><span class="label">${ ui.message("Person.birthdate") }:</span></td>
-                <td>${ ui.includeFragment("widget/field", [ class: java.util.Date,
+                <td>${ ui.includeFragment("uilibrary", "widget/field", [ class: java.util.Date,
                         formFieldName: "birthdate",
                         initialValue: person?.birthdate, maxDate: "+0d" ]) }
                     ${ ui.message('Person.birthdateEstimated') }:
@@ -108,7 +108,7 @@
             <tr>
                 <td><span class="label">${ it.name }:</span></td>
                 <td>
-                    ${ ui.includeFragment("widget/field", [ class: it.format,
+                    ${ ui.includeFragment("uilibrary", "widget/field", [ class: it.format,
                         formFieldName: "attributeMap[" + it.name + "].value",
                         initialValue: person?.attributes.find{ attribute -> attribute.attributeType == it }?.hydratedObject ?: null] ) }
                 </td>
@@ -121,7 +121,7 @@
             <tr>
                 <td><span class="label">${ it.name }:</span></td>
                 <td>
-                    ${ ui.includeFragment("widget/field", [ class: "java.lang.String",
+                    ${ ui.includeFragment("uilibrary", "widget/field", [ class: "java.lang.String",
                             formFieldName: "provider.attributeMap['" + it.id + "']",
                             initialValue: provider?.attributes.find{ attribute -> attribute.attributeType == it }?.value ?: null ] ) }
                 </td>
@@ -133,7 +133,7 @@
             </tr>
 
             <!-- include the address fragment -->
-            ${ ui.includeFragment(addressWidget, [personAddress: person?.personAddress, mode: 'edit']) }
+            ${ ui.includeFragment("providermanagement", addressWidget, [personAddress: person?.personAddress, mode: 'edit']) }
 
         </table>
 
@@ -142,7 +142,7 @@
         <table class="providerActionButtonsTable">
             <tr>
                 <td colspan="2">
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: config.actionButtons])}
+                    ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: config.actionButtons])}
                 </td>
             </tr>
         </table>

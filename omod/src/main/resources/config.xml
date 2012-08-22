@@ -24,8 +24,8 @@
     <!-- logic module is required because it is where the Groovy jar comes from -->
     <require_modules>
         <require_module>org.openmrs.logic</require_module>
-        <require_module version="1.7">org.openmrs.module.uiframework</require_module>
-        <require_module version="1.3">org.openmrs.module.uilibrary</require_module>
+        <require_module version="1.8">org.openmrs.module.uiframework</require_module>
+        <require_module version="1.4">org.openmrs.module.uilibrary</require_module>
     </require_modules>
 
 

@@ -23,9 +23,9 @@
                 </td>
                 <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
                 <td>
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("editProviderSuggestion", [providerSuggestion: it.id])],
-                            [label: ui.message("general.retire"), link: ui.actionLink("providerSuggestionForm", "retireProviderSuggestion", [providerSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")],
-                            [label: ui.message("general.delete"), link: ui.actionLink("providerSuggestionForm", "deleteProviderSuggestion", [providerSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")]]]
+                    ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: [ [label: ui.message("general.edit"), link: ui.pageLink("providermanagement", "editProviderSuggestion", [providerSuggestion: it.id])],
+                            [label: ui.message("general.retire"), link: ui.actionLink("providermanagement", "providerSuggestionForm", "retireProviderSuggestion", [providerSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")],
+                            [label: ui.message("general.delete"), link: ui.actionLink("providermanagement", "providerSuggestionForm", "deleteProviderSuggestion", [providerSuggestion: it.id]), confirm: ui.message("providermanagement.confirm")]]]
                     )}
                  </td>
             </tr>

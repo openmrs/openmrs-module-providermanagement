@@ -105,7 +105,7 @@
                         </tr>
 
                         <!-- include the address fragment -->
-                        ${ ui.includeFragment(addressWidget, [personAddress: command?.personAddress, mode: 'edit']) }
+                        ${ ui.includeFragment("providermanagement", addressWidget, [personAddress: command?.personAddress, mode: 'edit']) }
 
                     </table>
                 </td>
@@ -114,7 +114,7 @@
                     <table>
                         <tr>
                             <td><span class="label">${ ui.message("providermanagement.providerRole") }</span></td>
-                            <td> ${ ui.includeFragment("widget/selectList", [ formFieldName: "providerRole",
+                            <td> ${ ui.includeFragment("uilibrary", "widget/selectList", [ formFieldName: "providerRole",
                                     selected: [command?.providerRole?.id], options: providerRoles, optionsDisplayField: 'name',
                                     optionsValueField: 'id', includeEmptyOption: true] ) }</td>
                         </tr>
@@ -123,7 +123,7 @@
                         <tr>
                             <td><span class="label">${ advancedSearchPersonAttributeType.name }:</span></td>
                             <td>
-                                ${ ui.includeFragment("widget/field", [ class: advancedSearchPersonAttributeType.format,
+                                ${ ui.includeFragment("uilibrary", "widget/field", [ class: advancedSearchPersonAttributeType.format,
                                         formFieldName: "attribute.value", initialValue: command?.attribute?.hydratedObject ] ) }
                             </td>
                         </tr>
@@ -140,7 +140,7 @@
 
             <tr>
                 <td colspan="2" align="center">
-                    ${ ui.includeFragment("widget/actionButtons", [actionButtons: [ [type: "submit", id: "searchButton_" + id, label: ui.message("general.search")],
+                    ${ ui.includeFragment("providermanagement", "widget/actionButtons", [actionButtons: [ [type: "submit", id: "searchButton_" + id, label: ui.message("general.search")],
                                                                                     [type: "reset", id: "cancelButton_" + id, label: ui.message("general.cancel")] ]]) }
                 </td>
             </tr>

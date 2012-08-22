@@ -1,7 +1,7 @@
 
 <%
     context.requirePrivilege("Provider Management Dashboard - Edit Providers")
-    ui.decorateWith("providerManagementPage")
+    ui.decorateWith("providermanagement", "providerManagementPage")
     ui.includeCss("providermanagement", "similarPeople.css")
 %>
 
@@ -23,12 +23,12 @@
                 jq('#peopleList').show();
             });
         <% } else { %>
-            window.location = '${ ui.pageLink("providerCreate", [name: name]) }';
+            window.location = '${ ui.pageLink("providermanagement", "providerCreate", [name: name]) }';
         <% } %>
 
         // define click action for the people button
         jq('#notFoundInPeopleListButton').click(function() {
-            window.location = '${ ui.pageLink("providerCreate", [name: name]) }';
+            window.location = '${ ui.pageLink("providermanagement", "providerCreate", [name: name]) }';
         });
 
     });
@@ -39,10 +39,10 @@
 
 <div id="providerList" class="list">
       ${ ui.message('providermanagement.similarProviders.message') }
-      <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: similarProviders,
+      <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: similarProviders,
             columns: providerSearchDisplayFields.values(),
             columnLabels: providerSearchDisplayFields.keySet(),
-            selectAction: ui.pageLink('providerDashboard'),
+            selectAction: ui.pageLink("providermanagement", "providerDashboard"),
             selectIdParam: "personId",
             disabled: true,
             actionButtons: [[label: ui.message("providermanagement.providerNotFoundInList"), id: "notFoundInProviderListButton"]]
@@ -54,10 +54,10 @@
 
 <div id="peopleList" class="list">
     ${ ui.message('providermanagement.similarPersons.message') }
-    <%=  ui.includeFragment("widget/multiSelectCheckboxTable", [ items: similarPeople,
+    <%=  ui.includeFragment("providermanagement", "widget/multiSelectCheckboxTable", [ items: similarPeople,
             columns: personSearchDisplayFields.values(),
             columnLabels: personSearchDisplayFields.keySet(),
-            selectAction: ui.pageLink('providerCreate'),
+            selectAction: ui.pageLink("providermanagement", "providerCreate"),
             selectIdParam: "personId",
             disabled: true,
             actionButtons: [[label: ui.message("providermanagement.providerNotFoundInList"), id: "notFoundInPeopleListButton"]]

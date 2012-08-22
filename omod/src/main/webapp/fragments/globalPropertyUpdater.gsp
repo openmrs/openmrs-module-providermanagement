@@ -31,7 +31,7 @@
     <input type="hidden" name="propertyName" value="${ property.property }"/>
 
     <% if (config.options) { %>
-    ${ ui.includeFragment("widget/selectList", [ formFieldName: "values",
+    ${ ui.includeFragment("uilibrary", "widget/selectList", [ formFieldName: "values",
             selected: values, options: config.options, optionsDisplayField: config.optionsKey,
             optionsValueField: config.optionsValue, multiple: config.multiple] ) }
     <% } else { %>

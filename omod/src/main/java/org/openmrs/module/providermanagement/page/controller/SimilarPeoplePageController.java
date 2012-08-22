@@ -47,7 +47,7 @@ public class SimilarPeoplePageController {
 
             // if there are no similar persons, go directly to the create provider page
             if (similarPeople == null || similarPeople.size() == 0) {
-                return "redirect:" + new Redirect("providerCreate","name=" + name).getUrl();
+                return "redirect:" + new Redirect("providermanagement", "providerCreate","name=" + name).getUrl();
             }
 
             // otherwise, split into two lists, one of providers and the other of persons
@@ -78,7 +78,7 @@ public class SimilarPeoplePageController {
             return null;
         }
         else {
-            return "redirect:" + new Redirect("providerCreate","name=" + name).getUrl();
+            return "redirect:" + new Redirect("providermanagement", "providerCreate","name=" + name).getUrl();
         }
     }
 }
