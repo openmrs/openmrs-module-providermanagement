@@ -11,14 +11,14 @@ ${ ui.includeFragment("uilibrary", "standardIncludes") }
 
 <div id="providerHeader">
     <!-- banner -->
-    ${ ui.includeFragment("providerManagementBanner") }
+    ${ ui.includeFragment("providermanagement", "providerManagementBanner") }
 
     <!-- include the menu -->
-    ${ ui.includeFragment("providerManagementMenu") }
+    ${ ui.includeFragment("providermanagement","providerManagementMenu") }
 </div>
 
 <!--  show any generic error messages -->
-${ ui.includeFragment("flashMessage") }
+${ ui.includeFragment("uilibrary", "flashMessage") }
 
 <div id="content">
     ${ config.content }
