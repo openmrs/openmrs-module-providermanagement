@@ -25,7 +25,7 @@
     <require_modules>
         <require_module>org.openmrs.logic</require_module>
         <require_module version="1.8.1">org.openmrs.module.uiframework</require_module>
-        <require_module version="1.4">org.openmrs.module.uilibrary</require_module>
+        <require_module version="1.5">org.openmrs.module.uilibrary</require_module>
     </require_modules>
 
 
