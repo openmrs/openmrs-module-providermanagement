@@ -273,10 +273,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         if (role == null) {
             throw new APIException("Cannot set provider role: role is null");
         }
-        
-        if (identifier == null) {
-            throw new APIException("Cannot set provider role: identifier is null");
-        }
 
         if (provider.isVoided()) {
             throw new APIException("Cannot set provider role: underlying person has been voided");
