@@ -71,9 +71,10 @@ public interface ProviderSuggestionService {
      * Saves the specified provider suggestion
      *
      * @param suggestion
+     * @return the saved provider suggestion
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void saveProviderSuggestion(ProviderSuggestion suggestion);
+    public ProviderSuggestion saveProviderSuggestion(ProviderSuggestion suggestion);
 
 
     /**
@@ -172,9 +173,10 @@ public interface ProviderSuggestionService {
      * Saves the specified supervision suggestion
      *
      * @param suggestion
+     * @return the saved supervision suggestion
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion);
+    public SupervisionSuggestion saveSupervisionSuggestion(SupervisionSuggestion suggestion);
 
     /**
      * Retires the specified supervision suggestion

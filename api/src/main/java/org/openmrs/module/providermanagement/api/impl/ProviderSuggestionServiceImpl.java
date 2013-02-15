@@ -87,8 +87,8 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
     @Override
     @Transactional
-    public void saveProviderSuggestion(ProviderSuggestion suggestion) {
-        dao.saveProviderSuggestion(suggestion);
+    public ProviderSuggestion saveProviderSuggestion(ProviderSuggestion suggestion) {
+        return dao.saveProviderSuggestion(suggestion);
     }
 
     @Override
@@ -197,8 +197,8 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
     @Override
     @Transactional
-    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion) {
-        dao.saveSupervisionSuggestion(suggestion);
+    public SupervisionSuggestion saveSupervisionSuggestion(SupervisionSuggestion suggestion) {
+        return dao.saveSupervisionSuggestion(suggestion);
     }
 
     @Override

@@ -81,8 +81,9 @@ public interface ProviderManagementDAO {
      * Saves/updates a provider role
      *
      * @param role the provider role to save
+     * @return provider role
      */
-    public void saveProviderRole(ProviderRole role);
+    public ProviderRole saveProviderRole(ProviderRole role);
 
     /**
      * Deletes a provider role
@@ -160,8 +161,9 @@ public interface ProviderManagementDAO {
      * Saves the specified provider suggestion
      *
      * @param suggestion
+     * @return provider suggestion
      */
-    public void saveProviderSuggestion(ProviderSuggestion suggestion);
+    public ProviderSuggestion saveProviderSuggestion(ProviderSuggestion suggestion);
 
     /**
      * Deletes the specified provider suggestion
@@ -209,8 +211,9 @@ public interface ProviderManagementDAO {
      * Saves the specified supervision suggestion
      *
      * @param suggestion
+     * @return supervision suggestion
      */
-    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion);
+    public SupervisionSuggestion saveSupervisionSuggestion(SupervisionSuggestion suggestion);
 
     /**
      * Deletes the specified supervision suggestion

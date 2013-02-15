@@ -95,8 +95,9 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public void saveProviderRole(ProviderRole role) {
+    public ProviderRole  saveProviderRole(ProviderRole role) {
         sessionFactory.getCurrentSession().saveOrUpdate(role);
+        return role;
     }
 
     @Override
@@ -227,8 +228,9 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public void saveProviderSuggestion(ProviderSuggestion suggestion) {
+    public ProviderSuggestion saveProviderSuggestion(ProviderSuggestion suggestion) {
         sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
+        return suggestion;
     }
 
     @Override
@@ -273,8 +275,9 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public void saveSupervisionSuggestion(SupervisionSuggestion suggestion) {
+    public SupervisionSuggestion saveSupervisionSuggestion(SupervisionSuggestion suggestion) {
         sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
+        return suggestion;
     }
 
     @Override
