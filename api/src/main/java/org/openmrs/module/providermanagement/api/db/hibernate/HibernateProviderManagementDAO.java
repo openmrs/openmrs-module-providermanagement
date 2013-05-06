@@ -148,7 +148,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
         // handle restricting by name if any names have been specified
         if (name != null && name.length() > 0) {
-            addNameCrieteria(criteria, name);
+            addNameCriteria(criteria, name);
         }
 
         // handle querying by address if an address has been specified
@@ -285,7 +285,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         sessionFactory.getCurrentSession().delete(suggestion);
     }
 
-    private void addNameCrieteria(Criteria criteria, String name) {
+    private void addNameCriteria(Criteria criteria, String name) {
         name = name.replace(", ", " ");
         String[] names = name.split("\\s+");
 
