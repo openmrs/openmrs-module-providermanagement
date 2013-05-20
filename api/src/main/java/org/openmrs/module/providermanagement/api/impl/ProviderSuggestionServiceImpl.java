@@ -295,7 +295,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         }
 
         // only keep providers that are valid for this provider to supervise or be supervised by
-        suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersByRoles(validRoles));
+        suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersAsPersonsByRoles(validRoles));
 
         // finally, remove any providers that this provider is already supervising or being supervised by
         if (type.equals(SupervisionSuggestionType.SUPERVISEE_SUGGESTION)) {

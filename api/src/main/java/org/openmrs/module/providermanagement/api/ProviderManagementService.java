@@ -38,7 +38,6 @@ import org.openmrs.module.providermanagement.exception.SourceProviderSameAsDesti
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Provider Management Service
@@ -158,7 +157,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return result list of providers
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProviders(String query, List<ProviderRole> providerRoles, Boolean includeRetired);
+    public List<Person> getProvidersAsPersons(String query, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Gets the list of providers that match the specified name, identifier, and provider roles
@@ -171,7 +170,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return result list of providers
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired);
+    public List<Person> getProvidersAsPersons(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Gets the list of providers that match the specified name, identifier, and provider roles
@@ -186,7 +185,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return result list of providers
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-     public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
+     public List<Person> getProvidersAsPersons(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Returns the provider roles associated with the specified provider
@@ -232,7 +231,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw APIException if roles are empty or null
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersByRoles(List<ProviderRole> roles);
+    public List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles);
     
     /**
      * Gets all providers with the specified role
@@ -243,7 +242,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw APIException if role is null
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersByRole(ProviderRole role);
+    public List<Person> getProvidersAsPersonsByRole(ProviderRole role);
 
     /**
      * Gets all providers that support the specified relationship type

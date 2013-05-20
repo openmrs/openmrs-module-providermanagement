@@ -16,7 +16,6 @@ package org.openmrs.module.providermanagement.api;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -541,7 +540,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test
     public void getProvidersByRole_shouldGetProvidersByRole() {
         ProviderRole role = providerManagementService.getProviderRole(1001);
-        List<Person> providers = providerManagementService.getProvidersByRole(role);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRole(role);
 
         // there should be three providers with the binome role
         Assert.assertEquals(3, providers.size());
@@ -571,7 +570,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Context.getProviderService().retireProvider(providerToRetire, "test");
 
         ProviderRole role = providerManagementService.getProviderRole(1001);
-        List<Person> providers = providerManagementService.getProvidersByRole(role);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRole(role);
 
         // there should now only be three providers with the binome role
         Assert.assertEquals(2, providers.size());
@@ -595,7 +594,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     @Test(expected = APIException.class)
     public void getProvidersByRole_shouldFailIfCalledWithNull() {
-        List<Person> providers = providerManagementService.getProvidersByRole(null);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRole(null);
     }
 
     @Test
@@ -609,7 +608,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         roles.add(providerManagementService.getProviderRole(1001));
         roles.add(providerManagementService.getProviderRole(1002));
 
-        List<Person> providers = providerManagementService.getProvidersByRoles(roles);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRoles(roles);
 
         // there should be four providers with the binome  or binome supervisor role
         Assert.assertEquals(3, providers.size());
@@ -637,7 +636,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         roles.add(providerManagementService.getProviderRole(1001));
         roles.add(providerManagementService.getProviderRole(1002));
 
-        List<Person> providers = providerManagementService.getProvidersByRoles(roles);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRoles(roles);
 
         // there should be four providers with the binome  or binome supervisor role
         Assert.assertEquals(4, providers.size());
@@ -661,7 +660,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     @Test(expected = APIException.class)
     public void getProvidersByRoles_shouldFailIfCalledWithNull() {
-        List<Person> providers = providerManagementService.getProvidersByRole(null);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRole(null);
     }
 
 
@@ -2907,28 +2906,28 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
 
     @Test(expected = RuntimeException.class)
     public void getProviders_shouldThrowExceptionIfIncludeRetiredNotSpecified() {
-        providerManagementService.getProviders(null, null, null, null);
+        providerManagementService.getProvidersAsPersons(null, null, null, null);
     }
 
     @Test
     public void getProviders_shouldGetProvidersReferencedByName() throws Exception {
-        List<Person> providers = providerManagementService.getProviders("jimmy", null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("jimmy", null, null, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(9), providers.get(0).getId());
 
-        providers = providerManagementService.getProviders("anet oloo", null, null, false);
+        providers = providerManagementService.getProvidersAsPersons("anet oloo", null, null, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(8), providers.get(0).getId());
     }
 
     @Test
     public void getProviders_shouldGetProvidersReferencedByIdentifier() throws Exception {
-        List<Person> providers = providerManagementService.getProviders(null,"2a5",null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, "2a5", null, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(2), providers.get(0).getId());
 
         // try a partial match
-        providers = providerManagementService.getProviders(null,"2a",null, false);
+        providers = providerManagementService.getProvidersAsPersons(null, "2a", null, false);
         Assert.assertEquals(5, providers.size());
 
         // double-check to make sure the are the correct providers
@@ -2953,7 +2952,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         roles.add(providerManagementService.getProviderRole(1001));
 
-        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, roles, false);
         Assert.assertEquals(3, providers.size());
 
         // double-check to make sure the are the correct providers
@@ -2979,7 +2978,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         roles.add(providerManagementService.getProviderRole(1001));
         roles.add(providerManagementService.getProviderRole(1011));
 
-        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, roles, false);
         Assert.assertEquals(4, providers.size());
 
         // double-check to make sure the are the correct providers
@@ -3006,7 +3005,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         roles.add(providerManagementService.getProviderRole(1001));
         roles.add(providerManagementService.getProviderRole(1005));
 
-        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, roles, false);
         Assert.assertEquals(4, providers.size());
 
         // double-check to make sure the are the correct providers
@@ -3034,7 +3033,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         roles.add(providerManagementService.getProviderRole(1001));
 
-        List<Person> providers = providerManagementService.getProviders(null,null, roles, true);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, roles, true);
         Assert.assertEquals(3, providers.size());
 
         // double-check to make sure the are the correct providers
@@ -3063,7 +3062,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         roles.add(providerManagementService.getProviderRole(1001));
 
-        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, roles, false);
         Assert.assertEquals(2, providers.size());
 
         // double-check to make sure the are the correct providers
@@ -3086,7 +3085,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void getProvider_shouldSearchOnMultipleParameters() throws Exception {
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         roles.add(providerManagementService.getProviderRole(1001));
-        List<Person> providers = providerManagementService.getProviders("John Doe","2a6", roles, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("John Doe", "2a6", roles, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(6), providers.get(0).getId());
     }
@@ -3097,7 +3096,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         roles.add(providerManagementService.getProviderRole(1001));
 
-        List<Person> providers = providerManagementService.getProviders(null,null, roles, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, roles, false);
         Assert.assertEquals(3, providers.size());
         Assert.assertEquals(new Integer(7), providers.get(0).getId());
         Assert.assertEquals(new Integer(2), providers.get(1).getId());
@@ -3111,7 +3110,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         roles.add(providerManagementService.getProviderRole(1001));
 
-        List<Person> providers = providerManagementService.getProviders("barack",null, roles, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("barack", null, roles, false);
         Assert.assertTrue(providers == null || providers.size() == 0);
     }
 
@@ -3122,7 +3121,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Person person = Context.getPersonService().getPerson(9);
         Context.getPersonService().voidPerson(person, "test");
 
-        List<Person> providers = providerManagementService.getProviders("jimmy", null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("jimmy", null, null, false);
         Assert.assertTrue(providers == null || providers.size() == 0);
     }
 
@@ -3131,13 +3130,13 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         PersonAddress personAddress = new PersonAddress();
         personAddress.setAddress1("wishard");
 
-        List<Person> providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, personAddress, null, null, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(2), providers.get(0).getId());
 
         personAddress = new PersonAddress();
         personAddress.setCityVillage("kapi");
-        providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        providers = providerManagementService.getProvidersAsPersons(null, null, personAddress, null, null, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(7), providers.get(0).getId());
     }
@@ -3148,7 +3147,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         personAddress.setAddress1("wishard");
         personAddress.setCityVillage("ind");
 
-        List<Person> providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, personAddress, null, null, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(2), providers.get(0).getId());
     }
@@ -3159,7 +3158,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         personAddress.setAddress1("wishard");
         personAddress.setCityVillage("boston");
 
-        List<Person> providers = providerManagementService.getProviders(null, null, personAddress, null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, personAddress, null, null, false);
         Assert.assertEquals(0, providers.size());
     }
 
@@ -3169,7 +3168,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         personAddress.setAddress1("wishard");
         personAddress.setCityVillage("ind");
 
-        List<Person> providers = providerManagementService.getProviders("horatio", null, personAddress, null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("horatio", null, personAddress, null, null, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(2), providers.get(0).getId());
     }
@@ -3181,7 +3180,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         personAddress.setCityVillage("ind");
 
         // search for a valid person name, but not the name of the person with the above address
-        List<Person> providers = providerManagementService.getProviders("jimmy", null, personAddress, null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("jimmy", null, personAddress, null, null, false);
         Assert.assertEquals(0, providers.size());
     }
 
@@ -3190,7 +3189,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1001);
         PersonAttribute attribute = new PersonAttribute(personAttributeType,"test");
 
-        List<Person> providers = providerManagementService.getProviders(null, null, null, attribute, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, null, attribute, null, false);
 
         Assert.assertEquals(2, providers.size());
         Assert.assertEquals(new Integer(8), providers.get(0).getId());
@@ -3203,7 +3202,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         PersonAttribute attribute = new PersonAttribute(personAttributeType,"test");
 
         // searches for a valid person name, but not the person with the above attribute
-        List<Person> providers = providerManagementService.getProviders("jimmy", null, null, attribute, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("jimmy", null, null, attribute, null, false);
 
         Assert.assertEquals(0, providers.size());
     }
@@ -3222,24 +3221,24 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         PersonAttribute emptyAttribute = new PersonAttribute();
         emptyAttribute.setValue("");
 
-        List<Person> providers = providerManagementService.getProviders("jimmy", "", emptyAddress, emptyAttribute, emptyList, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("jimmy", "", emptyAddress, emptyAttribute, emptyList, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(9), providers.get(0).getId());
 
-        providers = providerManagementService.getProviders("", "2a6", emptyAddress, emptyAttribute, emptyList, false);
+        providers = providerManagementService.getProvidersAsPersons("", "2a6", emptyAddress, emptyAttribute, emptyList, false);
         Assert.assertEquals(1, providers.size());
         Assert.assertEquals(new Integer(6), providers.get(0).getId());
     }
 
     @Test
     public void getProvidersQuery_shouldReturnNullIfNoQuery() throws Exception {
-        List<Person> providers = providerManagementService.getProviders(null, null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons(null, null, false);
         Assert.assertTrue(providers == null || providers.size() == 0);
     }
 
     @Test
     public void getProvidersQuery_shouldFetchByIdentifierAndNameAndOrderByName()  throws Exception {
-        List<Person> providers = providerManagementService.getProviders("b", null, false);
+        List<Person> providers = providerManagementService.getProvidersAsPersons("b", null, false);
         Assert.assertEquals(3, providers.size());
         Assert.assertEquals(new Integer(501), providers.get(0).getId());
         Assert.assertEquals(new Integer(2), providers.get(1).getId());

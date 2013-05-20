@@ -127,7 +127,7 @@ public class ProviderAdvancedSearchFragmentController {
             roles.addAll(Context.getService(ProviderManagementService.class).getAllProviderRoles(true));
         }
 
-        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(command.getName(), command.getIdentifier(), command.getPersonAddress(), command.getAttribute(), roles, false);
+        List<Person> persons = Context.getService(ProviderManagementService.class).getProvidersAsPersons(command.getName(), command.getIdentifier(), command.getPersonAddress(), command.getAttribute(), roles, false);
 
          // convert to a simple object list
         return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, command.getResultFields());

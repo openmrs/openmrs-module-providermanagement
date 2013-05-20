@@ -190,15 +190,15 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
-    public List<Person> getProviders(String query, List<ProviderRole> providerRoles, Boolean includeRetired) {
+    public List<Person> getProvidersAsPersons(String query, List<ProviderRole> providerRoles, Boolean includeRetired) {
 
         // return empty list if no query
         if (query == null || query.length() == 0) {
             return new ArrayList<Person>();
         }
 
-        List<Person> nameMatches = getProviders(query, null, providerRoles, includeRetired);
-        List<Person> identifierMatches = getProviders(null, query, providerRoles, includeRetired);
+        List<Person> nameMatches = getProvidersAsPersons(query, null, providerRoles, includeRetired);
+        List<Person> identifierMatches = getProvidersAsPersons(null, query, providerRoles, includeRetired);
 
         if (identifierMatches == null || identifierMatches.size() == 0) {
             return nameMatches;
@@ -218,7 +218,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Person> getProviders(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired) {
+    public List<Person> getProvidersAsPersons(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired) {
         if (providerRoles == null) {
             providerRoles = Collections.emptyList();
         }
@@ -227,11 +227,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new RuntimeException("include retired must be specified when searching for providers");
         }
 
-        return getProviders(name, identifier, null, null, providerRoles, includeRetired);
+        return getProvidersAsPersons(name, identifier, null, null, providerRoles, includeRetired);
     }
 
     @Override
-    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
+    public List<Person> getProvidersAsPersons(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
         return dao.getProviders(name, identifier, personAddress, personAttribute, providerRoles, includeRetired);
     }
 
@@ -346,7 +346,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Person> getProvidersByRoles(List<ProviderRole> roles) {
+    public List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles) {
         // not allowed to pass null or empty set here
         if (roles == null || roles.isEmpty()) {
             throw new APIException("Roles cannot be null or empty");
@@ -357,7 +357,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Person> getProvidersByRole(ProviderRole role) {
+    public List<Person> getProvidersAsPersonsByRole(ProviderRole role) {
         // not allowed to pass null here
         if (role == null) {
             throw new APIException("Role cannot be null");
@@ -365,7 +365,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         roles.add(role);
-        return getProvidersByRoles(roles);
+        return getProvidersAsPersonsByRoles(roles);
     }
 
     @Override
@@ -382,7 +382,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             return new ArrayList<Person>();  // just return an empty list
         }
         else {
-            return getProvidersByRoles(providerRoles);
+            return getProvidersAsPersonsByRoles(providerRoles);
         }
     }
 

@@ -25,7 +25,6 @@ import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -58,7 +57,7 @@ public class ProviderSearchFragmentController {
         }
 
         // now fetch the results
-        List<Person> persons = Context.getService(ProviderManagementService.class).getProviders(searchValue, providerRoleList, includeRetired);
+        List<Person> persons = Context.getService(ProviderManagementService.class).getProvidersAsPersons(searchValue, providerRoleList, includeRetired);
 
         // exclude supervisees of a provider if needed
         if (excludeSuperviseesOf != null) {
