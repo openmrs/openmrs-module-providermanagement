@@ -347,12 +347,17 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional(readOnly = true)
     public List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles) {
+        return providersToPersons(getProvidersByRoles(roles));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Provider> getProvidersByRoles(List<ProviderRole> roles) {
         // not allowed to pass null or empty set here
         if (roles == null || roles.isEmpty()) {
             throw new APIException("Roles cannot be null or empty");
         }
-        List<Provider> providers = dao.getProvidersByProviderRoles(roles, false);
-        return providersToPersons(providers);
+        return dao.getProvidersByProviderRoles(roles, false);
     }
 
     @Override

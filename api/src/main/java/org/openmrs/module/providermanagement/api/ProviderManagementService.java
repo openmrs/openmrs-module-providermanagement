@@ -233,6 +233,15 @@ public interface ProviderManagementService extends OpenmrsService {
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles);
 
+    /**
+     * Gets all providers whose role is in the list of specified roles
+     *
+     * @param roles
+     * @return all providers with one of the specified roles
+     * @should throw APIException if roles are empty or null
+     */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
+    public List<Provider> getProvidersByRoles(List<ProviderRole> roles);
 
     /**
      * Gets all providers with the specified role
