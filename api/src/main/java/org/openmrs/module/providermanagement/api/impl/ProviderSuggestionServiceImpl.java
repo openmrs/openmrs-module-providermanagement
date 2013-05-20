@@ -152,10 +152,10 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
         // only keep those providers that are valid (ie, support the specified relationship type
         // TODO: might want to test the performance of this
-        suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersByRelationshipType(relationshipType));
+        suggestedProviders.retainAll(Context.getService(ProviderManagementService.class).getProvidersAsPersonsByRelationshipType(relationshipType));
 
         // finally, remove any providers that are already assigned to this patient
-        suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getProvidersForPatient(patient, relationshipType, new Date()));
+        suggestedProviders.removeAll(Context.getService(ProviderManagementService.class).getProvidersAsPersonsForPatient(patient, relationshipType, new Date()));
 
         return new ArrayList<Person>(suggestedProviders);
     }

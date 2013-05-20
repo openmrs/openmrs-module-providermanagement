@@ -152,7 +152,7 @@ public class SuggestionTest extends BaseModuleContextSensitiveTest {
 
 
         suggestion.setCriteria("Set<org.openmrs.Person> persons = new HashSet<org.openmrs.Person>();" +
-                "persons.addAll(providerManagementService.getProvidersByRelationshipType(relationshipType));" +
+                "persons.addAll(providerManagementService.getProvidersAsPersonsByRelationshipType(relationshipType));" +
                 "return persons;");
 
         suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");

@@ -48,7 +48,7 @@ public class PatientProviderDashboardPageController {
 
         // first find the provider (or list of providers) for each relationship type
         for (RelationshipType relationshipType : pmService.getAllProviderRoleRelationshipTypes(false)) {
-            List<Person> p = pmService.getProvidersForPatient(patient, relationshipType, new Date());
+            List<Person> p = pmService.getProvidersAsPersonsForPatient(patient, relationshipType, new Date());
 
             // if we have existing providers, add them to the results list
             if (p != null && p.size() > 0) {

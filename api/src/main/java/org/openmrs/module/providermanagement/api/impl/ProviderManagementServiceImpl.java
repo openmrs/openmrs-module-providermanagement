@@ -370,7 +370,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Person> getProvidersByRelationshipType(RelationshipType relationshipType) {
+    public List<Person> getProvidersAsPersonsByRelationshipType(RelationshipType relationshipType) {
 
         if (relationshipType == null) {
             throw new  APIException("Relationship type cannot be null");
@@ -835,7 +835,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType, Date date)
+    public List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType, Date date)
             throws InvalidRelationshipTypeException {
 
         List<Relationship> relationships;
@@ -866,9 +866,9 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
+    public List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException {
-        return getProvidersForPatient(patient, relationshipType, null);
+        return getProvidersAsPersonsForPatient(patient, relationshipType, null);
     }
 
     @Override

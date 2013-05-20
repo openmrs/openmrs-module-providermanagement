@@ -668,7 +668,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test
     public void getProvidersByRelationshipType_shouldReturnProvidersThatSupportRelationshipType() {
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1002);
-        List<Person> providers = providerManagementService.getProvidersByRelationshipType(relationshipType);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRelationshipType(relationshipType);
 
         // there should be four providers (the 3 binomes, the binome supervisor, and the accompagnateur) that support the accompagnateur relationship
 
@@ -694,18 +694,18 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test
     public void getProvidersByRelationshipType_shouldReturnEmptyListIfNoMatchingProvidersFound() {
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);   // a relationship type from the standard test data
-        List<Person> providers = providerManagementService.getProvidersByRelationshipType(relationshipType);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRelationshipType(relationshipType);
         Assert.assertEquals(0, providers.size());
 
         // also try a relationship type that has a matching role, but no providers have that role
         relationshipType = Context.getPersonService().getRelationshipType(1003);
-        providers = providerManagementService.getProvidersByRelationshipType(relationshipType);
+        providers = providerManagementService.getProvidersAsPersonsByRelationshipType(relationshipType);
         Assert.assertEquals(0, providers.size());
     }
 
     @Test(expected = APIException.class)
     public void getProvidersByRelationshipType_shouldFailIfCalledWithNull() {
-        List<Person> providers = providerManagementService.getProvidersByRelationshipType(null);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsByRelationshipType(null);
     }
 
     @Test
@@ -1705,7 +1705,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now confirm that these two providers are returned when we call getProviderRelationshipsForPatient
-        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null, new Date());
+        List<Person> providers = providerManagementService.getProvidersAsPersonsForPatient(patient, null, new Date());
 
         // there should be two providers
         Assert.assertEquals(2, providers.size());
@@ -1742,7 +1742,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch only providers with a specific relationship type
-        List<Person> providers = providerManagementService.getProvidersForPatient(patient, acc, new Date());
+        List<Person> providers = providerManagementService.getProvidersAsPersonsForPatient(patient, acc, new Date());
 
         // there should be one provider
         Assert.assertEquals(1, providers.size());
@@ -1752,20 +1752,20 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     @Test
     public void getProvidersForPatient_shouldReturnEmptyListIfPatientHasNoProviderRelationships() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
-        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null, new Date());
+        List<Person> providers = providerManagementService.getProvidersAsPersonsForPatient(patient, null, new Date());
         Assert.assertEquals(0, providers.size());
     }
 
     @Test(expected = APIException.class)
     public void getProvidersForPatient_shouldFailIfPatientNull() throws Exception {
-        providerManagementService.getProvidersForPatient(null, null);
+        providerManagementService.getProvidersAsPersonsForPatient(null, null);
     }
 
     @Test(expected = InvalidRelationshipTypeException.class)
     public void getProvidersForPatient_shouldFailIfRelationshipIsNotProviderRelationship() throws Exception {
         Patient patient = Context.getPatientService().getPatient(2);
         RelationshipType relationshipType = Context.getPersonService().getRelationshipType(1);
-        providerManagementService.getProvidersForPatient(patient, relationshipType);
+        providerManagementService.getProvidersAsPersonsForPatient(patient, relationshipType);
     }
 
     @Test
@@ -1783,7 +1783,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc, DATE);
 
         // now get relationships in the past
-        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null, PAST_DATE);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsForPatient(patient, null, PAST_DATE);
 
         // there should be one relationship
         Assert.assertEquals(1, providers.size());
@@ -1806,7 +1806,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc, DATE);
 
         // now get relationships without specifying a date
-        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null, null);
+        List<Person> providers = providerManagementService.getProvidersAsPersonsForPatient(patient, null, null);
 
         // there should be two relationships
         Assert.assertEquals(2, providers.size());
@@ -1843,7 +1843,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         providerManagementService.assignPatientToProvider(patient, provider2, acc);
 
         // now fetch only providers with a specific relationship type
-        List<Person> providers = providerManagementService.getProvidersForPatient(patient, acc, new Date());
+        List<Person> providers = providerManagementService.getProvidersAsPersonsForPatient(patient, acc, new Date());
 
         // there should be one provider
         Assert.assertEquals(1,providers.size());
@@ -1869,7 +1869,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Context.getProviderService().retireProvider(providerToRetire, "test");
 
         // now confirm that these two providers are returned when we call getProviderRelationshipsForPatient
-        List<Person> providers = providerManagementService.getProvidersForPatient(patient, null, new Date());
+        List<Person> providers = providerManagementService.getProvidersAsPersonsForPatient(patient, null, new Date());
 
         // there should be two providers
         Assert.assertEquals(2, providers.size());

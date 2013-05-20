@@ -232,7 +232,8 @@ public interface ProviderManagementService extends OpenmrsService {
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     public List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles);
-    
+
+
     /**
      * Gets all providers with the specified role
      * (Excludes retired providers)
@@ -253,7 +254,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should throw API Exception if relationship type is null
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersByRelationshipType(RelationshipType relationshipType);
+    public List<Person> getProvidersAsPersonsByRelationshipType(RelationshipType relationshipType);
 
     /**
      * Gets all the provider roles that can server as supervisors of the specified provider
@@ -544,7 +545,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType, Date date)
+    public List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType, Date date)
             throws InvalidRelationshipTypeException;
 
     /**
@@ -556,7 +557,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersForPatient(Patient patient, RelationshipType relationshipType)
+    public List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException;
 
 
