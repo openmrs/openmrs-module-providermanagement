@@ -46,8 +46,8 @@
                 supervisee_provider_role_id int(11) NOT NULL,
                 KEY provider_role_id (provider_role_id),
                 KEY supervisee_provider_role_id (supervisee_provider_role_id),
-                CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
-                CONSTRAINT FOREIGN KEY (supervisee_provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id)
+                CONSTRAINT providermanagement_prspr_provider_role_fk FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
+                CONSTRAINT providermanagement_prspr_supervisee_role_fk FOREIGN KEY (supervisee_provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             CREATE TABLE providermanagement_provider_role_provider_attribute_type (
@@ -55,8 +55,8 @@
                 provider_attribute_type_id int(11) NOT NULL,
                 KEY provider_role_id (provider_role_id),
                 KEY provider_attribute_type_id (provider_attribute_type_id),
-                CONSTRAINT FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
-                CONSTRAINT FOREIGN KEY (provider_attribute_type_id) REFERENCES provider_attribute_type (provider_attribute_type_id)
+                CONSTRAINT providermanagement_prpat_provider_role_fk FOREIGN KEY (provider_role_id) REFERENCES providermanagement_provider_role (provider_role_id),
+                CONSTRAINT providermanagement_prpat_provider_attribute_type_fk FOREIGN KEY (provider_attribute_type_id) REFERENCES provider_attribute_type (provider_attribute_type_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
             CREATE TABLE providermanagement_provider_suggestion (
