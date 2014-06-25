@@ -27,7 +27,8 @@
     </require_modules>
 
     <!-- Aware Modules -->
-    <!-- logic module is required because it is where the Groovy jar comes from -->
+    <!-- In Openmrs 1.9.x and earlier we rely on the logic module to get the groovy jar, which is used for processing suggestion rules;
+         in Openmrs 1.10.x the groovy jar is provided with core, and so the logic module is no longer required-->
     <aware_of_modules>
         <aware_of_module>org.openmrs.logic</aware_of_module>
     </aware_of_modules>
