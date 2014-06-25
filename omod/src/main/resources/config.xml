@@ -21,12 +21,16 @@
 	
 
     <!-- Required Modules -->
-    <!-- logic module is required because it is where the Groovy jar comes from -->
     <require_modules>
-        <require_module>org.openmrs.logic</require_module>
         <require_module version="1.8.1">org.openmrs.module.uiframework</require_module>
         <require_module version="1.5">org.openmrs.module.uilibrary</require_module>
     </require_modules>
+
+    <!-- Aware Modules -->
+    <!-- logic module is required because it is where the Groovy jar comes from -->
+    <aware_of_modules>
+        <aware_of_module>org.openmrs.logic</aware_of_module>
+    </aware_of_modules>
 
 
 	<!-- Adds link to admin page -->

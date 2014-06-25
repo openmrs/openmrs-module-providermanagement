@@ -51,7 +51,6 @@
 		<!-- End OpenMRS core -->
 
         <!--  include groovy, but mark as provided since it is included in core OpenMRS -->
-        <!-- TODO: may need to modify this once logic is no longer provided -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
