@@ -40,7 +40,7 @@
         </set>
 
         <!-- link to supervisee roles -->
-        <set name="superviseeProviderRoles" table="providermanagement_provider_role_supervisee_provider_role">
+        <set name="superviseeProviderRoles" table="providermanagement_provider_role_supervisee_provider_role" inverse="false">
             <key column="provider_role_id" />
             <many-to-many column="supervisee_provider_role_id" class="org.openmrs.module.providermanagement.ProviderRole" />
         </set>
