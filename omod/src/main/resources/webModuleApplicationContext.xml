@@ -22,7 +22,6 @@
     <bean class="org.openmrs.module.providermanagement.converter.StringToProviderRoleConverter"/>
     <bean class="org.openmrs.module.providermanagement.converter.StringToProviderSuggestionConverter"/>
     <bean class="org.openmrs.module.providermanagement.converter.StringToSupervisionSuggestionConverter"/>
-    <bean class="org.openmrs.module.providermanagement.converter.StringToProviderAttributeTypeConverter"/>
 
     <!-- URL Mapping -->
     <!-- override the PersonRelationshipsPortletController defined in core -->
