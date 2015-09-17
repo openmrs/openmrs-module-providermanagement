@@ -15,22 +15,32 @@
 package org.openmrs.module.providermanagement.converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.ui.framework.converter.util.ConversionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StringToProviderRoleConverter implements Converter<String, ProviderRole> {
-
-    /**
-     * Treats the string as the integer primary key of the Provider Role
-     */
-    @Override
-    public ProviderRole convert(String id) {
-        if (StringUtils.isBlank(id))
-            return null;
-        return Context.getService(ProviderManagementService.class).getProviderRole(Integer.valueOf(id));
-    }
+	
+	@Autowired
+	@Qualifier("providerManagementService")
+	public ProviderManagementService service;
+	
+	/**
+	 * Treats the string as the integer primary key of the Provider Role
+	 */
+	@Override
+	public ProviderRole convert(String id) {
+		if (StringUtils.isBlank(id)) {
+			return null;
+		} else if (ConversionUtil.onlyDigits(id)) {
+			return service.getProviderRole(Integer.valueOf(id));
+		} else {
+			return service.getProviderRoleByUuid(id);
+		}
+	}
 }

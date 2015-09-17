@@ -1,4 +1,4 @@
-/*
+/**
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -17,14 +17,17 @@ package org.openmrs.module.providermanagement;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.fragment.controller.ProviderSearchFragmentController;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.ui.framework.Formatter;
+import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.FragmentActionUiUtils;
 
 import java.util.List;
@@ -40,7 +43,10 @@ public class ProviderSearchFragmentControllerTest extends BaseModuleContextSensi
 
     @Before
     public void init() throws Exception {
-        this.ui = new FragmentActionUiUtils(null, null, null);
+        FormatterService fs = Mockito.mock(FormatterService.class);
+        Formatter f = new FormatterImpl(Context.getMessageSourceService(), null);
+        Mockito.when(fs.getFormatter()).thenReturn(f);
+        this.ui = new FragmentActionUiUtils(null, null, null, fs);
         // execute the provider management test dataset
         executeDataSet(XML_DATASET_PATH + XML_DATASET);
 

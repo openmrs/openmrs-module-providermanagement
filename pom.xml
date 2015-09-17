@@ -115,7 +115,7 @@
             <dependency>
                 <groupId>org.openmrs.module</groupId>
                 <artifactId>uiframework-api</artifactId>
-                <version>1.8.1</version>
+                <version>3.4-SNAPSHOT</version>
                 <type>jar</type>
                 <scope>provided</scope>
             </dependency>
