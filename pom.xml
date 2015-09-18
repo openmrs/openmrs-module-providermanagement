@@ -48,6 +48,8 @@
 	
 	<properties>
 		<openMRSVersion>1.9.0</openMRSVersion>
+        <uiframeworkVersion>3.4</uiframeworkVersion>
+        <uilibraryVersion>1.5</uilibraryVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -115,7 +117,7 @@
             <dependency>
                 <groupId>org.openmrs.module</groupId>
                 <artifactId>uiframework-api</artifactId>
-                <version>3.4-SNAPSHOT</version>
+                <version>${uiframeworkVersion}</version>
                 <type>jar</type>
                 <scope>provided</scope>
             </dependency>

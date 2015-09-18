@@ -12,7 +12,7 @@
 		${project.parent.description}
 	</description>
 	<updateURL>https://dev.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
-	<require_version>1.9.0</require_version>
+	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
 
 	
@@ -22,8 +22,8 @@
 
     <!-- Required Modules -->
     <require_modules>
-        <require_module version="1.8.1">org.openmrs.module.uiframework</require_module>
-        <require_module version="1.5">org.openmrs.module.uilibrary</require_module>
+        <require_module version="${uiframeworkVersion}">org.openmrs.module.uiframework</require_module>
+        <require_module version="${uilibraryVersion}">org.openmrs.module.uilibrary</require_module>
     </require_modules>
 
     <!-- Aware Modules -->
