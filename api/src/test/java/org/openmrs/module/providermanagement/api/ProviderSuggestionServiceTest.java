@@ -15,6 +15,7 @@
 package org.openmrs.module.providermanagement.api;
 
 import org.hibernate.PropertyValueException;
+import org.hibernate.exception.GenericJDBCException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -432,7 +433,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
     }
 
     // TODO: this will need to be changed once/if we add a validator?
-    @Test(expected = PropertyValueException.class)
+    @Test(expected = GenericJDBCException.class)
     public void saveSupervisionSuggestion_shouldFailIfNoTypeSpecified() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         SupervisionSuggestion suggestion = new SupervisionSuggestion();
