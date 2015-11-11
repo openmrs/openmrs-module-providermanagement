@@ -36,8 +36,9 @@
                   not-null="true" length="255" />
 
         <property name="suggestionType" column="suggestion_type" length="50" not-null="true">
-            <type name="org.openmrs.util.HibernateEnumType">
-                <param name="enumClassName">org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType</param>
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType</param>
+                <param name="type">12</param>
             </type>
         </property>
 
