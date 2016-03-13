@@ -34,7 +34,6 @@ public class PersonAddressFragmentController {
 	        model.addAttribute("layoutTemplate", MethodUtils.invokeExactMethod(addressSupport, "getDefaultLayoutTemplate", null));
     	}
     	catch (Exception e) {
-            //wrap into a runtime exception
             throw new RuntimeException("Error while getting patient address", e);
         }
     }
