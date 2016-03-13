@@ -14,12 +14,28 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
-import org.openmrs.layout.web.address.AddressSupport;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonAddressFragmentController {
 
     public void controller(FragmentModel model) {
-        model.addAttribute("layoutTemplate", AddressSupport.getInstance().getDefaultLayoutTemplate());
+    	try {
+	    	Class<?> addressSupportClass = null;
+	        try {
+	        	addressSupportClass = Context.loadClass("org.openmrs.layout.web.address.AddressSupport");
+	        }
+	        catch (ClassNotFoundException ex) {
+	        	addressSupportClass = Context.loadClass("org.openmrs.layout.address.AddressSupport");
+	        }
+	        
+	        Object addressSupport = addressSupportClass.getMethod("getInstance").invoke(null);
+	        model.addAttribute("layoutTemplate", MethodUtils.invokeExactMethod(addressSupport, "getDefaultLayoutTemplate", null));
+    	}
+    	catch (Exception e) {
+            //wrap into a runtime exception
+            throw new RuntimeException("Error while getting patient address", e);
+        }
     }
 }
