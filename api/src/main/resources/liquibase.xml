@@ -41,30 +41,35 @@
 		</createTable>
 	</changeSet>
 
-	<changeSet id="providermanagement-2" author="bgeVam">
+	<changeSet id="providermanagement-2a" author="pgutkowski">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
 				<columnExists tableName="provider" columnName="provider_role_id" />
 			</not>
-			<and>
-				<not>
-					<foreignKeyConstraintExists
-						foreignKeyTableName="providermanagement_provider_role"
-						foreignKeyName="provider_role_id" />
-				</not>
-			</and>
 		</preConditions>
 		<comment>
-			add provider role id to table provider and use it as foreign key
+			add provider role id to table provider
 		</comment>
 		<addColumn tableName="provider">
 			<column name="provider_role_id" type="int(11)" />
 		</addColumn>
+	</changeSet>
+
+	<changeSet id="providermanagement-2b" author="pgutkowski">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<foreignKeyConstraintExists
+						foreignKeyName="provider_ibfk_1" />
+			</not>
+		</preConditions>
+		<comment>
+			use provider role id from table provider as foreign key
+		</comment>
 		<addForeignKeyConstraint 
-			baseTableName="providermanagement_provider_role"
+			baseTableName="provider"
 			baseColumnNames="provider_role_id" 
 			constraintName="provider_ibfk_1"
-			referencedTableName="provider" 
+			referencedTableName="providermanagement_provider_role"
 			referencedColumnNames="provider_role_id" />
 	</changeSet>
 
