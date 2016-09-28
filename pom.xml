@@ -49,7 +49,6 @@
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
         <uiframeworkVersion>3.4</uiframeworkVersion>
-        <uilibraryVersion>1.5</uilibraryVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
