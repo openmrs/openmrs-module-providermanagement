@@ -545,6 +545,32 @@ public class ProviderEditFragmentController {
         }
     }
 
+    public FragmentActionResult removePatient(@RequestParam(value = "provider", required = true) Person provider,
+                                               @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
+                                               @RequestParam(value = "patientRelationship", required = false) Relationship patientRelationship,
+                                               @RequestParam(value = "date", required = false) Date date) {
+
+        if (patientRelationship == null ) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.patients.required"));
+        }
+        else if (date == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.required"));
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.notInFuture"));
+        }
+
+        // try to unassign patient from the provider
+        try {
+            Patient patient = Context.getPatientService().getPatient(patientRelationship.getPersonB().getId());
+            Context.getService(ProviderManagementService.class).unassignPatientFromProvider(patient, provider, relationshipType, date);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+    }
+
     public FragmentActionResult transferPatients(@RequestParam(value = "oldProvider", required = true) Person oldProvider,
                                                  @RequestParam(value = "newProvider", required = false) Person newProvider,
                                                  @RequestParam(value = "relationshipType", required = true) RelationshipType relationshipType,
