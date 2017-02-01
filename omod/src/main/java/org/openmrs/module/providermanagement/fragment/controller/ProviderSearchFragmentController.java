@@ -23,8 +23,10 @@ import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.annotation.SpringBean;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -74,4 +76,26 @@ public class ProviderSearchFragmentController {
         return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, resultFields);
     }
 
+    public List<SimpleObject> getSupervisors(@RequestParam(value="roleId", required=true) ProviderRole providerRole,
+                                             @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
+                                           UiUtils ui)
+            throws PersonIsNotProviderException {
+
+
+        List<SimpleObject> items = new ArrayList<SimpleObject>();
+        List<ProviderRole> roles = providerManagementService.getProviderRolesBySuperviseeProviderRole(providerRole);
+        if ( roles!=null && roles.size()>0) {
+            List<Person> supervisors = providerManagementService.getProvidersAsPersonsByRoles(roles);
+            if (supervisors != null && supervisors.size() > 0 ) {
+                for (Person supervisor : supervisors) {
+                    SimpleObject item = new SimpleObject();
+                    item.put("personId", supervisor.getId());
+                    item.put("familyName", supervisor.getFamilyName());
+                    item.put("givenName", supervisor.getGivenName());
+                    items.add(item);
+                }
+            }
+        }
+        return items;
+    }
 }

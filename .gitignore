@@ -1,5 +1,9 @@
 Files should be ingored(including information from https://github.com/github/gitignore)
 
+*.css
+omod/src/main/compass/sass-external/*
+
+
 ### IntelliJ Idea ###
 *.iml
 *.ipr

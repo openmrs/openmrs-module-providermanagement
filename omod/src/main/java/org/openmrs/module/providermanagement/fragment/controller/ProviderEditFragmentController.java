@@ -36,6 +36,7 @@ import org.openmrs.module.providermanagement.exception.PersonIsNotProviderExcept
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.annotation.MethodParam;
+import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
@@ -304,6 +305,29 @@ public class ProviderEditFragmentController {
         // if validation passes, try to assign the supervisee to the supervisor
         try {
             Context.getService(ProviderManagementService.class).assignProviderToSupervisor(supervisee, supervisor, date);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
+    public FragmentActionResult addSupervisor(@RequestParam(value = "supervisee", required = true) Person supervisee,
+                                              @RequestParam(value = "supervisor", required = true) Person supervisor,
+                                              @RequestParam(value = "date", required = false) Date date,
+                                              @SpringBean("providerManagementService") ProviderManagementService providerManagementService) {
+
+        if (supervisee == null) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisee.required"));
+        }
+
+        if (date == null) {
+            date = new Date();
+        }
+        // if validation passes, try to assign the supervisee to the supervisor
+        try {
+            providerManagementService.assignProviderToSupervisor(supervisee, supervisor, date);
             return new SuccessResult();
         }
         catch (Exception e) {
