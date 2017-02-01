@@ -171,6 +171,8 @@
 	</changeSet>
 
 	<changeSet id="providermanagement-6" author="bgeVam">
+		<validCheckSum><comment>Fixing Invalid default value for date_created on MySQL 5.7.16</comment>3:bbc82803f522fd1127493417fe0f3000</validCheckSum>
+		<validCheckSum><comment>current checksum with default value removed from date_created</comment>3:c3fd7e8969bfbe7c0186e7a17f8488ca</validCheckSum>
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
 				<tableExists tableName="providermanagement_provider_suggestion" />
@@ -224,6 +226,8 @@
 	</changeSet>
 
 	<changeSet id="providermanagement-7" author="bgeVam">
+	    <validCheckSum><comment>Fixing Invalid default value for date_created on MySQL 5.7.16</comment>3:923169cf831e2488ab2f13f2192e66f9</validCheckSum>
+		<validCheckSum><comment>current checksum with default value removed from date_created</comment>3:8574fa612aaa5b8b91e5e2f27cc6935d</validCheckSum>
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
 				<tableExists tableName="providermanagement_supervision_suggestion" />
