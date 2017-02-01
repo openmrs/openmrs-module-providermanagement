@@ -200,7 +200,7 @@
 			<column name="creator" defaultValueNumeric="0" type="int(11)">
 				<constraints nullable="false" />
 			</column>
-			<column name="date_created" type="datetime" defaultValueDate="0000-00-00T00:00:00">
+			<column name="date_created" type="datetime">
 				<constraints nullable="false" />
 			</column>
 			<column name="changed_by" type="int(11)" />
@@ -256,7 +256,7 @@
 			<column name="creator" defaultValueNumeric="0" type="int(11)">
 				<constraints nullable="false" />
 			</column>
-			<column name="date_created" type="datetime" defaultValueDate="0000-00-00T00:00:00">
+			<column name="date_created" type="datetime">
 				<constraints nullable="false" />
 			</column>
 			<column name="changed_by" type="int(11)" />
