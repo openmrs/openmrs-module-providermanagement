@@ -313,10 +313,11 @@ public class ProviderEditFragmentController {
 
     }
 
-    public FragmentActionResult addSupervisor(@RequestParam(value = "supervisee", required = true) Person supervisee,
-                                              @RequestParam(value = "supervisor", required = true) Person supervisor,
-                                              @RequestParam(value = "date", required = false) Date date,
-                                              @SpringBean("providerManagementService") ProviderManagementService providerManagementService) {
+    public FragmentActionResult editSupervisor(@RequestParam(value = "supervisee", required = true) Person supervisee,
+                                               @RequestParam(value = "supervisor", required = true) Person supervisor,
+                                               @RequestParam(value = "relationship", required = false) Relationship relationship,
+                                               @RequestParam(value = "date", required = false) Date date,
+                                               @SpringBean("providerManagementService") ProviderManagementService providerManagementService) {
 
         if (supervisee == null) {
             return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisee.required"));
@@ -325,14 +326,27 @@ public class ProviderEditFragmentController {
         if (date == null) {
             date = new Date();
         }
-        // if validation passes, try to assign the supervisee to the supervisor
+        if (relationship != null) {
+            if (relationship.getPersonB().getPersonId().compareTo(supervisee.getPersonId()) == 0) {
+                if (relationship.getPersonA().getPersonId().compareTo(supervisor.getPersonId()) != 0) {
+                    //end this relationship
+                    relationship.setEndDate(ProviderManagementUtils.clearTimeComponent(new Date()));
+                    Context.getPersonService().saveRelationship(relationship);
+                } else {
+                    relationship.setStartDate(ProviderManagementUtils.clearTimeComponent(date));
+                    // if it is the same relationship with the same supervisor then just update the startDate of the relationship and return
+                    Context.getPersonService().saveRelationship(relationship);
+                    return new SuccessResult();
+                }
+            }
+        }
         try {
             providerManagementService.assignProviderToSupervisor(supervisee, supervisor, date);
             return new SuccessResult();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return new FailureResult(e.getLocalizedMessage());
         }
+
 
     }
 
