@@ -14,14 +14,21 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.Person;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.page.PageModel;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ProviderViewFragmentController {
 
@@ -40,5 +47,20 @@ public class ProviderViewFragmentController {
 
         // also add the person attribute types we want to display
         model.addAttribute("personAttributeTypes", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES());
+    }
+
+    public SimpleObject getCodedConcepts(@RequestParam("conceptId") Concept concept) {
+        SimpleObject results = new SimpleObject();
+        List<SimpleObject> values = new LinkedList<SimpleObject>();
+        for(ConceptAnswer conceptAnswer : concept.getAnswers()){
+            SimpleObject conceptAnswerMap = new SimpleObject();
+            conceptAnswerMap.put("uuid", conceptAnswer.getAnswerConcept().getUuid());
+            conceptAnswerMap.put("name", conceptAnswer.getAnswerConcept().getName().getName());
+            values.add(conceptAnswerMap);
+        }
+
+        results.put("results", values);
+
+        return results;
     }
 }
