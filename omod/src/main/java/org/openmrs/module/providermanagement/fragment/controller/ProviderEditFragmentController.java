@@ -319,10 +319,6 @@ public class ProviderEditFragmentController {
                                                @RequestParam(value = "date", required = false) Date date,
                                                @SpringBean("providerManagementService") ProviderManagementService providerManagementService) {
 
-        if (supervisee == null) {
-            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.supervisee.required"));
-        }
-
         if (date == null) {
             date = new Date();
         }

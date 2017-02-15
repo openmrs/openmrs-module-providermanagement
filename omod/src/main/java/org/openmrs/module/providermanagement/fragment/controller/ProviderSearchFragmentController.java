@@ -76,6 +76,14 @@ public class ProviderSearchFragmentController {
         return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, resultFields);
     }
 
+    /**
+     * Given a provider role, it returns all the potential providers that could supervise someone with this role
+     * @param providerRole
+     * @param providerManagementService
+     * @param ui
+     * @return
+     * @throws PersonIsNotProviderException
+     */
     public List<SimpleObject> getSupervisors(@RequestParam(value="roleId", required=true) ProviderRole providerRole,
                                              @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
                                            UiUtils ui)
