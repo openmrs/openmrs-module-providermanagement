@@ -16,19 +16,24 @@ package org.openmrs.module.providermanagement;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 public class ProviderManagementUtils {
-
     /**
      * Returns true/false whether the relationship is active on the current date
      *
@@ -98,6 +103,66 @@ public class ProviderManagementUtils {
         cal.set(Calendar.MILLISECOND, 0);
 
         return cal.getTime();
+    }
+
+    public static List<ProviderPersonRelationship> getSupervisors(Provider provider)
+            throws PersonIsNotProviderException {
+
+        ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
+        List<ProviderPersonRelationship> supervisors = new ArrayList<ProviderPersonRelationship>();
+        Person person = provider.getPerson();
+        List<Person> supervisorPersons = providerManagementService.getSupervisorsForProvider(person);
+        for (Person supervisor : supervisorPersons) {
+            List<Provider> providersByPerson = providerManagementService.getProvidersByPerson(supervisor, true);
+            if (providersByPerson !=null && providersByPerson.size() > 0) {
+                RelationshipType supervisorRelationshipType = providerManagementService.getSupervisorRelationshipType();
+                Relationship supervisorRelationship = null;
+                Provider supervisorProvider = providersByPerson.get(0);
+                List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor,
+                        person, supervisorRelationshipType, null);
+                if (relationships != null && relationships.size() > 0 ){
+                    for (Relationship relationship : relationships) {
+                        if ( ( supervisorRelationship == null && relationship.getEndDate() == null ) ||
+                                (supervisorRelationship != null && relationship.getEndDate() == null
+                                        && relationship.getStartDate().after(supervisorRelationship.getStartDate()))) {
+                            // select the most active relationship
+                            supervisorRelationship = relationship;
+                        }
+                    }
+                }
+                supervisors.add(new ProviderPersonRelationship(
+                        supervisorProvider.getPerson(),
+                        supervisorProvider.getIdentifier(),
+                        supervisor.getId(),
+                        supervisorRelationship,
+                        supervisorRelationshipType));
+            }
+        }
+        return supervisors;
+    }
+
+    public static List<ProviderPersonRelationship> getAssignedPatients(Provider provider)
+            throws InvalidRelationshipTypeException, PersonIsNotProviderException {
+
+        ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
+        PatientService patientService = Context.getService(PatientService.class);
+        List<ProviderPersonRelationship> patientsList = new ArrayList<ProviderPersonRelationship>();
+        for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
+            if (!relationshipType.isRetired()) {
+                for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
+                    if (relationship.getPersonB().isPatient()) {
+                        Patient temp = patientService.getPatient(relationship.getPersonB().getId());
+                        patientsList.add(new ProviderPersonRelationship(
+                                temp,
+                                temp.getPatientIdentifier().getIdentifier(),
+                                temp.getPatientId(),
+                                relationship,
+                                relationshipType));
+                    }
+                }
+            }
+        }
+        return patientsList;
     }
 }
 
