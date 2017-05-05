@@ -1035,7 +1035,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // test to mark sure the relationship doesn't already exist
         List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor, provider, getSupervisorRelationshipType(), date);
         if (relationships != null && relationships.size() > 0) {
-            throw new ProviderAlreadyAssignedToSupervisorException(provider.getPersonName() + " is already assigned to " + supervisor.getPersonName());
+            for (Relationship relationship : relationships) {
+                if (relationship.getEndDate() == null) {
+                    throw new ProviderAlreadyAssignedToSupervisorException(provider.getPersonName() + " is already assigned to " + supervisor.getPersonName());
+                }
+            }
         }
 
         // go ahead and create the relationship

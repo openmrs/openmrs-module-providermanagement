@@ -253,7 +253,8 @@ public class ProviderEditFragmentController {
         return new ObjectResult(person.getId());
     }
 
-    public FragmentActionResult retireProvider(@RequestParam(value = "provider", required = true) Person provider) {
+    public FragmentActionResult retireProvider(@RequestParam(value = "provider", required = true) Person provider,
+                                               @RequestParam(value = "reason", required = false) String reason) {
 
         try {
             Provider p = ProviderManagementWebUtil.getProvider(provider);   // get actual provider object associated with this provider
@@ -264,7 +265,11 @@ public class ProviderEditFragmentController {
             Context.getService(ProviderManagementService.class).unassignAllSupervisorsFromProvider(provider);
 
             // now retire the provider
-            Context.getProviderService().retireProvider(p, "retired via Provider Management UI");
+            String retireReason = "retired via Provider Management UI";
+            if (StringUtils.isNotBlank(reason)) {
+                retireReason = reason;
+            }
+            Context.getProviderService().retireProvider(p, retireReason);
         }
         catch (Exception e) {
             return new FailureResult(e.getLocalizedMessage());
