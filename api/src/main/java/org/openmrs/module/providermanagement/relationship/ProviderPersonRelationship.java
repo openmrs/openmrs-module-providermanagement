@@ -1,9 +1,13 @@
-package org.openmrs.module.providermanagement;
+package org.openmrs.module.providermanagement.relationship;
 
 import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 
+/**
+ *  Utility domain object for use by the coreapps providermanagement functionality.
+ *  The object holds information that describes the relationship to a Provider.
+ */
 public class ProviderPersonRelationship {
 
     Person person = null;

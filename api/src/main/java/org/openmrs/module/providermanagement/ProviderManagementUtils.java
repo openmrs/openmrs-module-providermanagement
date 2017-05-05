@@ -26,6 +26,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.module.providermanagement.relationship.ProviderPersonRelationship;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -105,6 +106,12 @@ public class ProviderManagementUtils {
         return cal.getTime();
     }
 
+    /**
+     * Given a Provider it returns a List of supervisors for that Provider along with information about the relationship between provider and supervisor
+     * @param provider
+     * @return a List<ProviderPersonRelationship>
+     * @throws PersonIsNotProviderException
+     */
     public static List<ProviderPersonRelationship> getSupervisors(Provider provider)
             throws PersonIsNotProviderException {
 
@@ -125,7 +132,7 @@ public class ProviderManagementUtils {
                         if ( ( supervisorRelationship == null && relationship.getEndDate() == null ) ||
                                 (supervisorRelationship != null && relationship.getEndDate() == null
                                         && relationship.getStartDate().after(supervisorRelationship.getStartDate()))) {
-                            // select the most active relationship
+                            // select the most recent active relationship
                             supervisorRelationship = relationship;
                         }
                     }
@@ -141,6 +148,13 @@ public class ProviderManagementUtils {
         return supervisors;
     }
 
+    /**
+     * Given a Provider it returns a List of assigned Patients along with information about the relationship between Provider and Patient
+     * @param provider
+     * @return List<ProviderPersonRelationship>
+     * @throws InvalidRelationshipTypeException
+     * @throws PersonIsNotProviderException
+     */
     public static List<ProviderPersonRelationship> getAssignedPatients(Provider provider)
             throws InvalidRelationshipTypeException, PersonIsNotProviderException {
 
