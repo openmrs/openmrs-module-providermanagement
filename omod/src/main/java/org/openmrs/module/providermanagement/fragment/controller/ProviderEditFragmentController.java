@@ -407,6 +407,28 @@ public class ProviderEditFragmentController {
         }
     }
 
+    public FragmentActionResult unassignSupervisee(@RequestParam(value = "supervisor", required = true) Person supervisor,
+                                                  @RequestParam(value = "supervisee", required = true) Person supervisee,
+                                                  @RequestParam(value = "endDate", required = false) Date endDate) {
+
+        Date date = new Date();
+        if (endDate != null) {
+            date = endDate;
+        }
+        else if (ProviderManagementUtils.clearTimeComponent(date).after(new Date())) {
+            return new FailureResult(Context.getMessageSourceService().getMessage("providermanagement.errors.endDate.notInFuture"));
+        }
+
+        try {
+            Context.getService(ProviderManagementService.class).unassignProviderFromSupervisor(supervisee, supervisor, date);
+            return new SuccessResult();
+        }
+        catch (Exception e) {
+            return new FailureResult(e.getLocalizedMessage());
+        }
+
+    }
+
     public FragmentActionResult removeSupervisees(@RequestParam(value = "supervisor", required = true) Person supervisor,
                                                   @RequestParam(value = "superviseeRelationships", required = false) List<Relationship> superviseeRelationships,
                                                   @RequestParam(value = "date", required = false) Date date) {

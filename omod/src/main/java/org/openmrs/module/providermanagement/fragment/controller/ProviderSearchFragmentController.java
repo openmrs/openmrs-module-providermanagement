@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class ProviderSearchFragmentController {
 
@@ -100,6 +101,36 @@ public class ProviderSearchFragmentController {
                     item.put("personId", supervisor.getId());
                     item.put("familyName", supervisor.getFamilyName());
                     item.put("givenName", supervisor.getGivenName());
+                    items.add(item);
+                }
+            }
+        }
+        return items;
+    }
+
+    /**
+     * Given a provider role, it returns a list of providers who could be supervised by a provider with this given role
+     * @param providerRole
+     * @param providerManagementService
+     * @param ui
+     * @return
+     * @throws PersonIsNotProviderException
+     */
+    public List<SimpleObject> getSupervisees(@RequestParam(value="roleId", required=true) ProviderRole providerRole,
+                                             @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
+                                             UiUtils ui)
+            throws PersonIsNotProviderException {
+
+        List<SimpleObject> items = new ArrayList<SimpleObject>();
+        Set<ProviderRole> roles = providerRole.getSuperviseeProviderRoles();
+        if ( roles!=null && roles.size() > 0 ) {
+            List<Person> supervisees = providerManagementService.getProvidersAsPersonsByRoles(new ArrayList<ProviderRole>(roles));
+            if (supervisees != null && supervisees.size() > 0 ) {
+                for (Person supervisee : supervisees) {
+                    SimpleObject item = new SimpleObject();
+                    item.put("personId", supervisee.getId());
+                    item.put("familyName", supervisee.getFamilyName());
+                    item.put("givenName", supervisee.getGivenName());
                     items.add(item);
                 }
             }
