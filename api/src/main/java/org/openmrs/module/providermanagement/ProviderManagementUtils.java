@@ -109,7 +109,7 @@ public class ProviderManagementUtils {
     /**
      * Given a Provider it returns a List of supervisors for that Provider along with information about the relationship between provider and supervisor
      * @param provider
-     * @return a List<ProviderPersonRelationship>
+     * @return List<ProviderPersonRelationship>
      * @throws PersonIsNotProviderException
      */
     public static List<ProviderPersonRelationship> getSupervisors(Provider provider)
@@ -146,6 +146,48 @@ public class ProviderManagementUtils {
             }
         }
         return supervisors;
+    }
+
+    /**
+     * Given a Provider it returns a List of supervisees for the Provider along with information about the relationship between supervisor and supervisees
+     * @param provider
+     * @return List<ProviderPersonRelationship>
+     * @throws PersonIsNotProviderException
+     */
+    public static List<ProviderPersonRelationship> getSupervisees(Provider provider)
+            throws PersonIsNotProviderException {
+
+        ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
+        List<ProviderPersonRelationship> supervisees = new ArrayList<ProviderPersonRelationship>();
+        Person person = provider.getPerson();
+        List<Person> superviseesForSupervisor = providerManagementService.getSuperviseesForSupervisor(person);
+        for (Person supervisee : superviseesForSupervisor) {
+            List<Provider> providersByPerson = providerManagementService.getProvidersByPerson(supervisee, true);
+            if (providersByPerson !=null && providersByPerson.size() > 0) {
+                RelationshipType supervisorRelationshipType = providerManagementService.getSupervisorRelationshipType();
+                Relationship supervisorRelationship = null;
+                Provider supervisorProvider = providersByPerson.get(0);
+                List<Relationship> relationships = Context.getPersonService().getRelationships(person, supervisee,
+                        supervisorRelationshipType, null);
+                if (relationships != null && relationships.size() > 0 ){
+                    for (Relationship relationship : relationships) {
+                        if ( ( supervisorRelationship == null && relationship.getEndDate() == null ) ||
+                                (supervisorRelationship != null && relationship.getEndDate() == null
+                                        && relationship.getStartDate().after(supervisorRelationship.getStartDate()))) {
+                            // select the most recent active relationship
+                            supervisorRelationship = relationship;
+                        }
+                    }
+                }
+                supervisees.add(new ProviderPersonRelationship(
+                        supervisorProvider.getPerson(),
+                        supervisorProvider.getIdentifier(),
+                        supervisee.getId(),
+                        supervisorRelationship,
+                        supervisorRelationshipType));
+            }
+        }
+        return supervisees;
     }
 
     /**
