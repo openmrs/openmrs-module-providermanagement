@@ -208,12 +208,14 @@ public class ProviderManagementUtils {
                 for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
                     if (relationship.getPersonB().isPatient()) {
                         Patient temp = patientService.getPatient(relationship.getPersonB().getId());
-                        patientsList.add(new ProviderPersonRelationship(
-                                temp,
-                                temp.getPatientIdentifier().getIdentifier(),
-                                temp.getPatientId(),
-                                relationship,
-                                relationshipType));
+                        if (!temp.isVoided()) {
+                            patientsList.add(new ProviderPersonRelationship(
+                                    temp,
+                                    (temp.getPatientIdentifier() != null) ? temp.getPatientIdentifier().getIdentifier() : null,
+                                    temp.getPatientId(),
+                                    relationship,
+                                    relationshipType));
+                        }
                     }
                 }
             }
