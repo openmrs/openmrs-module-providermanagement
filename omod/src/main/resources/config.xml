@@ -140,6 +140,14 @@
         </description>
     </globalProperty>
 
+    <globalProperty>
+        <property>providermanagement.locationTag</property>
+        <defaultValue>Health Facility</defaultValue>
+        <description>
+            Indicates the Health Facility location to which a provider could be assigned to.
+        </description>
+    </globalProperty>
+
     <!--  Extension Points -->
     <!-- we are not overridding the patient dashboard at this point -->
     <!--
