@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -116,13 +117,22 @@ public class ProviderSearchFragmentController {
      * @return
      * @throws PersonIsNotProviderException
      */
-    public List<SimpleObject> getSupervisees(@RequestParam(value="roleId", required=true) ProviderRole providerRole,
+    public List<SimpleObject> getSupervisees(@RequestParam(value="roleId", required=false) ProviderRole providerRole,
                                              @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
                                              UiUtils ui)
             throws PersonIsNotProviderException {
 
         List<SimpleObject> items = new ArrayList<SimpleObject>();
-        Set<ProviderRole> roles = providerRole.getSuperviseeProviderRoles();
+        Set<ProviderRole> roles = null;
+        if (providerRole != null) {
+            roles = providerRole.getSuperviseeProviderRoles();
+        } else {
+            List<ProviderRole> allProviderRoles = providerManagementService.getAllProviderRoles(false);
+            roles = new HashSet<ProviderRole>();
+            for (ProviderRole role : allProviderRoles) {
+                roles.add(role);
+            }
+        }
         if ( roles!=null && roles.size() > 0 ) {
             List<Person> supervisees = providerManagementService.getProvidersAsPersonsByRoles(new ArrayList<ProviderRole>(roles));
             if (supervisees != null && supervisees.size() > 0 ) {
