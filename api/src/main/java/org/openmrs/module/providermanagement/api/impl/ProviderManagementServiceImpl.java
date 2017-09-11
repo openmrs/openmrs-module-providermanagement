@@ -556,7 +556,12 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         // test to mark sure the relationship doesn't already exist
-        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
+        List<Relationship> relationships = null;
+        try {
+            relationships = getActiveProviderRelationshipsForPatient(patient, provider, relationshipType, date);
+        } catch (InvalidRelationshipTypeException e) {
+            throw new ProviderDoesNotSupportRelationshipTypeException(provider.getPersonName() + " cannot support " + relationshipType);
+        }
         if (relationships != null && relationships.size() > 0) {
             throw new PatientAlreadyAssignedToProviderException(patient.getPersonName() + " is already assigned to " + provider.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
         }
@@ -622,7 +627,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         // find the existing relationship
-        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
+        List<Relationship> relationships = getActiveProviderRelationshipsForPatient(patient, provider, relationshipType, date);
         if (relationships == null || relationships.size() == 0) {
             throw new PatientNotAssignedToProviderException(patient.getPersonName() + " is not assigned to " + provider.getPersonName() + " with a " + relationshipType + " relationship on " + Context.getDateFormat().format(date));
         }
@@ -829,6 +834,43 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         return relationships;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Relationship> getActiveProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException {
+
+        List<Relationship> activeRelationships = null;
+        if (patient == null) {
+            throw new APIException("Patient cannot be null");
+        }
+
+        if (provider != null && !isProvider(provider)) {
+            throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
+        }
+
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+            throw new InvalidRelationshipTypeException(relationshipType + " is not a patient/provider relationship");
+        }
+
+        // fetch the relationships
+        List<Relationship> relationships = Context.getPersonService().getRelationships(provider, patient, relationshipType, date);
+
+        // if a relationship type was not specified, we need to filter this list to only contain provider relationships
+        if (relationshipType == null) {
+            ProviderManagementUtils.filterNonProviderRelationships(relationships);
+        }
+        if ( relationships != null && relationships.size() > 0) {
+            activeRelationships = new ArrayList<Relationship>();
+            for (Relationship relationship : relationships) {
+                if (relationship.getEndDate() == null) {
+                    activeRelationships.add(relationship);
+                }
+            }
+        }
+
+        return activeRelationships;
     }
 
     @Override

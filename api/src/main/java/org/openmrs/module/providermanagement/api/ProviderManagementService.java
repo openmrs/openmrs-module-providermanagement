@@ -545,6 +545,20 @@ public interface ProviderManagementService extends OpenmrsService {
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
+     * Returns active(endDate = null) provider relationships associated with the given patient
+     * @param patient
+     * @param provider limits returned relationships to those with the specified provider (if null, returns relationships with all providers)
+     * @param relationshipType limits returned relationships to those of a specified type (if null, returns all provider relationships)
+     * @param date returns only those relationships on the specified date
+     * @return active provider relationships associated with the given patient
+     * @throws PersonIsNotProviderException
+     * @throws InvalidRelationshipTypeException
+     */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
+    public List<Relationship> getActiveProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+            throws PersonIsNotProviderException, InvalidRelationshipTypeException;
+
+    /**
      * Returns all providers associated with the given patient on the specified date
      *
      * @param patient
