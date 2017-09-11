@@ -15,6 +15,7 @@
 package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.openmrs.Person;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
@@ -143,6 +144,26 @@ public class ProviderSearchFragmentController {
                     item.put("givenName", supervisee.getGivenName());
                     items.add(item);
                 }
+            }
+        }
+        return items;
+    }
+    public List<SimpleObject> getProviderAttributes(@RequestParam(value="roleId", required=false) ProviderRole providerRole,
+                                                    @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
+                                                    UiUtils ui) {
+        List<SimpleObject> items = new ArrayList<SimpleObject>();
+        Set<ProviderAttributeType> providerAttributeTypes = null ;
+        if (providerRole != null) {
+            providerAttributeTypes =providerRole.getProviderAttributeTypes();
+        }
+        if (providerAttributeTypes != null && providerAttributeTypes.size() > 0 ) {
+            for (ProviderAttributeType providerAttributeType : providerAttributeTypes) {
+                SimpleObject item = new SimpleObject();
+                item.put("providerAttributeTypeId", providerAttributeType.getProviderAttributeTypeId());
+                item.put("name", providerAttributeType.getName());
+                item.put("datatypeClassname", providerAttributeType.getDatatypeClassname());
+                item.put("datatypeConfig", providerAttributeType.getDatatypeConfig());
+                items.add(item);
             }
         }
         return items;
