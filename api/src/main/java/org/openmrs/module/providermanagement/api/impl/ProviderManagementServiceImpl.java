@@ -16,6 +16,7 @@ package org.openmrs.module.providermanagement.api.impl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.ConstraintViolationException;
@@ -88,6 +89,37 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
         return dao.getAllProviderRoles(includeRetired);
     }
+
+    /**
+     * Gets restricted Provider Roles in the database
+     *
+     * @param includeRetired whether or not to include retired provider roles
+     * @param onlyRestricted whether or not to include retired provider roles
+     * @return list of restricted provider roles in the system
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProviderRole> getRestrictedProviderRoles(boolean includeRetired, boolean onlyRestricted) {
+
+        List<ProviderRole> uiProviderRoles = new ArrayList<ProviderRole>();
+        List<ProviderRole> allProviderRoles = getAllProviderRoles(includeRetired);
+        if (allProviderRoles != null && allProviderRoles.size() > 0 ) {
+            List<String> restrictedRolesGP = ProviderManagementUtils.getRestrictedRolesGP();
+            if (restrictedRolesGP != null && restrictedRolesGP.size() > 0) {
+                for (ProviderRole role : allProviderRoles) {
+                    for (String gp : restrictedRolesGP) {
+                        if (StringUtils.equals(role.getUuid(), gp)) {
+                            uiProviderRoles.add(role);
+                            break;
+                        }
+                    }
+                }
+                return uiProviderRoles;
+            }
+        }
+        return allProviderRoles;
+    }
+
 
     @Override
     @Transactional(readOnly = true)
