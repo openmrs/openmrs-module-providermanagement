@@ -142,9 +142,17 @@
 
     <globalProperty>
         <property>providermanagement.locationTag</property>
-        <defaultValue>Health Facility</defaultValue>
+        <defaultValue></defaultValue>
         <description>
             Indicates the Health Facility location to which a provider could be assigned to.
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>providermanagement.restrictedRoles</property>
+        <defaultValue></defaultValue>
+        <description>
+            Comma delimited list of UUIDs indicating the only Provider Roles to be available via the UI.
         </description>
     </globalProperty>
 

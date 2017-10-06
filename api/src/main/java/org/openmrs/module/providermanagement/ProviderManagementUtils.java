@@ -16,6 +16,7 @@ package org.openmrs.module.providermanagement;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
@@ -29,6 +30,7 @@ import org.openmrs.module.providermanagement.exception.PersonIsNotProviderExcept
 import org.openmrs.module.providermanagement.relationship.ProviderPersonRelationship;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -221,6 +223,20 @@ public class ProviderManagementUtils {
             }
         }
         return patientsList;
+    }
+
+    /**
+     * Returns a List of roles that are configured via the GP_RESTRICTED_ROLES to be included in the UI
+     * @return List<String>
+     */
+    public static List<String> getRestrictedRolesGP() {
+        List<String> restrictedRoles = null;
+        String gpRestrictedRoles = Context.getAdministrationService().getGlobalProperty(ProviderManagementConstants.GP_RESTRICTED_ROLES);
+        if (StringUtils.isNotBlank(gpRestrictedRoles)) {
+            restrictedRoles = Arrays.asList(gpRestrictedRoles.split("\\s*,\\s*"));
+        }
+
+        return restrictedRoles;
     }
 }
 

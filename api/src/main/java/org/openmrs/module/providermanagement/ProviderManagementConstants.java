@@ -36,5 +36,6 @@ public class ProviderManagementConstants {
 
     public static final String PROVIDER_MANAGEMENT_ADMIN_PRIVILEGE = "Provider Management - Admin";
 
+    public static final String GP_RESTRICTED_ROLES = "providermanagement.restrictedRoles";
 
 }

@@ -61,6 +61,16 @@ public interface ProviderManagementService extends OpenmrsService {
     public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
 
     /**
+     * Gets restricted Provider Roles in the database
+     *
+     * @param includeRetired whether or not to include retired provider roles
+     * @param onlyRestricted whether or not to include retired provider roles
+     * @return list of restricted provider roles in the system
+     */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
+    public List<ProviderRole> getRestrictedProviderRoles(boolean includeRetired, boolean onlyRestricted);
+
+    /**
      * Gets the provider role referenced by the specified id
      *
      * @param id
