@@ -94,12 +94,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
      * Gets restricted Provider Roles in the database
      *
      * @param includeRetired whether or not to include retired provider roles
-     * @param onlyRestricted whether or not to include retired provider roles
      * @return list of restricted provider roles in the system
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ProviderRole> getRestrictedProviderRoles(boolean includeRetired, boolean onlyRestricted) {
+    public List<ProviderRole> getRestrictedProviderRoles(boolean includeRetired) {
 
         List<ProviderRole> uiProviderRoles = new ArrayList<ProviderRole>();
         List<ProviderRole> allProviderRoles = getAllProviderRoles(includeRetired);
