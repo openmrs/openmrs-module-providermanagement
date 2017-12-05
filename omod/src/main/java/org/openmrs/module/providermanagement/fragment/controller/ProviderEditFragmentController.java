@@ -33,6 +33,7 @@ import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.annotation.MethodParam;
@@ -318,7 +319,38 @@ public class ProviderEditFragmentController {
 
     }
 
-    public FragmentActionResult editSupervisor(@RequestParam(value = "supervisee", required = true) Person supervisee,
+    public SimpleObject assignProviderRoleToPerson(
+                                               @RequestParam(value = "person", required = true) Person person,
+                                               @RequestParam(value = "providerRole", required = true) ProviderRole providerRole,
+                                               @RequestParam(value = "identifier", required = true) String identifier,
+                                               @SpringBean("providerManagementService") ProviderManagementService providerManagementService) {
+
+        SimpleObject item = new SimpleObject();
+        if (person != null && providerRole != null && StringUtils.isNotBlank(identifier)) {
+            providerManagementService.assignProviderRoleToPerson(person, providerRole, identifier);
+            List<Provider> providersByPerson = providerManagementService.getProvidersByPerson(person, false);
+            if (providersByPerson != null && providersByPerson.size() > 0){
+                //find the provider record that matches the identifier we just created
+                for (Provider provider : providersByPerson) {
+                    if (StringUtils.equals(provider.getIdentifier(), identifier) ) {
+                        item.put("uuid", provider.getUuid());
+                        item.put("identifier", provider.getIdentifier());
+                        item.put("id", provider.getId());
+                        item.put("providerRoleUuid", provider.getProviderRole().getUuid());
+                        item.put("providerRole", provider.getProviderRole().toString());
+                        item.put("success", "true");
+                        return item;
+                    }
+                }
+            }
+
+        }
+        item.put("success", "false");
+        return item;
+
+    }
+
+        public FragmentActionResult editSupervisor(@RequestParam(value = "supervisee", required = true) Person supervisee,
                                                @RequestParam(value = "supervisor", required = true) Person supervisor,
                                                @RequestParam(value = "relationship", required = false) Relationship relationship,
                                                @RequestParam(value = "date", required = false) Date date,
