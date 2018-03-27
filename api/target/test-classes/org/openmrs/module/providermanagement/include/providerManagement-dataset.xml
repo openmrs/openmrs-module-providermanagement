@@ -24,12 +24,12 @@
     <relationship_type relationship_type_id="1003" a_is_to_b="A" b_is_to_a="B" preferred="0" weight="0" description="Some other relationship type" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a6f4ff4-a179-4b8a-aa4c-40f71956eadc"/>
 	<relationship_type relationship_type_id="1005" a_is_to_b="Child" b_is_to_a="Parent" preferred="0" weight="0" description="Relationship from parent to child" creator="1" date_created="2009-03-03 09:59:33.0" retired="false" uuid="2a7f4ff4-a179-4b8a-aa4c-40f71956eadc"/>
 	
-	<!-- set up a sample person -->
+	<!-- set up some sample persons -->
 	<person person_id="2" dead="false" date_created="2012-01-01 00:00:00.0" voided="false"/>
     <person person_id="202" dead="false" date_created="2012-01-01 00:00:00.0" voided="false"/>
 	<person person_id="203" dead="false" date_created="2012-01-01 00:00:00.0" voided="false"/>
 
-	<!--  set up a sample patient -->
+	<!--  set up some sample patients -->
 	<patient patient_id="202" creator="1" date_created="2012-01-01 00:00:00.0" voided="false"/>
     <patient patient_id="203" creator="1" date_created="2012-02-01 00:00:00.0" voided="false"/>
 	

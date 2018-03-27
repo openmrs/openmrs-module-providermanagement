@@ -3264,40 +3264,40 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     public void getPatientRelationshipsForProvider_shouldThrowInvalidRelationshipTypeException() throws Exception {
         // Parent Child Relationship -- not a provider relationship
 	   	RelationshipType type = new RelationshipType(1005); 
-    	Person p = new Person(2);
+    	Person provider = new Person(2);
     	Date date = new Date();
-    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(p, type, date);
+    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(provider, type, date);
     	Assert.assertTrue(actual == null || actual.size() == 0);
    }
    
    @Test
    public void getPatientRelationshipsForProvider_shouldReturnAllRelationships() throws Exception {
-	   Person g = new Person(9);
+	   Person provider = new Person(9);
 	   Date date = new Date();
-	   List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(g, null, date);
+	   List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(provider, null, date);
 	   Assert.assertTrue(actual.size() == 3);
    }
    
    @Test
    public void getPatientRelationshipsForProvider_shouldReturnNoRelationship() throws Exception {
-	   // This provider has no relationships
-	   Person g = new Person(501);
+	   // This provider has no relationships defined 
+	   Person provider = new Person(501);
 	   Date date = new Date();
-	   List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(g, null, date);
+	   List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(provider, null, date);
 	   Assert.assertTrue(actual.size() == 0);
    }
    
    @Test 
    public void getPatientRelationshipsForProvider_shouldReturnSpecificRelationship() throws Exception {
-	   Person g = new Person(9);
+	   Person provider = new Person(9);
 	   Date date = new Date();
-	   RelationshipType binome, accompagnateur;
-	   binome = providerManagementService.getAllProviderRoleRelationshipTypes(false).get(2);
-	   accompagnateur = providerManagementService.getAllProviderRoleRelationshipTypes(false).get(1);
-	   List<Relationship> binomeRelationships = providerManagementService.getPatientRelationshipsForProvider(g, binome, date);
-	   List<Relationship> accompagnateurRelationships = providerManagementService.getPatientRelationshipsForProvider(g, accompagnateur, date);
-	   Assert.assertTrue(binomeRelationships.size() == 2);
+	   RelationshipType accompagnateur, binome;
+	   accompagnateur = Context.getPersonService().getRelationshipType(1002);
+	   binome  = Context.getPersonService().getRelationshipType(1001);
+	   List<Relationship> accompagnateurRelationships = providerManagementService.getPatientRelationshipsForProvider(provider, accompagnateur, date);
+	   List<Relationship> binomeRelationships = providerManagementService.getPatientRelationshipsForProvider(provider, binome, date);
 	   Assert.assertTrue(accompagnateurRelationships.size() == 1);
+	   Assert.assertTrue(binomeRelationships.size() == 2);
 	   
    }
 }
