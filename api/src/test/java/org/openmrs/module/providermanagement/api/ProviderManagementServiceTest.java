@@ -3244,6 +3244,38 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(new Integer(2), providers.get(1).getId());
         Assert.assertEquals(new Integer(9), providers.get(2).getId());
     }
-
+    
+    @Test (expected = APIException.class)
+    public void getPatientRelationshipForProvider_shouldThrowAPIException() throws Exception {
+    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(null, null, new Date());
+    	Assert.assertTrue(actual == null || actual.size() == 0);
+    }
+    
+    @Test (expected = PersonIsNotProviderException.class)
+    public void getPatientRelationshipsForProvider_shouldThrowPersonNotProvierException() throws Exception {
+    	RelationshipType type = new RelationshipType(1004);
+    	Person p = new Person(20);
+    	Date date = new Date();
+    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(p, type, date);
+    	Assert.assertTrue(actual == null || actual.size() == 0);
+    }
+    
+   @Test (expected = InvalidRelationshipTypeException.class)
+    public void getPatientRelationshipsForProvider_shouldThrowInvalidRelationshipTypeException() throws Exception {
+    	RelationshipType type = new RelationshipType(1004);
+    	Person p = new Person(2);
+    	Date date = new Date();
+    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(p, type, date);
+    	Assert.assertTrue(actual == null || actual.size() == 0);
+   }
+   
+   @Test
+   public void getPatientRelationshipsForProvider_shouldReturnARelationship() throws Exception {
+	   Person p = new Person(8);
+	   Date date = new Date();
+	   System.out.println(providerManagementService.getAllProviderRoleRelationshipTypes(false));
+	   System.out.println(Context.getPersonService().getRelationships(p, null, null, date));
+	   
+   }
 }
 
