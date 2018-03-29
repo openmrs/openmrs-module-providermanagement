@@ -3246,14 +3246,15 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
     }
     
     @Test (expected = APIException.class)
-    public void getPatientRelationshipForProvider_shouldThrowAPIException() throws Exception {
+    public void getPatientRelationshipForProvider_shouldThrowAPIExceptionIfNoProviderOrRelationshipSpecified() throws Exception {
     	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(null, null, new Date());
     	Assert.assertTrue(actual == null || actual.size() == 0);
     }
     
     @Test (expected = PersonIsNotProviderException.class)
-    public void getPatientRelationshipsForProvider_shouldThrowPersonNotProvierException() throws Exception {
+    public void getPatientRelationshipsForProvider_shouldThrowPersonNotProviderException() throws Exception {
     	RelationshipType type = new RelationshipType(1004);
+    	// This person is not a provider.
     	Person p = new Person(202);
     	Date date = new Date();
     	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(p, type, date);
@@ -3271,7 +3272,7 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
    }
    
    @Test
-   public void getPatientRelationshipsForProvider_shouldReturnAllRelationships() throws Exception {
+   public void getPatientRelationshipsForProvider_shouldReturnAllRelationshipsIfRelationshipTypeNotSpecified() throws Exception {
 	   Person provider = new Person(9);
 	   Date date = new Date();
 	   List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(provider, null, date);

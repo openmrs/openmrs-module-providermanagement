@@ -3,7 +3,7 @@
 <dataset>
 
     <!-- this types is baked into the module -->
-     <relationship_type relationship_type_id="1004" a_is_to_b="Supervisor" b_is_to_a="Supervisee" preferred="0" weight="0" description="Relationship from supervisor to supervisee" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc"/>
+    <relationship_type relationship_type_id="1004" a_is_to_b="Supervisor" b_is_to_a="Supervisee" preferred="0" weight="0" description="Relationship from supervisor to supervisee" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc"/>
 
     <!-- set up the provider roles and relationships and supervisees they support -->
     <providermanagement_provider_role provider_role_id="1001" name="Binome" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
@@ -105,7 +105,7 @@
     <relationship relationship_id="1005" person_a="9" relationship="1002" person_b="203" creator="1" date_created="2008-08-18 11:50:15.0" voided="false" uuid="c18714df-5d78-4a0e-84fc-ef62c5f0676b"/> 
     
     <!-- add some additional person attributes to test person attribute searching -->
-     <person_attribute person_attribute_id="1001" person_id="6" value="test" person_attribute_type_id="1001" creator="1" date_created="2008-08-18 11:44:02.0" voided="false" uuid="6d9a58c3-61bd-493b-9287-27c624128712"/>
-     <person_attribute person_attribute_id="1003" person_id="8" value="test" person_attribute_type_id="1001" creator="1" date_created="2008-08-18 11:56:42.0" voided="false" uuid="09a7a35e-4fca-43bc-b0e1-9e05d8c68f99"/>
-     <person_attribute_type person_attribute_type_id="1001" name="Attribute type 1" description="test" format="java.lang.String" searchable="true" creator="1" date_created="2007-05-04 09:59:23.0" retired="false" uuid="b3b7d540-a32e-44c7-91b3-292d97667518" sort_weight="1"/>
+    <person_attribute person_attribute_id="1001" person_id="6" value="test" person_attribute_type_id="1001" creator="1" date_created="2008-08-18 11:44:02.0" voided="false" uuid="6d9a58c3-61bd-493b-9287-27c624128712"/>
+    <person_attribute person_attribute_id="1003" person_id="8" value="test" person_attribute_type_id="1001" creator="1" date_created="2008-08-18 11:56:42.0" voided="false" uuid="09a7a35e-4fca-43bc-b0e1-9e05d8c68f99"/>
+    <person_attribute_type person_attribute_type_id="1001" name="Attribute type 1" description="test" format="java.lang.String" searchable="true" creator="1" date_created="2007-05-04 09:59:23.0" retired="false" uuid="b3b7d540-a32e-44c7-91b3-292d97667518" sort_weight="1"/>
 </dataset>
