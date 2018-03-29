@@ -3244,6 +3244,61 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertEquals(new Integer(2), providers.get(1).getId());
         Assert.assertEquals(new Integer(9), providers.get(2).getId());
     }
-
+    
+    @Test (expected = APIException.class)
+    public void getPatientRelationshipForProvider_shouldThrowAPIExceptionIfNoProviderOrRelationshipSpecified() throws Exception {
+    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(null, null, new Date());
+    	Assert.assertTrue(actual == null || actual.size() == 0);
+    }
+    
+    @Test (expected = PersonIsNotProviderException.class)
+    public void getPatientRelationshipsForProvider_shouldThrowPersonNotProviderException() throws Exception {
+    	RelationshipType type = new RelationshipType(1004);
+    	// This person is not a provider.
+    	Person p = new Person(202);
+    	Date date = new Date();
+    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(p, type, date);
+    	Assert.assertTrue(actual == null || actual.size() == 0);
+    }
+    
+   @Test (expected = InvalidRelationshipTypeException.class)
+    public void getPatientRelationshipsForProvider_shouldThrowInvalidRelationshipTypeException() throws Exception {
+        // Parent Child Relationship -- not a provider relationship
+	   	RelationshipType type = new RelationshipType(1005);
+    	Person provider = new Person(2);
+    	Date date = new Date();
+    	List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(provider, type, date);
+    	Assert.assertTrue(actual == null || actual.size() == 0);
+   }
+   
+   @Test
+   public void getPatientRelationshipsForProvider_shouldReturnAllRelationshipsIfRelationshipTypeNotSpecified() throws Exception {
+	   Person provider = new Person(9);
+	   Date date = new Date();
+	   List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(provider, null, date);
+	   Assert.assertTrue(actual.size() == 3);
+   }
+   
+   @Test
+   public void getPatientRelationshipsForProvider_shouldReturnNoRelationship() throws Exception {
+	   // This provider has no relationships defined 
+	   Person provider = new Person(501);
+	   Date date = new Date();
+	   List<Relationship> actual = providerManagementService.getPatientRelationshipsForProvider(provider, null, date);
+	   Assert.assertTrue(actual.size() == 0);
+   }
+   
+   @Test 
+   public void getPatientRelationshipsForProvider_shouldReturnSpecificRelationship() throws Exception {
+	   Person provider = new Person(9);
+	   Date date = new Date();
+	   RelationshipType accompagnateur, binome;
+	   accompagnateur = Context.getPersonService().getRelationshipType(1002);
+	   binome  = Context.getPersonService().getRelationshipType(1001);
+	   List<Relationship> accompagnateurRelationships = providerManagementService.getPatientRelationshipsForProvider(provider, accompagnateur, date);
+	   List<Relationship> binomeRelationships = providerManagementService.getPatientRelationshipsForProvider(provider, binome, date);
+	   Assert.assertTrue(accompagnateurRelationships.size() == 1);
+	   Assert.assertTrue(binomeRelationships.size() == 2);
+   }
 }
 
