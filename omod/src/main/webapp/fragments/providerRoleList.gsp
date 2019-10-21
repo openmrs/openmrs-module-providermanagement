@@ -11,15 +11,15 @@
 
     <% providerRoles.each { %>
     <tr>
-        <td><a href="${ ui.pageLink("providermanagement", "editProviderRole", [providerRoleId: it.id]) }">${ (it.retired ? '<span class="retired">' + it.name + '</span>': it.name) }</a></td>
+        <td><a href="${ ui.pageLink("providermanagement", "editProviderRole", [providerRoleId: it.id]) }">${ (it.retired ? '<span class="retired">' + ui.encodeHtml(it.name) + '</span>': ui.encodeHtml(it.name)) }</a></td>
         <td>
-            ${ it.superviseeProviderRoles?.collect { (it.retired ? '<span class="retired">' + it.name + '</span>' : it.name) }.join(', ') }
+            ${ it.superviseeProviderRoles?.collect { (it.retired ? '<span class="retired">' + ui.encodeHtml(it.name) + '</span>' : ui.encodeHtml(it.name)) }.join(', ') }
         </td>
         <td>
-            ${ it.relationshipTypes?.collect { (it.retired ? '<span class="retired">' + it.aIsToB + '</span>' : it.aIsToB) }.join(', ') }
+            ${ it.relationshipTypes?.collect { (it.retired ? '<span class="retired">' + ui.encodeHtml(it.aIsToB) + '</span>' : ui.encodeHtml(it.aIsToB)) }.join(', ') }
         </td>
         <td>
-            ${ it.providerAttributeTypes?.collect { (it.retired ? '<span class="retired">' + it.name + '</span>' : it.name) }.join(', ') }
+            ${ it.providerAttributeTypes?.collect { (it.retired ? '<span class="retired">' + ui.encodeHtml(it.name) + '</span>' : ui.encodeHtml(it.name)) }.join(', ') }
         </td>
         <td>${ it.retired ? ui.message("general.yes") : ui.message("general.no") }</td>
          <td>
