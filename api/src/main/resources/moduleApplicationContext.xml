@@ -64,7 +64,7 @@
         <property name="moduleService">
             <list>
                 <value>org.openmrs.module.providermanagement.api.ProviderManagementService</value>
-                <ref local="providerManagementService"/>
+                <ref bean="providerManagementService"/>
             </list>
         </property>
     </bean>
@@ -73,7 +73,7 @@
         <property name="moduleService">
             <list>
                 <value>org.openmrs.module.providermanagement.api.ProviderSuggestionService</value>
-                <ref local="providerSuggestionService"/>
+                <ref bean="providerSuggestionService"/>
             </list>
         </property>
     </bean>

@@ -10,9 +10,6 @@
 	<!-- Add here beans related to the web context -->
     <context:component-scan base-package="org.openmrs.module.providermanagement.web.controller" />
 
-	<!-- Annotation based controllers -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
-
     <!-- Standard ui framework bean -->
     <bean class="org.openmrs.ui.framework.StandardModuleUiConfiguration">
         <property name="moduleId" value="providermanagement"/>
