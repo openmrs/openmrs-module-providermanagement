@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping auto-import="false">
+    <subclass name="org.openmrs.module.providermanagement.Provider"
+              extends="org.openmrs.Provider" discriminator-value="not null" entity-name="org.openmrs.module.providermanagement.Provider">
+        <many-to-one name="providerRole" class="org.openmrs.module.providermanagement.ProviderRole"
+                     column="provider_role_id"/>
+    </subclass>
+</hibernate-mapping>

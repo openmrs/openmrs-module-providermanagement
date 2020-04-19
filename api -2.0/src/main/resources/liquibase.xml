@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet id="providermanagement-1" author="bgeVam">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists tableName="providermanagement_provider_role" />
+			</not>
+		</preConditions>
+		<comment>
+			create table provider role
+		</comment>
+		<createTable tableName="providermanagement_provider_role">
+			<column name="provider_role_id" autoIncrement="true" type="int(11)">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(1000)" />
+			<column name="creator" defaultValueNumeric="0" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int(11)" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" defaultValueBoolean="false" type="boolean">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int(11)" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="providermanagement-2a" author="pgutkowski">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<columnExists tableName="provider" columnName="provider_role_id" />
+			</not>
+		</preConditions>
+		<comment>
+			add provider role id to table provider
+		</comment>
+		<addColumn tableName="provider">
+			<column name="provider_role_id" type="int(11)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="providermanagement-2b" author="pgutkowski">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<foreignKeyConstraintExists
+						foreignKeyName="provider_ibfk_1" />
+			</not>
+		</preConditions>
+		<comment>
+			use provider role id from table provider as foreign key
+		</comment>
+		<addForeignKeyConstraint 
+			baseTableName="provider"
+			baseColumnNames="provider_role_id" 
+			constraintName="provider_ibfk_1"
+			referencedTableName="providermanagement_provider_role"
+			referencedColumnNames="provider_role_id" />
+	</changeSet>
+
+	<changeSet id="providermanagement-3" author="bgeVam">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists tableName="providermanagement_provider_role_relationship_type" />
+			</not>
+		</preConditions>
+		<comment>
+			create table providermanagement_provider_role_relationship_type
+		</comment>
+		<createTable tableName="providermanagement_provider_role_relationship_type">
+			<column name="provider_role_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="relationship_type_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			baseTableName="providermanagement_provider_role_relationship_type"
+			baseColumnNames="provider_role_id"
+			constraintName="providermanagement_provider_role_relationship_type_ibfk_1"
+			referencedTableName="providermanagement_provider_role"
+			referencedColumnNames="provider_role_id" />
+		<addForeignKeyConstraint
+			baseTableName="providermanagement_provider_role_relationship_type"
+			baseColumnNames="relationship_type_id"
+			constraintName="providermanagement_provider_role_relationship_type_ibfk_2"
+			referencedTableName="relationship_type" 
+			referencedColumnNames="relationship_type_id" />
+	</changeSet>
+
+	<changeSet id="providermanagement-4" author="bgeVam">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists
+					tableName="providermanagement_provider_role_supervisee_provider_role" />
+			</not>
+		</preConditions>
+		<comment>
+			create table providermanagement_provider_role_supervisee_provider_role
+		</comment>
+		<createTable
+			tableName="providermanagement_provider_role_supervisee_provider_role">
+			<column name="provider_role_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="supervisee_provider_role_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			baseTableName="providermanagement_provider_role_supervisee_provider_role"
+			baseColumnNames="provider_role_id" 
+			constraintName="providermanagement_prspr_provider_role_fk"
+			referencedTableName="providermanagement_provider_role"
+			referencedColumnNames="provider_role_id" />
+		<addForeignKeyConstraint
+			baseTableName="providermanagement_provider_role_supervisee_provider_role"
+			baseColumnNames="supervisee_provider_role_id" 
+			constraintName="providermanagement_prspr_supervisee_role_fk"
+			referencedTableName="providermanagement_provider_role"
+			referencedColumnNames="provider_role_id" />
+	</changeSet>
+
+	<changeSet id="providermanagement-5" author="bgeVam">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists
+					tableName="providermanagement_provider_role_provider_attribute_type" />
+			</not>
+		</preConditions>
+		<comment>
+			create table providermanagement_provider_role_provider_attribute_type
+		</comment>
+		<createTable
+			tableName="providermanagement_provider_role_provider_attribute_type">
+			<column name="provider_role_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="provider_attribute_type_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			baseTableName="providermanagement_provider_role_provider_attribute_type"
+			baseColumnNames="provider_role_id" 
+			constraintName="providermanagement_prpat_provider_role_fk"
+			referencedTableName="providermanagement_provider_role"
+			referencedColumnNames="provider_role_id" />
+		<addForeignKeyConstraint
+			baseTableName="providermanagement_provider_role_provider_attribute_type"
+			baseColumnNames="provider_attribute_type_id" 
+			constraintName="providermanagement_prpat_provider_attribute_type_fk"
+			referencedTableName="provider_attribute_type" 
+			referencedColumnNames="provider_attribute_type_id" />
+	</changeSet>
+
+	<changeSet id="providermanagement-6" author="bgeVam">
+		<validCheckSum><comment>Fixing Invalid default value for date_created on MySQL 5.7.16</comment>3:bbc82803f522fd1127493417fe0f3000</validCheckSum>
+		<validCheckSum><comment>current checksum with default value removed from date_created</comment>3:c3fd7e8969bfbe7c0186e7a17f8488ca</validCheckSum>
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists tableName="providermanagement_provider_suggestion" />
+			</not>
+		</preConditions>
+		<comment>
+			create table providermanagement_provider_suggestion
+		</comment>
+		<createTable tableName="providermanagement_provider_suggestion">
+			<column name="provider_suggestion_id" autoIncrement="true"
+				type="int(11)">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="criteria" type="varchar(5000)">
+				<constraints nullable="false" />
+			</column>
+			<column name="evaluator" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="relationship_type_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(1000)" />
+			<column name="creator" defaultValueNumeric="0" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int(11)" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" defaultValueBoolean="false" type="boolean">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int(11)" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint 
+			baseTableName="providermanagement_provider_suggestion"
+			baseColumnNames="relationship_type_id" 
+			constraintName="providermanagement_provider_suggestion_ibfk_1"
+			referencedTableName="relationship_type" 
+			referencedColumnNames="relationship_type_id" />
+	</changeSet>
+
+	<changeSet id="providermanagement-7" author="bgeVam">
+	    <validCheckSum><comment>Fixing Invalid default value for date_created on MySQL 5.7.16</comment>3:923169cf831e2488ab2f13f2192e66f9</validCheckSum>
+		<validCheckSum><comment>current checksum with default value removed from date_created</comment>3:8574fa612aaa5b8b91e5e2f27cc6935d</validCheckSum>
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<tableExists tableName="providermanagement_supervision_suggestion" />
+			</not>
+		</preConditions>
+		<comment>
+			create table providermanagement_supervision_suggestion
+		</comment>
+		<createTable tableName="providermanagement_supervision_suggestion">
+			<column name="supervision_suggestion_id" autoIncrement="true"
+				type="int(11)">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="criteria" type="varchar(5000)">
+				<constraints nullable="false" />
+			</column>
+			<column name="evaluator" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="provider_role_id" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="suggestion_type" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(1000)" />
+			<column name="creator" defaultValueNumeric="0" type="int(11)">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="changed_by" type="int(11)" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" defaultValueBoolean="false" type="boolean">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired_by" type="int(11)" />
+			<column name="date_retired" type="datetime" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint 
+			baseTableName="providermanagement_supervision_suggestion"
+			baseColumnNames="provider_role_id" 
+			constraintName="providermanagement_supervision_suggestion_ibfk_1"
+			referencedTableName="providermanagement_provider_role"
+			referencedColumnNames="provider_role_id" />
+	</changeSet>
+
+	<changeSet id="providermanagement-8" author="bgeVam">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM relationship_type WHERE uuid = '2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc'</sqlCheck>
+		</preConditions>
+		<comment>
+			insert in relationship_type
+		</comment>
+		<insert tableName="relationship_type">
+			<column name="a_is_to_b" value="Supervisor" />
+			<column name="b_is_to_a" value="Supervisee" />
+			<column name="preferred" valueNumeric="0" />
+			<column name="weight" valueNumeric="0" />
+			<column name="description"
+				value="Provider supervisor to provider supervisee relationship" />
+			<column name="creator" valueNumeric="1" />
+			<column name="date_created" valueDate="now()" />
+			<column name="uuid" value="2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc" />
+		</insert>
+	</changeSet>
+</databaseChangeLog>
