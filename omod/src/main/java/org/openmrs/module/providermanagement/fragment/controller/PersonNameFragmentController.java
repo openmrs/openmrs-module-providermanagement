@@ -19,8 +19,8 @@ import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonNameFragmentController {
 
-    public void controller(FragmentModel model) {
-        model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
-    }
+	public void controller(FragmentModel model) {
+		model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
+	}
 
 }

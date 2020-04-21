@@ -40,11 +40,11 @@
             <url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
     <modules>
 		<module>api</module>
+		<module>api-2.0</module>
 		<module>omod</module>
-	</modules>
+    </modules>
 	
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>

@@ -31,10 +31,19 @@
 		</dependency>
 
 		<!-- End OpenMRS modules -->
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>providermanagement-api</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 		
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>providermanagement-api-2.0</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<!-- Begin OpenMRS core -->
-
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
