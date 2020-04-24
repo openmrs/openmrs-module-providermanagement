@@ -14,13 +14,43 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import java.lang.reflect.Method;
+
+import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.util.OpenmrsConstants;
 
 public class PersonNameFragmentController {
 
-    public void controller(FragmentModel model) {
+	public void controller(FragmentModel model) {
+    	
+		// use a later API NameSupport class from 2.0+, so we need to access it via
+		// reflection
+    if(OpenmrsConstants.OPENMRS_VERSION_SHORT.startsWith("1.9.*")||OpenmrsConstants.OPENMRS_VERSION_SHORT.startsWith("1.10.*")||OpenmrsConstants.OPENMRS_VERSION_SHORT.startsWith("1.11.*")||OpenmrsConstants.OPENMRS_VERSION_SHORT.startsWith("1.12"))
+	{
         model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
-    }
+	}else
+		
+	{
+		 try {
+				// load the NameSupport with the openmrsClass loader from the fully qualified class name
+				Object nameSupport = Context.loadClass("org.openmrs.layout.name.NameSupport");
 
+				// invoke the getInstance method of the NameSupport class being loaded at runtime
+				Method method = nameSupport.getClass().getMethod("getInstance", null);
+				method.invoke(nameSupport, null);
+				// invoke the getDefaultLayoutTemplate method of the NameSupport class being loaded at runtime
+				Method method1 = nameSupport.getClass().getMethod("getDefaultLayoutTemplate", null);
+				method1.invoke(nameSupport, null);
+
+				model.addAttribute("layoutTemplate", nameSupport);
+
+			} catch (Exception ex) {
+				throw new RuntimeException("Unable to access NameSupport via reflection", ex);
+			}
+		
+		}
+		
+    }
 }
