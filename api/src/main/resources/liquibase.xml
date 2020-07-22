@@ -284,6 +284,8 @@
 	</changeSet>
 
 	<changeSet id="providermanagement-8" author="bgeVam">
+	    <validCheckSum>8:c9cba28768d4c5d2c70f71916d90bf5e</validCheckSum> <!-- old checksum before changing valueNumeric to value for column preferred -->
+	    <validCheckSum>8:023f27b0a5c5993cca87d2bc131c0a8b</validCheckSum> <!-- new checksum after changing valueNumeric to value for column preferred -->
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM relationship_type WHERE uuid = '2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc'</sqlCheck>
 		</preConditions>
@@ -293,7 +295,7 @@
 		<insert tableName="relationship_type">
 			<column name="a_is_to_b" value="Supervisor" />
 			<column name="b_is_to_a" value="Supervisee" />
-			<column name="preferred" valueNumeric="0" />
+			<column name="preferred" value="0" />
 			<column name="weight" valueNumeric="0" />
 			<column name="description"
 				value="Provider supervisor to provider supervisee relationship" />
