@@ -6,7 +6,7 @@ ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUr
 
        <tr>
            <td>${ ui.message("providermanagement.providerRole") }:</td>
-           <td><input name="name" type="text" value="${ providerRole?.name ?: ''}"/></td>
+           <td><input name="name" type="text" value="${ ui.encodeHtmlAttribute(providerRole?.name ?: '')}"/></td>
        </tr>
 
 

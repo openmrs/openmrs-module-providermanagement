@@ -62,7 +62,7 @@
                 <td colspan="2" class="label">${ person?.personName ?: '&nbsp;' } ${ provider?.retired ? '(' + ui.message("general.retired") + ')' : '' }</td>
             </tr>
             <tr>
-                <td colspan="2"> ${ provider?.providerRole?.name ?: '' }</td>
+                <td colspan="2"> ${  ui.encodeHtmlAttribute(provider?.providerRole?.name ?: '' )}</td>
             </tr>
         </table>
 
