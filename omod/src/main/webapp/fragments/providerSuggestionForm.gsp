@@ -5,7 +5,7 @@ ${ ui.startForm("saveProviderSuggestion", [id: providerSuggestion?.providerSugge
 
         <tr>
             <td>${ ui.message("general.name") }:</td>
-            <td><input name="name" type="text" value="${ providerSuggestion?.name ?: ''}"/></td>
+            <td><input name="name" type="text" value="${  ui.encodeHtmlAttribute(providerSuggestion?.name ?: '')}"/></td>
         </tr>
 
 

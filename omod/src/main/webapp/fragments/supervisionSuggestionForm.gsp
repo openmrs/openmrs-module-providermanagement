@@ -7,7 +7,7 @@
 
         <tr>
             <td>${ ui.message("general.name") }:</td>
-            <td><input name="name" type="text" value="${ supervisionSuggestion?.name ?: ''}"/></td>
+            <td><input name="name" type="text" value="${ ui.encodeHtmlAttribute(supervisionSuggestion?.name ?: '')}"/></td>
         </tr>
 
 
