@@ -20,7 +20,10 @@ import org.openmrs.ui.framework.fragment.FragmentModel;
 public class PersonNameFragmentController {
 
     public void controller(FragmentModel model) {
+        System.out.println("this works properly man!!!");
         model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
+
+        System.out.println("this works properly man!!!");
     }
 
 }
