@@ -14,16 +14,28 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
+import java.lang.reflect.*;
+
 import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonNameFragmentController {
 
+    /**
+     * @param model
+     */
     public void controller(FragmentModel model) {
-        System.out.println("this works properly man!!!");
-        model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
+        System.out.println(
+                "***************************************this works properly man!!!******************************");
+        try {
+            Class cls = Class.forName("org.openmrs.layout.name.NameSupport");
 
-        System.out.println("this works properly man!!!");
+            Constructor ctorlist[] = cls.getDeclaredConstructors();
+            
+        } catch (Throwable e) {
+            System.err.println(e);
+        }
+        model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
     }
 
 }
