@@ -23,11 +23,7 @@ import org.openmrs.module.ModuleActivator;
  */
 public class ProviderManagementActivator implements ModuleActivator {
 	
-	protected Log log = LogFactory.getLog(getClass());
-
-	public void itWorks() { 
-    System.out.println("the modules is called and it works properly man!!!");
-	}	
+	protected Log log = LogFactory.getLog(getClass());	
 	/**
 	 * @see ModuleActivator#willRefreshContext()
 	 */
@@ -53,7 +49,6 @@ public class ProviderManagementActivator implements ModuleActivator {
 	 * @see ModuleActivator#started()
 	 */
 	public void started() {
-		System.out.println("the modules is called and it works properly man!!!");
 		log.info("Provider Management Module started");
 	}
 	

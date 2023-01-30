@@ -16,26 +16,33 @@ package org.openmrs.module.providermanagement.fragment.controller;
 
 import java.lang.reflect.*;
 
-import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.module.*;
 
 public class PersonNameFragmentController {
 
-    /**
-     * @param model
-     */
-    public void controller(FragmentModel model) {
-        System.out.println(
-                "***************************************this works properly man!!!******************************");
-        try {
-            Class cls = Class.forName("org.openmrs.layout.name.NameSupport");
+	/**
+	 * @param model
+	 */
 
-            Constructor ctorlist[] = cls.getDeclaredConstructors();
-            
-        } catch (Throwable e) {
-            System.err.println(e);
-        }
-        model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
-    }
+
+	public void controller(FragmentModel model) {
+
+		try {
+			Class<?> cls = Class.forName("org.openmrs.layout.name.NameSupport");
+			Method meth = cls.getDeclaredMethod("getInstance");
+			meth.setAccessible(true);
+			Object obj = cls.newInstance();
+
+			System.out.println(
+					"8###################******************does this work******************######################## "
+							+ meth.invoke(obj));
+
+			model.addAttribute("layoutTemplate", meth.invoke(obj));
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		;
+	}
 
 }

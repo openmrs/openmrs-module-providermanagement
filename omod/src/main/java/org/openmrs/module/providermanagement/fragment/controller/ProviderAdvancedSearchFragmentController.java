@@ -99,9 +99,7 @@ public class ProviderAdvancedSearchFragmentController {
     }
 
     public AdvancedSearchCommand initializeCommand() {
-        System.out.println(
-                "<<<<<<<<>>>>>>>>>>>>>><<<>>>>this works properly man!!!:::::::::::::::::::::::::<<<>>>>>>>>>>>>>><<<<<<<<<<<");
-
+       
         PersonAttributeType personAttributeType = ProviderManagementGlobalProperties
                 .GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE();
 

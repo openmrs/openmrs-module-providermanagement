@@ -40,7 +40,6 @@ public class PatientProviderDashboardPageController {
     public void controller(PageModel pageModel,
             @RequestParam(value = "patient", required = true) Patient patient, UiUtils ui)
             throws InvalidRelationshipTypeException, PersonIsNotProviderException, SuggestionEvaluationException {
-        System.out.println("************>><<<<<<<<>>>><<>this works properly man!!!<<<<<>>>>>>>>>>>>>***********");
 
         ProviderManagementService pmService = Context.getService(ProviderManagementService.class);
 
