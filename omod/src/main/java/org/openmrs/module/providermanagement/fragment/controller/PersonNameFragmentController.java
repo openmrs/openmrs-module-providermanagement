@@ -17,32 +17,32 @@ package org.openmrs.module.providermanagement.fragment.controller;
 import java.lang.reflect.*;
 
 import org.openmrs.ui.framework.fragment.FragmentModel;
-import org.openmrs.module.*;
 
 public class PersonNameFragmentController {
 
 	/**
 	 * @param model
+	 * @throws ClassNotFoundException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
 	 */
 
 
-	public void controller(FragmentModel model) {
-
-		try {
+	public void controller(FragmentModel model) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+			Class<?> cls1 = Class.forName("org.openmrs.layout.LayoutSupport");
 			Class<?> cls = Class.forName("org.openmrs.layout.name.NameSupport");
-			Method meth = cls.getDeclaredMethod("getInstance");
-			meth.setAccessible(true);
-			Object obj = cls.newInstance();
-
-			System.out.println(
-					"8###################******************does this work******************######################## "
-							+ meth.invoke(obj));
-
-			model.addAttribute("layoutTemplate", meth.invoke(obj));
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-		;
+			Method getInstance = cls.getMethod("getInstance");
+			Object instance = getInstance.invoke(null);
+			Method getDefaultLayoutTemplate = cls1.getDeclaredMethod("getDefaultLayoutTemplate");
+			Object layoutTemplate = getDefaultLayoutTemplate.invoke(instance);
+			 
+			model.addAttribute("layoutTemplate", layoutTemplate);
+		
+		
+		
 	}
-
 }
