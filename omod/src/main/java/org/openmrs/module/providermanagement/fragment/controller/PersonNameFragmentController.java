@@ -17,20 +17,11 @@ package org.openmrs.module.providermanagement.fragment.controller;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.ui.framework.fragment.FragmentModel;
-import org.openmrs.util.OpenmrsConstants;
-
 
 public class PersonNameFragmentController {
-	String openmrsVersion = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 
-	ComparableVersion version_1 = new ComparableVersion(openmrsVersion);
-	ComparableVersion version_2 = new ComparableVersion("2.0.0");
-
-	 
-		/**
+	/**
 	 * @param model
 	 * @throws ClassNotFoundException
 	 * @throws SecurityException
@@ -40,27 +31,33 @@ public class PersonNameFragmentController {
 	 * @throws IllegalAccessException
 	 */
 
+	public void controller(FragmentModel model) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-	 
-	 public void controller(FragmentModel model) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-		
-		
-		Class<?> cls1 = Class.forName("org.openmrs.layout.LayoutSupport");
-		Class<?> cls = Class.forName("org.openmrs.layout.name.NameSupport");
-		Method getInstance = cls.getMethod("getInstance");
-		Object instance = getInstance.invoke(null);
-		Method getDefaultLayoutTemplate = cls1.getDeclaredMethod("getDefaultLayoutTemplate");
-		Object layoutTemplate = getDefaultLayoutTemplate.invoke(instance);	
+				/*
+				 * backward compatibility
+				 */
+				Class<?> nameSurpport;
 
-		if(version_1.compareTo(version_2) >= 0)
-			model.addAttribute("layoutTemplate", layoutTemplate );
-		else if(version_1.compareTo(version_2) < 0)
-			model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate() );
-	
-	
-	
+				try {
+					nameSurpport = Class.forName("org.openmrs.layout.name.NameSupport");
+				} catch (ClassNotFoundException e) {
+					nameSurpport = Class.forName("org.openmrs.layout.web.name.NameSupport");
+				}
+
+				if (nameSurpport == null) {
+					return;
+				}
+
+				Method getInstance = nameSurpport.getDeclaredMethod("getInstance");
+				Object instance = getInstance.invoke(null);
+
+				Method getLayoutTemplate = nameSurpport.getMethod("getDefaultLayoutTemplate");
+				Object layoutTemplate = getLayoutTemplate.invoke(instance);
+
+				model.addAttribute("layoutTemplate", layoutTemplate);
+
 	}
 
 }
-

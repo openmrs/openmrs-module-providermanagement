@@ -47,7 +47,7 @@ public class ProviderAdvancedSearchFragmentController {
 
         private PersonAttribute attribute = new PersonAttribute();
 
-        private String[] resultFields;
+        private String [] resultFields;
 
         public String getName() {
             return name;
@@ -98,10 +98,10 @@ public class ProviderAdvancedSearchFragmentController {
         }
     }
 
+
     public AdvancedSearchCommand initializeCommand() {
-       
-        PersonAttributeType personAttributeType = ProviderManagementGlobalProperties
-                .GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE();
+
+        PersonAttributeType personAttributeType =  ProviderManagementGlobalProperties.GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE();
 
         AdvancedSearchCommand command = new AdvancedSearchCommand();
         command.getAttribute().setAttributeType(personAttributeType);
@@ -109,43 +109,37 @@ public class ProviderAdvancedSearchFragmentController {
         return command;
     }
 
-    public List<SimpleObject> getProviders(
-            @MethodParam("initializeCommand") @BindParams() AdvancedSearchCommand command,
-            UiUtils ui)
-            throws PersonIsNotProviderException {
+    public List<SimpleObject> getProviders(@MethodParam("initializeCommand") @BindParams() AdvancedSearchCommand command,
+                                             UiUtils ui)
+                    throws PersonIsNotProviderException {
 
         if (command.getResultFields() == null || command.getResultFields().length == 0) {
-            command.setResultFields(new String[] { "personName" });
+            command.setResultFields(new String[] {"personName"});
         }
 
         // now fetch the results
         List<ProviderRole> roles = new ArrayList<ProviderRole>();
         if (command.getProviderRole() != null) {
             roles.add(command.getProviderRole());
-        } else if (ProviderManagementGlobalProperties
-                .GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES() != null
-                && ProviderManagementGlobalProperties
-                        .GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES()) {
+        }
+        else if (ProviderManagementGlobalProperties.GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES() != null
+                && ProviderManagementGlobalProperties.GLOBAL_PROPERTY_RESTRICT_SEARCH_TO_PROVIDERS_WITH_PROVIDER_ROLES()) {
             roles.addAll(Context.getService(ProviderManagementService.class).getAllProviderRoles(true));
         }
 
-        List<Person> persons = Context.getService(ProviderManagementService.class).getProvidersAsPersons(
-                command.getName(), command.getIdentifier(), command.getPersonAddress(), command.getAttribute(), roles,
-                false);
+        List<Person> persons = Context.getService(ProviderManagementService.class).getProvidersAsPersons(command.getName(), command.getIdentifier(), command.getPersonAddress(), command.getAttribute(), roles, false);
 
-        // convert to a simple object list
+         // convert to a simple object list
         return ProviderManagementWebUtil.convertPersonListToSimpleObjectList(persons, ui, command.getResultFields());
     }
 
     public void controller(FragmentModel model) {
 
         // add the possible provider roles
-        model.addAttribute("providerRoles",
-                Context.getService(ProviderManagementService.class).getAllProviderRoles(false));
+        model.addAttribute("providerRoles", Context.getService(ProviderManagementService.class).getAllProviderRoles(false));
 
         // add the person attribute type we want to include on this page
-        PersonAttributeType personAttributeType = ProviderManagementGlobalProperties
-                .GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE();
+        PersonAttributeType personAttributeType =  ProviderManagementGlobalProperties.GLOBAL_PROPERTY_ADVANCED_SEARCH_PERSON_ATTRIBUTE_TYPE();
         model.addAttribute("advancedSearchPersonAttributeType", personAttributeType);
 
         // add the address widget to use
