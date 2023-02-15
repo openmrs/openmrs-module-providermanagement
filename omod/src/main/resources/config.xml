@@ -22,15 +22,6 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ProviderManagementActivator</activator>
 
-    <conditionalResources>
-
-        <conditionalResource>
-			<path>/lib/openmrs-web-.*.jar</path>
-			<openmrsVersion>2.0.5 - 2.3.0</openmrsVersion>
-		</conditionalResource>
-
-    </conditionalResources>
-	
 
     <!-- Required Modules -->
     <require_modules>
