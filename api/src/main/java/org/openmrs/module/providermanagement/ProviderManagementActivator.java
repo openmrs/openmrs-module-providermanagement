@@ -65,5 +65,6 @@ public class ProviderManagementActivator implements ModuleActivator {
 	 */
 	public void stopped() {
 		log.info("Provider Management Module stopped");
-	}		
+	}
+		
 }
