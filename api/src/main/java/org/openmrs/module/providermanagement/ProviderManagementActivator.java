@@ -23,7 +23,8 @@ import org.openmrs.module.ModuleActivator;
  */
 public class ProviderManagementActivator implements ModuleActivator {
 	
-	protected Log log = LogFactory.getLog(getClass());	
+	protected Log log = LogFactory.getLog(getClass());
+		
 	/**
 	 * @see ModuleActivator#willRefreshContext()
 	 */
@@ -64,6 +65,5 @@ public class ProviderManagementActivator implements ModuleActivator {
 	 */
 	public void stopped() {
 		log.info("Provider Management Module stopped");
-	}
-		
+	}		
 }
