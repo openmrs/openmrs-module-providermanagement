@@ -22,7 +22,6 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ProviderManagementActivator</activator>
 
-
     <!-- Required Modules -->
     <require_modules>
         <require_module version="${uiframeworkVersion}">org.openmrs.module.uiframework</require_module>
