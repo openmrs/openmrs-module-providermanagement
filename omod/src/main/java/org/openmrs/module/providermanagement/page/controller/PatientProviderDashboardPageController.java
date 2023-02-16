@@ -37,45 +37,45 @@ import java.util.Map;
 
 public class PatientProviderDashboardPageController {
 
-    public void controller(PageModel pageModel,
-            @RequestParam(value = "patient", required = true) Patient patient, UiUtils ui)
+    public void controller (PageModel pageModel,
+                             @RequestParam(value = "patient", required = true) Patient patient, UiUtils ui)
             throws InvalidRelationshipTypeException, PersonIsNotProviderException, SuggestionEvaluationException {
 
         ProviderManagementService pmService = Context.getService(ProviderManagementService.class);
 
         Map<RelationshipType, List<SimpleObject>> providerMap = new HashMap<RelationshipType, List<SimpleObject>>();
-        Map<RelationshipType, List<SimpleObject>> providerSuggestionMap = new HashMap<RelationshipType, List<SimpleObject>>();
+        Map<RelationshipType,List<SimpleObject>> providerSuggestionMap = new HashMap<RelationshipType, List<SimpleObject>>();
 
           // first find the provider (or list of providers) for each relationship type
-          for (RelationshipType relationshipType : pmService.getAllProviderRoleRelationshipTypes(false)) {
-                List<Person> p = pmService.getProvidersAsPersonsForPatient(patient, relationshipType, new Date());
-    
-                // if we have existing providers, add them to the results list
-                if (p != null && p.size() > 0) {
-                    providerMap.put(relationshipType, ProviderManagementWebUtil.convertPersonListToSimpleObjectList(p, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
-                }
-                // otherwise, get suggestions for this relationship type
-                else {
-                    // note that we still still add a blank map entry to providers so that we can iterate over the keys in the view
-                    providerMap.put(relationshipType, null);
-    
-                    // get the suggestions for the patient, cnonvert them to a simple object, and add them to the map
-                    providerSuggestionMap.put(relationshipType,
-                            ProviderManagementWebUtil.convertPersonListToSimpleObjectList(
-                                    Context.getService(ProviderSuggestionService.class).suggestProvidersForPatient(patient, relationshipType),
-                                    ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
-                }
+        for (RelationshipType relationshipType : pmService.getAllProviderRoleRelationshipTypes(false)) {
+            List<Person> p = pmService.getProvidersAsPersonsForPatient(patient, relationshipType, new Date());
+
+            // if we have existing providers, add them to the results list
+            if (p != null && p.size() > 0) {
+                providerMap.put(relationshipType, ProviderManagementWebUtil.convertPersonListToSimpleObjectList(p, ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
             }
+            // otherwise, get suggestions for this relationship type
+            else {
+                // note that we still still add a blank map entry to providers so that we can iterate over the keys in the view
+                providerMap.put(relationshipType, null);
 
-            pageModel.addAttribute("patient", patient);
-
-            pageModel.addAttribute("providerMap", providerMap);
-            pageModel.addAttribute("providerSuggestionMap", providerSuggestionMap);
-    
-            // add the global properties that specifies the fields to display in the provider and patient field and search results
-            pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
-            pageModel.addAttribute("providerListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS());
+                // get the suggestions for the patient, cnonvert them to a simple object, and add them to the map
+                providerSuggestionMap.put(relationshipType,
+                        ProviderManagementWebUtil.convertPersonListToSimpleObjectList(
+                                Context.getService(ProviderSuggestionService.class).suggestProvidersForPatient(patient, relationshipType),
+                                ui, ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS().values().toArray(new String[0])));
+            }
         }
-    
-    
-    }
+
+        pageModel.addAttribute("patient", patient);
+
+        pageModel.addAttribute("providerMap", providerMap);
+        pageModel.addAttribute("providerSuggestionMap", providerSuggestionMap);
+
+        // add the global properties that specifies the fields to display in the provider and patient field and search results
+        pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
+        pageModel.addAttribute("providerListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS());
+        }
+
+
+}
