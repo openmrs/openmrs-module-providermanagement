@@ -223,5 +223,4 @@
         <description>Allows access to admin pages of the provider management module</description>
     </privilege>
 
-    </module>
-    
+</module>

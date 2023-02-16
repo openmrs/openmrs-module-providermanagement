@@ -46,7 +46,7 @@ public class PatientProviderDashboardPageController {
         Map<RelationshipType, List<SimpleObject>> providerMap = new HashMap<RelationshipType, List<SimpleObject>>();
         Map<RelationshipType,List<SimpleObject>> providerSuggestionMap = new HashMap<RelationshipType, List<SimpleObject>>();
 
-          // first find the provider (or list of providers) for each relationship type
+        // first find the provider (or list of providers) for each relationship type
         for (RelationshipType relationshipType : pmService.getAllProviderRoleRelationshipTypes(false)) {
             List<Person> p = pmService.getProvidersAsPersonsForPatient(patient, relationshipType, new Date());
 
@@ -75,7 +75,7 @@ public class PatientProviderDashboardPageController {
         // add the global properties that specifies the fields to display in the provider and patient field and search results
         pageModel.addAttribute("providerSearchDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_SEARCH_DISPLAY_FIELDS());
         pageModel.addAttribute("providerListDisplayFields", ProviderManagementGlobalProperties.GLOBAL_PROPERTY_PROVIDER_LIST_DISPLAY_FIELDS());
-        }
+    }
 
 
 }
