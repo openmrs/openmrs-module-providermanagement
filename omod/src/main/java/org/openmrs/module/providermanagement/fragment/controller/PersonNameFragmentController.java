@@ -46,10 +46,6 @@ public class PersonNameFragmentController {
 			nameSurpport = Class.forName("org.openmrs.layout.web.name.NameSupport");
 		}
 		
-		if (nameSurpport == null) {
-			return;
-		}
-		
 		Method getInstance = nameSurpport.getDeclaredMethod("getInstance");
 		Object instance = getInstance.invoke(null);
 		
