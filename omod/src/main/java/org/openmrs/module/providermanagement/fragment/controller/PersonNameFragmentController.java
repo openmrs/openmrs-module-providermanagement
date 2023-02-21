@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonNameFragmentController {
-
+	
 	/**
 	 * @param model
 	 * @throws ClassNotFoundException
@@ -30,34 +30,34 @@ public class PersonNameFragmentController {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-
+	
 	public void controller(FragmentModel model) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-
-
-				/*
-				 * backward compatibility
-				 */
-				Class<?> nameSurpport;
-
-				try {
-					nameSurpport = Class.forName("org.openmrs.layout.name.NameSupport");
-				} catch (ClassNotFoundException e) {
-					nameSurpport = Class.forName("org.openmrs.layout.web.name.NameSupport");
-				}
-
-				if (nameSurpport == null) {
-					return;
-				}
-
-				Method getInstance = nameSurpport.getDeclaredMethod("getInstance");
-				Object instance = getInstance.invoke(null);
-
-				Method getLayoutTemplate = nameSurpport.getMethod("getDefaultLayoutTemplate");
-				Object layoutTemplate = getLayoutTemplate.invoke(instance);
-
-				model.addAttribute("layoutTemplate", layoutTemplate);
-
+	        IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		/*
+		 * backward compatibility
+		 */
+		Class<?> nameSurpport;
+		
+		try {
+			nameSurpport = Class.forName("org.openmrs.layout.name.NameSupport");
+		}
+		catch (ClassNotFoundException e) {
+			nameSurpport = Class.forName("org.openmrs.layout.web.name.NameSupport");
+		}
+		
+		if (nameSurpport == null) {
+			return;
+		}
+		
+		Method getInstance = nameSurpport.getDeclaredMethod("getInstance");
+		Object instance = getInstance.invoke(null);
+		
+		Method getLayoutTemplate = nameSurpport.getMethod("getDefaultLayoutTemplate");
+		Object layoutTemplate = getLayoutTemplate.invoke(instance);
+		
+		model.addAttribute("layoutTemplate", layoutTemplate);
+		
 	}
-
+	
 }
