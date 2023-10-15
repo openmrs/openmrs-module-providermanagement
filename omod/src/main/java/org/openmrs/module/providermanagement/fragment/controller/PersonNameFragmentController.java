@@ -14,37 +14,13 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
-import java.lang.reflect.Method;
+import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonNameFragmentController {
 
-    public void controller(FragmentModel model)throws Exception {
-        
-        /*
-            * backward compatibility
-            * using reflection to call NameSupport class
-            */
-        Class<?> nameSupport;
-
-        try {
-            nameSupport = Class.forName("org.openmrs.layout.name.NameSupport");
-        } catch (ClassNotFoundException e) {
-            nameSupport = Class.forName("org.openmrs.layout.web.name.NameSupport");
-        }
-
-        if (nameSupport == null) {
-            return;
-        }
-
-        Method getInstance = nameSupport.getDeclaredMethod("getInstance");
-                        Object instance = getInstance.invoke(null);
-
-        Method getLayoutTemplate = nameSupport.getMethod("getDefaultLayoutTemplate");
-        Object layoutTemplate = getLayoutTemplate.invoke(instance);
-
-        model.addAttribute("layoutTemplate", layoutTemplate);
-
+    public void controller(FragmentModel model) {
+        model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
     }
 
 }
