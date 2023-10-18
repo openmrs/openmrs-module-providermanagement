@@ -22,10 +22,12 @@ public class PersonNameFragmentController {
 
     public void controller(FragmentModel model)throws Exception {
         
-        /*
-            * backward compatibility
-            * using reflection to call NameSupport class
-            */
+       /*
+        * backward compatibility
+        * dynamic class loading and reflection to interact with classes that provide layout templates for perso names in the system, allowing for flexibility and extensibility in managing name layouts.
+        * using classloader to call the NameSupport classes creating an instance
+        * using reflection method to access and invoke the methods of NameSupport class
+        */
         Class<?> nameSupport;
 
         try {
