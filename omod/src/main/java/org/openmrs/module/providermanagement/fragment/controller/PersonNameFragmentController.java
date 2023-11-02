@@ -20,32 +20,39 @@ import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonNameFragmentController {
 
+    /**
+     * Controller method to retrieve the layout template and add it to the model.
+     * 
+     * @param model The fragment model to which the layout template will be added.
+     * @throws Exception If there are any issues during reflection or if the layout template retrieval fails.
+     */
+
     public void controller(FragmentModel model)throws Exception {
-        
-       /*
-        * backward compatibility
-        * dynamic class loading and reflection to interact with classes that provide layout templates for perso names in the system, allowing for flexibility and extensibility in managing name layouts.
-        * using classloader to call the NameSupport classes creating an instance
-        * using reflection method to access and invoke the methods of NameSupport class
-        */
+
         Class<?> nameSupport;
 
         try {
+            // Attempt to load the NameSupport class from org.openmrs.layout.name
             nameSupport = Class.forName("org.openmrs.layout.name.NameSupport");
         } catch (ClassNotFoundException e) {
+            // If the NameSupport class is not found in org.openmrs.layout.name, try loading it from org.openmrs.layout.web.name
             nameSupport = Class.forName("org.openmrs.layout.web.name.NameSupport");
         }
 
         if (nameSupport == null) {
+            // If the NameSupport class couldn't be loaded, return.
             return;
         }
 
+        // Use reflection to invoke the "getInstance" method
         Method getInstance = nameSupport.getDeclaredMethod("getInstance");
                         Object instance = getInstance.invoke(null);
-
+        
+        // Use reflection to invoke the "getDefaultLayoutTemplate" method
         Method getLayoutTemplate = nameSupport.getMethod("getDefaultLayoutTemplate");
         Object layoutTemplate = getLayoutTemplate.invoke(instance);
 
+        // Add the layoutTemplate to the model
         model.addAttribute("layoutTemplate", layoutTemplate);
  
     }
