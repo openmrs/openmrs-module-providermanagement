@@ -14,13 +14,47 @@
 
 package org.openmrs.module.providermanagement.fragment.controller;
 
-import org.openmrs.layout.web.name.NameSupport;
+import java.lang.reflect.Method;
+
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class PersonNameFragmentController {
 
-    public void controller(FragmentModel model) {
-        model.addAttribute("layoutTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
+    /**
+     * Controller method to retrieve the layout template and add it to the model.
+     * 
+     * @param model The fragment model to which the layout template will be added.
+     * @throws Exception If there are any issues during reflection or if the layout template retrieval fails.
+     */
+
+    public void controller(FragmentModel model)throws Exception {
+
+        Class<?> nameSupport;
+
+        try {
+            // Attempt to load the NameSupport class from org.openmrs.layout.name
+            nameSupport = Class.forName("org.openmrs.layout.name.NameSupport");
+        } catch (ClassNotFoundException e) {
+            // If the NameSupport class is not found in org.openmrs.layout.name, try loading it from org.openmrs.layout.web.name
+            nameSupport = Class.forName("org.openmrs.layout.web.name.NameSupport");
+        }
+
+        if (nameSupport == null) {
+            // If the NameSupport class couldn't be loaded, return.
+            return;
+        }
+
+        // Use reflection to invoke the "getInstance" method
+        Method getInstance = nameSupport.getDeclaredMethod("getInstance");
+                        Object instance = getInstance.invoke(null);
+        
+        // Use reflection to invoke the "getDefaultLayoutTemplate" method
+        Method getLayoutTemplate = nameSupport.getMethod("getDefaultLayoutTemplate");
+        Object layoutTemplate = getLayoutTemplate.invoke(instance);
+
+        // Add the layoutTemplate to the model
+        model.addAttribute("layoutTemplate", layoutTemplate);
+ 
     }
 
 }
