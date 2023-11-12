@@ -43,15 +43,15 @@ public class PersonNameFragmentController {
             return;
         }
 
-        // Use reflection to invoke the "getInstance" method
+        // Use reflection to invoke the "getInstance" method.
         Method getInstance = nameSupport.getDeclaredMethod("getInstance");
                         Object instance = getInstance.invoke(null);
 
-        // Use reflection to invoke the "getDefaultLayoutTemplate" method
+        // Use reflection to invoke the "getDefaultLayoutTemplate" method.
         Method getLayoutTemplate = nameSupport.getMethod("getDefaultLayoutTemplate");
         Object layoutTemplate = getLayoutTemplate.invoke(instance);
 
-        // Add the layoutTemplate to the model
+        // Add the layoutTemplate to the model.
         model.addAttribute("layoutTemplate", layoutTemplate);
 
     }
