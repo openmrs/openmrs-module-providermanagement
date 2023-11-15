@@ -18,9 +18,6 @@ import java.lang.reflect.Method;
 
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
-/**
- * This class retrieves the layout template using reflection.
- */
 public class PersonNameFragmentController {
 
     /**
