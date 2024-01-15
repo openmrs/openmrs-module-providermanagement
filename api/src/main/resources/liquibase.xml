@@ -58,7 +58,7 @@
 	<changeSet id="providermanagement-2b" author="pgutkowski">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
-				<foreignKeyConstraintExists
+				<foreignKeyConstraintExists foreignKeyTableName="provider"
 						foreignKeyName="provider_ibfk_1" />
 			</not>
 		</preConditions>
