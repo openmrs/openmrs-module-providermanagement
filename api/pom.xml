@@ -11,60 +11,6 @@
 	<packaging>jar</packaging>
 	<name>Provider Management Module API</name>
 	<description>API project for ProviderManagement</description>
-
-	<dependencies>
-		<!-- Begin OpenMRS core -->
-		
-		<dependency>
-			<groupId>org.openmrs.api</groupId>
-			<artifactId>openmrs-api</artifactId>
-			<type>jar</type>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<type>jar</type>
-		</dependency>
-				
-		<dependency>
-			<groupId>org.openmrs.api</groupId>
-			<artifactId>openmrs-api</artifactId>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.openmrs.test</groupId>
-			<artifactId>openmrs-test</artifactId>
-			<type>pom</type>
-			<scope>test</scope>
-		</dependency>
-				
-		<!-- End OpenMRS core -->
-
-        <!--  include groovy, but mark as provided since it is included in core OpenMRS -->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <version>1.7.6</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>uiframework-api</artifactId>
-        </dependency>
-
-    </dependencies>
 	
 	<build>
 		<resources>
@@ -81,22 +27,5 @@
 			</testResource>
 		</testResources>
 	</build>
-
-    <!-- profiles for testing against different versions of Openmrs -->
-    <profiles>
-        <profile>
-            <id>openmrs-1.9</id>
-            <properties>
-                <openMRSVersion>1.9.0</openMRSVersion>
-            </properties>
-        </profile>
-        <profile>
-            <id>openmrs-1.10</id>
-            <properties>
-                <openMRSVersion>1.10.0-SNAPSHOT</openMRSVersion>
-            </properties>
-        </profile>
-    </profiles>
-
 
 </project>

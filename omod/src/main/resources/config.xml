@@ -27,6 +27,7 @@
     <require_modules>
         <require_module version="${uiframeworkVersion}">org.openmrs.module.uiframework</require_module>
         <require_module version="${uilibraryVersion}">org.openmrs.module.uilibrary</require_module>
+        <require_module version="${webservicesRestVersion}">org.openmrs.module.webservices.rest</require_module>
     </require_modules>
 
     <!-- Aware Modules -->
