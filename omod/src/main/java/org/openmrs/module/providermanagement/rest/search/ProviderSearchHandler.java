@@ -1,7 +1,5 @@
 package org.openmrs.module.providermanagement.rest.search;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderRole;
@@ -15,6 +13,8 @@ import org.openmrs.module.webservices.rest.web.resource.api.SearchQuery;
 import org.openmrs.module.webservices.rest.web.resource.impl.EmptySearchResult;
 import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.List;
 @Component
 public class ProviderSearchHandler implements SearchHandler {
 
-    protected Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(ProviderSearchHandler.class);
 
     protected final String PROVIDER_ROLES_PARAM = "providerRoles";
 
