@@ -4,9 +4,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Provider;
+import org.openmrs.api.APIException;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceControllerTest;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.annotation.ExpectedException;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
@@ -56,12 +58,12 @@ public class ProviderSearchHandlerTest extends MainResourceControllerTest {
     }
 
     @Test
-    public void shouldReturnEmptyListIfInvalidRole() throws Exception {
+    @ExpectedException(APIException.class)
+    public void shouldThrowExceptionIfInvalidRole() throws Exception {
         MockHttpServletRequest req = request(RequestMethod.GET, getURI());
         req.addParameter("providerRoles", "bogus");
         SimpleObject result = deserialize(handle(req));
         List<Provider> providers = (List<Provider>) result.get("results");
-        Assert.assertEquals(0, providers.size());
     }
 
 }
