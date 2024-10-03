@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.providermanagement;
+package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,20 +20,20 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
-import org.openmrs.module.providermanagement.fragment.controller.ProviderSearchFragmentController;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.ui.framework.Formatter;
 import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.FragmentActionUiUtils;
+import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 
 import java.util.List;
 import java.util.Map;
 
-public class ProviderSearchFragmentControllerTest extends BaseModuleContextSensitiveTest {
+public class ProviderSearchFragmentControllerTest extends BaseModuleWebContextSensitiveTest{
 
     protected static final String XML_DATASET_PATH = "org/openmrs/module/providermanagement/include/";
 
