@@ -44,16 +44,18 @@ public class ProviderSearchHandler implements SearchHandler {
     @Override
     public PageableResult search(RequestContext context) throws ResponseException {
   
-        String providerRoleUuids = context.getParameter(PROVIDER_ROLES_PARAM);
+        String[] providerRoleUuidArray = context.getRequest().getParameterValues(PROVIDER_ROLES_PARAM);
         List<ProviderRole> providerRoles = new ArrayList<ProviderRole>();
 
-        for (String providerRoleUuid : providerRoleUuids.split(",")) {
-            ProviderRole providerRole = Context.getService(ProviderManagementService.class).getProviderRoleByUuid(providerRoleUuid);
-            if (providerRole != null) {
-                providerRoles.add(providerRole);
-            }
-            else {
-                throw new APIException("Unable to find provider role with uuid: " + providerRoleUuid);
+        // supports both providerRoles=uuid1,uuid2 and providerRoles=uuid1&providerRoles=uuid2
+        for (String providerRoleUuidString : providerRoleUuidArray) {
+            for (String providerRoleUuid : providerRoleUuidString.split(",")) {
+                ProviderRole providerRole = Context.getService(ProviderManagementService.class).getProviderRoleByUuid(providerRoleUuid);
+                if (providerRole != null) {
+                    providerRoles.add(providerRole);
+                } else {
+                    throw new APIException("Unable to find provider role with uuid: " + providerRoleUuid);
+                }
             }
         }
 

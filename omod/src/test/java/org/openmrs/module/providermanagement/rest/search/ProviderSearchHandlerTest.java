@@ -49,13 +49,24 @@ public class ProviderSearchHandlerTest extends MainResourceControllerTest {
     }
 
     @Test
-    public void shouldReturnProvidersByMultipleRoles() throws Exception {
+    public void shouldReturnProvidersByMultipleRolesByCommaSeparatedSingleParameter() throws Exception {
         MockHttpServletRequest req = request(RequestMethod.GET, getURI());
         req.addParameter("providerRoles", "da7f523f-27ce-4bb2-86d6-6d1d05312bd5,ea7f523f-27ce-4bb2-86d6-6d1d05312bd5"); //binome and binome superviser roles
         SimpleObject result = deserialize(handle(req));
         List<Provider> providers = (List<Provider>) result.get("results");
         Assert.assertEquals(4, providers.size());
     }
+
+    @Test
+    public void shouldReturnProvidersByMultipleRolesByMultipleParameters() throws Exception {
+        MockHttpServletRequest req = request(RequestMethod.GET, getURI());
+        req.addParameter("providerRoles", "da7f523f-27ce-4bb2-86d6-6d1d05312bd5");
+        req.addParameter("providerRoles", "ea7f523f-27ce-4bb2-86d6-6d1d05312bd5");
+        SimpleObject result = deserialize(handle(req));
+        List<Provider> providers = (List<Provider>) result.get("results");
+        Assert.assertEquals(4, providers.size());
+    }
+
 
     @Test
     @ExpectedException(APIException.class)
