@@ -20,8 +20,6 @@ import org.openmrs.module.webservices.rest.web.response.ResponseException;
         supportedOpenmrsVersions = {"1.9.* - 9.*"})
 public class ProviderRoleResource extends MetadataDelegatingCrudResource<ProviderRole> {
 
-    // TODO: add get all
-
     @Override
     public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
         if (rep instanceof DefaultRepresentation) {
