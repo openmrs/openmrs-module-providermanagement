@@ -17,8 +17,6 @@ import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingC
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 import java.util.Set;
 
-// TODO extend provider class?
-// TODO confirm version in correct format?
 @Resource(name = RestConstants.VERSION_1 + ProviderManagementRestController.PROVIDER_MANAGEMENT_REST_NAMESPACE + "/provider", supportedClass = Provider.class, supportedOpenmrsVersions = {
         "1.9.* - 9.*" })
 public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
@@ -158,6 +156,5 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
         }
         return provider.getIdentifier() + " - " + provider.getName();
     }
-
 
 }
