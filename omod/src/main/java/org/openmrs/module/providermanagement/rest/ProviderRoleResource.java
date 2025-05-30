@@ -14,6 +14,7 @@ import org.openmrs.module.webservices.rest.web.representation.FullRepresentation
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
 import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingCrudResource;
+import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
 @Resource(name = RestConstants.VERSION_1 + ProviderManagementRestController.PROVIDER_MANAGEMENT_REST_NAMESPACE + "/providerrole", supportedClass = ProviderRole.class,
@@ -85,5 +86,16 @@ public class ProviderRoleResource extends MetadataDelegatingCrudResource<Provide
                 throw new APIException(e);
             }
         }
+    }
+
+    @Override
+    protected NeedsPaging<ProviderRole> doGetAll(RequestContext context) throws ResponseException {
+        return new NeedsPaging<ProviderRole>(Context.getService(ProviderManagementService.class).getAllProviderRoles(context.getIncludeAll()), context);
+    }
+
+
+    @Override
+    public String getResourceVersion() {
+        return "1.9";
     }
 }

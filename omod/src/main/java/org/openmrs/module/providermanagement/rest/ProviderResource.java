@@ -4,6 +4,7 @@ import org.openmrs.ProviderAttribute;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.rest.controller.ProviderManagementRestController;
+import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.annotation.PropertyGetter;
@@ -14,7 +15,11 @@ import org.openmrs.module.webservices.rest.web.representation.FullRepresentation
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
 import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingCrudResource;
+import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Resource(name = RestConstants.VERSION_1 + ProviderManagementRestController.PROVIDER_MANAGEMENT_REST_NAMESPACE + "/provider", supportedClass = Provider.class, supportedOpenmrsVersions = {
@@ -144,6 +149,19 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
         Context.getProviderService().purgeProvider(provider);
     }
 
+    @Override
+    protected NeedsPaging<Provider> doGetAll(RequestContext context) throws ResponseException {
+
+        List<org.openmrs.Provider> providers = Context.getProviderService().getAllProviders(context.getIncludeAll());
+        List<Provider> upliftedProviders = new ArrayList<Provider>();
+
+        for (org.openmrs.Provider p : providers) {
+            upliftedProviders.add((Provider) p);
+        }
+
+        return new NeedsPaging<Provider>(upliftedProviders, context);
+    }
+
     /**
      * @param provider
      * @return identifier + name (for concise display purposes)
@@ -155,6 +173,17 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
             return provider.getName();
         }
         return provider.getIdentifier() + " - " + provider.getName();
+    }
+
+    @Override
+    @PropertyGetter("auditInfo")
+    public SimpleObject getAuditInfo(Provider provider) throws Exception {
+        return super.getAuditInfo(provider);
+    }
+
+    @Override
+    public String getResourceVersion() {
+        return "1.9";
     }
 
 }
