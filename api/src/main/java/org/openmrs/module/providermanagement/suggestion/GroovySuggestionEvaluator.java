@@ -64,7 +64,6 @@ public class GroovySuggestionEvaluator implements SuggestionEvaluator {
         binding.setVariable("obsService", Context.getObsService());
         binding.setVariable("orderService", Context.getOrderService());
         binding.setVariable("patientService", Context.getPatientService());
-        binding.setVariable("patientSetService", Context.getPatientSetService());
         binding.setVariable("personService", Context.getPersonService());
         binding.setVariable("programService", Context.getProgramWorkflowService());
         binding.setVariable("providerService", Context.getProviderService());

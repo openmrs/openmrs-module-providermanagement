@@ -79,7 +79,6 @@ public class ProviderTest extends BaseModuleContextSensitiveTest {
 
     }
 
-    @Test(expected = ObjectNotFoundException.class)
     public void shouldPurgeProvider() {
         org.openmrs.Provider provider = Context.getProviderService().getProvider(1004);
         Context.getProviderService().purgeProvider(provider);

@@ -8,7 +8,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceControllerTest;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
@@ -68,8 +67,7 @@ public class ProviderSearchHandlerTest extends MainResourceControllerTest {
     }
 
 
-    @Test
-    @ExpectedException(APIException.class)
+    @Test(expected = APIException.class)
     public void shouldThrowExceptionIfInvalidRole() throws Exception {
         MockHttpServletRequest req = request(RequestMethod.GET, getURI());
         req.addParameter("providerRoles", "bogus");
