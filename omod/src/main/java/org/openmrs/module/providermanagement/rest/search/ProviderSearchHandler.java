@@ -16,7 +16,7 @@ import org.openmrs.module.webservices.rest.web.response.ResponseException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -25,7 +25,7 @@ public class ProviderSearchHandler implements SearchHandler {
     protected final String PROVIDER_ROLES_PARAM = "providerRoles";
 
     private final SearchConfig searchConfig = new SearchConfig("providerByRole", RestConstants.VERSION_1 + "/provider",
-            Arrays.asList("1.9.* - 9.*"),
+            Collections.singletonList("1.9.* - 9.*"),
             new SearchQuery.Builder(
                     "Allows you to find providers by provider role uuid").withRequiredParameters(PROVIDER_ROLES_PARAM).build());
 

@@ -14,7 +14,6 @@
 
 package org.openmrs.module.providermanagement.controller;
 
-import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
@@ -22,7 +21,6 @@ import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.web.controller.PortletController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
