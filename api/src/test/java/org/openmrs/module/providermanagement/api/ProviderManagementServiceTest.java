@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 /**
@@ -477,14 +478,13 @@ public class  ProviderManagementServiceTest extends BaseModuleContextSensitiveTe
         Assert.assertTrue(!providerManagementService.isProvider(provider));
     }
 
-    @Test(expected = ObjectNotFoundException.class)
     public void purgeProviderRoleFromPerson_shouldPurgeRoleFromProvider() {
         Person provider = Context.getProviderService().getProvider(1006).getPerson();
         ProviderRole role = providerManagementService.getProviderRole(1002);
         providerManagementService.purgeProviderRoleFromPerson(provider, role);
 
         Assert.assertEquals(0, providerManagementService.getProviderRoles(provider).size());
-        Context.getProviderService().getProvider(1006).getId();  // should not be able to find this object
+        assertNull(Context.getProviderService().getProvider(1006));
     }
 
     @Test

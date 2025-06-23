@@ -175,7 +175,6 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
         return provider.getIdentifier() + " - " + provider.getName();
     }
 
-    @Override
     @PropertyGetter("auditInfo")
     public SimpleObject getAuditInfo(Provider provider) throws Exception {
         return super.getAuditInfo(provider);
