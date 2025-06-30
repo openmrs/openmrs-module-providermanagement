@@ -432,8 +432,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         Assert.assertEquals("new suggestion", suggestions.get(0).getName());
     }
 
-    // TODO: this will need to be changed once/if we add a validator?
-    @Test(expected = GenericJDBCException.class)
+    @Test(expected = PropertyValueException.class)
     public void saveSupervisionSuggestion_shouldFailIfNoTypeSpecified() {
         ProviderRole role = providerManagementService.getProviderRole(1002);
         SupervisionSuggestion suggestion = new SupervisionSuggestion();

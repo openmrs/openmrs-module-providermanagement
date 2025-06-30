@@ -49,6 +49,7 @@ import org.openmrs.module.providermanagement.exception.ProviderRoleInUseExceptio
 import org.openmrs.module.providermanagement.exception.SourceProviderSameAsDestinationProviderException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -189,9 +190,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             dao.deleteProviderRole(role);
             Context.flushSession();  // shouldn't really have to do this, but we do to force a commit so that the exception will be thrown if necessary
         }
-        catch (ConstraintViolationException e) {
+        catch (PersistenceException e) {
             throw new ProviderRoleInUseException("Cannot purge provider role. Most likely it is currently linked to an existing provider ", e);
         }
+
 
     }
 
