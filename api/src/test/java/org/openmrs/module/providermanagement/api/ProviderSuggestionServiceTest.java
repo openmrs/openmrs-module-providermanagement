@@ -15,7 +15,6 @@
 package org.openmrs.module.providermanagement.api;
 
 import org.hibernate.PropertyValueException;
-import org.hibernate.exception.GenericJDBCException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
@@ -344,7 +343,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
 
     @Test
     public void getSupervisionSuggestionByProviderRole_shouldGetAllSuggestionsForProviderRole() {
-        ProviderRole role = providerManagementService.getProviderRole(1001);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1001);
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
 
         Assert.assertEquals(2, suggestions.size());
@@ -366,7 +365,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
 
     @Test
     public void getSupervisionSuggestionByProviderRoleAndSuggestionType_shouldGetAllSuggestionsForProviderRoleAndSuggestionType() {
-        ProviderRole role = providerManagementService.getProviderRole(1002);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1002);
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRoleAndSuggestionType(role, SupervisionSuggestionType.SUPERVISEE_SUGGESTION);
 
         Assert.assertEquals(2, suggestions.size());
@@ -388,7 +387,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
 
     @Test
     public void getSupervisionSuggestionForProviderRole_shouldReturnNullOrEmptyListIfNoSuggestions()  {
-        ProviderRole role = providerManagementService.getProviderRole(1003);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1003);
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
         Assert.assertTrue(suggestions == null || suggestions.size() == 0);
     }
@@ -417,7 +416,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
 
     @Test
     public void saveSupervisionSuggestion_shouldSaveSupervisionSuggestion() {
-        ProviderRole role = providerManagementService.getProviderRole(1003);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1003);
         SupervisionSuggestion suggestion = new SupervisionSuggestion();
         suggestion.setName("new suggestion");
         suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
@@ -434,7 +433,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
 
     @Test(expected = PropertyValueException.class)
     public void saveSupervisionSuggestion_shouldFailIfNoTypeSpecified() {
-        ProviderRole role = providerManagementService.getProviderRole(1002);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1002);
         SupervisionSuggestion suggestion = new SupervisionSuggestion();
         suggestion.setName("new suggestion");
         suggestion.setEvaluator("org.openmrs.module.providermanagement.suggestion.GroovySuggestionEvaluator");
@@ -450,7 +449,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         providerSuggestionService.retireSupervisionSuggestion(suggestion, "test");
 
         // make sure only the unretired suggestion is now returned
-        ProviderRole role = providerManagementService.getProviderRole(1001) ;
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1001) ;
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
 
         // there should be only one
@@ -464,7 +463,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         providerSuggestionService.retireSupervisionSuggestion(suggestion, "test");
         providerSuggestionService.unretireSupervisionSuggestion(suggestion);
 
-        ProviderRole role = providerManagementService.getProviderRole(1001) ;
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1001) ;
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
 
         Assert.assertEquals(2, suggestions.size());
@@ -490,7 +489,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
         providerSuggestionService.purgeSupervisionSuggestion(suggestion);
 
         // make sure only the un-purged selection is now returned
-        ProviderRole role = providerManagementService.getProviderRole(1001) ;
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1001) ;
         List<SupervisionSuggestion> suggestions = providerSuggestionService.getSupervisionSuggestionsByProviderRole(role);
 
         Assert.assertEquals(1, suggestions.size());
@@ -549,7 +548,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
     public void suggestSupervisorsForProvider_shouldFailIfInvalidSuggestion() throws Exception {
 
         // add an invalid suggestion
-        ProviderRole role = providerManagementService.getProviderRole(1001);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1001);
         SupervisionSuggestion suggestion = new SupervisionSuggestion();
         suggestion.setName("new suggestion");
         suggestion.setProviderRole(role);
@@ -620,7 +619,7 @@ public class ProviderSuggestionServiceTest extends BaseModuleContextSensitiveTes
     public void suggestSuperviseesForProvider_shouldFailIfInvalidSuggestion() throws Exception {
 
         // add an invalid suggestion
-        ProviderRole role = providerManagementService.getProviderRole(1002);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1002);
         SupervisionSuggestion suggestion = new SupervisionSuggestion();
         suggestion.setName("new suggestion");
         suggestion.setProviderRole(role);

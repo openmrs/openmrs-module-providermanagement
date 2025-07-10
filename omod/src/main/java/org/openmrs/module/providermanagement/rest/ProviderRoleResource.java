@@ -2,7 +2,7 @@ package org.openmrs.module.providermanagement.rest;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.ProviderRoleInUseException;
 import org.openmrs.module.providermanagement.rest.controller.ProviderManagementRestController;
@@ -17,9 +17,9 @@ import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingC
 import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
-@Resource(name = RestConstants.VERSION_1 + ProviderManagementRestController.PROVIDER_MANAGEMENT_REST_NAMESPACE + "/providerrole", supportedClass = ProviderRole.class,
+@Resource(name = RestConstants.VERSION_1 + ProviderManagementRestController.PROVIDER_MANAGEMENT_REST_NAMESPACE + "/providerrole", supportedClass = ExtendedProviderRole.class,
         supportedOpenmrsVersions = {"1.9.* - 9.*"})
-public class ProviderRoleResource extends MetadataDelegatingCrudResource<ProviderRole> {
+public class ProviderRoleResource extends MetadataDelegatingCrudResource<ExtendedProviderRole> {
 
     @Override
     public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
@@ -60,17 +60,17 @@ public class ProviderRoleResource extends MetadataDelegatingCrudResource<Provide
     }
 
     @Override
-    public ProviderRole getByUniqueId(String uuid) {
+    public ExtendedProviderRole getByUniqueId(String uuid) {
         return Context.getService(ProviderManagementService.class).getProviderRoleByUuid(uuid);
     }
 
     @Override
-    public ProviderRole newDelegate() {
-        return new ProviderRole();
+    public ExtendedProviderRole newDelegate() {
+        return new ExtendedProviderRole();
     }
 
     @Override
-    public ProviderRole save(ProviderRole providerRole) {
+    public ExtendedProviderRole save(ExtendedProviderRole providerRole) {
         if (providerRole != null) {
             return Context.getService(ProviderManagementService.class).saveProviderRole(providerRole);
         }
@@ -78,7 +78,7 @@ public class ProviderRoleResource extends MetadataDelegatingCrudResource<Provide
     }
 
     @Override
-    public void purge(ProviderRole providerRole, RequestContext requestContext) throws ResponseException {
+    public void purge(ExtendedProviderRole providerRole, RequestContext requestContext) throws ResponseException {
         if (providerRole != null) {
             try {
                 Context.getService(ProviderManagementService.class).purgeProviderRole(providerRole);
@@ -89,8 +89,8 @@ public class ProviderRoleResource extends MetadataDelegatingCrudResource<Provide
     }
 
     @Override
-    protected NeedsPaging<ProviderRole> doGetAll(RequestContext context) throws ResponseException {
-        return new NeedsPaging<ProviderRole>(Context.getService(ProviderManagementService.class).getAllProviderRoles(context.getIncludeAll()), context);
+    protected NeedsPaging<ExtendedProviderRole> doGetAll(RequestContext context) throws ResponseException {
+        return new NeedsPaging<ExtendedProviderRole>(Context.getService(ProviderManagementService.class).getAllProviderRoles(context.getIncludeAll()), context);
     }
 
 

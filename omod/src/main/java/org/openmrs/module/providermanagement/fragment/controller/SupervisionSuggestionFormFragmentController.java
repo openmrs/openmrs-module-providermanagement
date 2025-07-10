@@ -15,7 +15,7 @@
 package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
@@ -44,7 +44,7 @@ public class SupervisionSuggestionFormFragmentController {
         model.addAttribute("supervisionSuggestion", suggestion);
 
         // add possible provider roles
-        List<ProviderRole> providerRoles = Context.getService(ProviderManagementService.class).getAllProviderRoles(false);
+        List<ExtendedProviderRole> providerRoles = Context.getService(ProviderManagementService.class).getAllProviderRoles(false);
         model.addAttribute("providerRoles", providerRoles);
 
         // add the possible suggestion types

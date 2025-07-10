@@ -47,7 +47,7 @@
             </type>
         </property>
 
-        <many-to-one name="providerRole" class="org.openmrs.module.providermanagement.ProviderRole" column="provider_role_id"
+        <many-to-one name="providerRole" class="org.openmrs.module.providermanagement.ExtendedProviderRole" column="provider_role_id"
                      not-null="true" />
 
         <!--  standard OpenmrsMetaData -->

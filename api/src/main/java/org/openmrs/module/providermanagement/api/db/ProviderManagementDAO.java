@@ -18,7 +18,7 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.Provider;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
@@ -41,7 +41,7 @@ public interface ProviderManagementDAO {
      * @param includeRetired whether or not to include retired providers
      * @return list of al provider roles in the system
      */
-    public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
+    public List<ExtendedProviderRole> getAllProviderRoles(boolean includeRetired);
 
     /**
      * Gets the provider role referenced by the specified id
@@ -49,7 +49,7 @@ public interface ProviderManagementDAO {
      * @param id
      * @return providerRole
      */
-    public ProviderRole getProviderRole(Integer id);
+    public ExtendedProviderRole getProviderRole(Integer id);
 
     /**
      * Gets the provider role referenced by the specified uui
@@ -57,7 +57,7 @@ public interface ProviderManagementDAO {
      * @param uuid
      * @return providerRole
      */
-    public ProviderRole getProviderRoleByUuid(String uuid);
+    public ExtendedProviderRole getProviderRoleByUuid(String uuid);
 
     /**
      * Gets the list of provider roles that support the specified relationship type
@@ -66,7 +66,7 @@ public interface ProviderManagementDAO {
      * @param relationshipType
      * @return list of provider roles that support that relationship type
      */
-    public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
+    public List<ExtendedProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
 
     /**
      * Returns all provider roles that are able to supervise the specified provider role
@@ -75,7 +75,7 @@ public interface ProviderManagementDAO {
      * @param providerRole
      * @return the provider roles that can supervise the specified provider role
      */
-    public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole);
+    public List<ExtendedProviderRole> getProviderRolesBySuperviseeProviderRole(ExtendedProviderRole providerRole);
 
     /**
      * Saves/updates a provider role
@@ -83,14 +83,14 @@ public interface ProviderManagementDAO {
      * @param role the provider role to save
      * @return provider role
      */
-    public ProviderRole saveProviderRole(ProviderRole role);
+    public ExtendedProviderRole saveProviderRole(ExtendedProviderRole role);
 
     /**
      * Deletes a provider role
      *
      * @param role the provider role to delete
      */
-    public void deleteProviderRole(ProviderRole role);
+    public void deleteProviderRole(ExtendedProviderRole role);
 
     /**
      * Gets the list of providers that match the specified name, identifier, and provider roles
@@ -104,7 +104,7 @@ public interface ProviderManagementDAO {
      * @param includeRetired whether or not to include retired providers
      * @return result list of providers
      */
-    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ExtendedProviderRole> providerRoles, Boolean includeRetired);
 
     /**
      * Gets all providers associated with the current person
@@ -122,7 +122,7 @@ public interface ProviderManagementDAO {
      * @param includeRetired whether or not to include retired providers
      * @return all providers with the selected provider roles
      */
-    public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired);
+    public List<Provider> getProvidersByProviderRoles(List<ExtendedProviderRole> roles, boolean includeRetired);
 
     /**
      * Gets the provider suggestion referenced by the specified id
@@ -196,7 +196,7 @@ public interface ProviderManagementDAO {
      * @param suggestionType
      * @return ist of provider suggestions for the specified relationship type
      */
-    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ExtendedProviderRole providerRole, SupervisionSuggestionType suggestionType);
 
 
     /**

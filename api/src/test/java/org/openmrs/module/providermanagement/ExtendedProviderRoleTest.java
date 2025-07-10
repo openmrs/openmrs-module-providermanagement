@@ -21,7 +21,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
-public class ProviderRoleTest extends BaseModuleContextSensitiveTest {
+public class ExtendedProviderRoleTest extends BaseModuleContextSensitiveTest {
 
     protected static final String XML_DATASET_PATH = "org/openmrs/module/providermanagement/include/";
 
@@ -40,12 +40,12 @@ public class ProviderRoleTest extends BaseModuleContextSensitiveTest {
     
     @Test
     public void shouldCreateNewProviderRole() {
-        new ProviderRole();
+        new ExtendedProviderRole();
     }
     
     @Test
     public void shouldSpecifyWhetherRoleIsSupervisorRole() {
-        ProviderRole role = providerManagementService.getProviderRole(1001);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1001);
         Assert.assertFalse(role.isSupervisorRole());
 
         role = providerManagementService.getProviderRole(1002);
@@ -57,7 +57,7 @@ public class ProviderRoleTest extends BaseModuleContextSensitiveTest {
 
     @Test
     public void shouldSpecifyWhetherRoleIsDirectCareRole() {
-        ProviderRole role = providerManagementService.getProviderRole(1001);
+        ExtendedProviderRole role = providerManagementService.getProviderRole(1001);
         Assert.assertTrue(role.isDirectPatientCareRole());
 
         role = providerManagementService.getProviderRole(1002);
@@ -69,7 +69,7 @@ public class ProviderRoleTest extends BaseModuleContextSensitiveTest {
 
     @Test
     public void shouldTestWhetherRoleSupportsRelationshipType() {
-        ProviderRole role =  providerManagementService.getProviderRole(1011);
+        ExtendedProviderRole role =  providerManagementService.getProviderRole(1011);
         RelationshipType binome = Context.getPersonService().getRelationshipType(1001);
         RelationshipType accompagneteur =  Context.getPersonService().getRelationshipType(1002);
         
@@ -79,9 +79,9 @@ public class ProviderRoleTest extends BaseModuleContextSensitiveTest {
 
     @Test
     public void equalsTest() {
-        ProviderRole role1 = providerManagementService.getProviderRole(1001);
-        ProviderRole role2 = providerManagementService.getProviderRole(1001);
-        ProviderRole role3 = providerManagementService.getProviderRole(1002);
+        ExtendedProviderRole role1 = providerManagementService.getProviderRole(1001);
+        ExtendedProviderRole role2 = providerManagementService.getProviderRole(1001);
+        ExtendedProviderRole role3 = providerManagementService.getProviderRole(1002);
         
         Assert.assertTrue(role1.equals(role2));
         Assert.assertFalse(role1.equals(role3));

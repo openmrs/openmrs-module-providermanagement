@@ -15,7 +15,7 @@
 package org.openmrs.module.providermanagement.fragment.controller;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
@@ -24,7 +24,7 @@ import java.util.List;
 public class ProviderRoleListFragmentController {
 
     public void controller(FragmentModel model) {
-        List<ProviderRole> providerRoles = Context.getService(ProviderManagementService.class).getAllProviderRoles(true);
+        List<ExtendedProviderRole> providerRoles = Context.getService(ProviderManagementService.class).getAllProviderRoles(true);
         model.addAttribute("providerRoles", providerRoles);
     }
 }

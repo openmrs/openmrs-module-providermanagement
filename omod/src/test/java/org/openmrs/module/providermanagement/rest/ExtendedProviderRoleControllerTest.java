@@ -4,13 +4,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceControllerTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-public class ProviderRoleControllerTest extends MainResourceControllerTest {
+public class ExtendedProviderRoleControllerTest extends MainResourceControllerTest {
 
     protected static final String XML_DATASET_PATH = "org/openmrs/module/providermanagement/include/";
 
@@ -31,7 +31,7 @@ public class ProviderRoleControllerTest extends MainResourceControllerTest {
 
     @Test
     public void voidProvider_shouldRetireAProvider() throws Exception {
-        ProviderRole providerRole = Context.getService(ProviderManagementService.class).getProviderRoleByUuid(getUuid());
+        ExtendedProviderRole providerRole = Context.getService(ProviderManagementService.class).getProviderRoleByUuid(getUuid());
         Assert.assertFalse(providerRole.isRetired());
 
         MockHttpServletRequest request = request(RequestMethod.DELETE, getURI() + "/" + getUuid() );
@@ -48,7 +48,7 @@ public class ProviderRoleControllerTest extends MainResourceControllerTest {
         String json = "{\"description\":\"new description\"}";
         handle(newPostRequest(getURI() + "/" + getUuid(), json));
 
-        ProviderRole updatedProviderRole = (ProviderRole) Context.getService(ProviderManagementService.class).getProviderRoleByUuid(getUuid());
+        ExtendedProviderRole updatedProviderRole = (ExtendedProviderRole) Context.getService(ProviderManagementService.class).getProviderRoleByUuid(getUuid());
         Assert.assertEquals("new description", updatedProviderRole.getDescription());
     }
 

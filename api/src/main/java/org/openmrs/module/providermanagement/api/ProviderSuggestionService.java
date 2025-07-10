@@ -19,7 +19,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
@@ -149,7 +149,7 @@ public interface ProviderSuggestionService {
      * @return  all Supervision Suggestions for the specified provider role of the specified type
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType);
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ExtendedProviderRole providerRole, SupervisionSuggestionType suggestionType);
 
     /**
      * Gets all Supervision Suggestions for the specified provider role
@@ -158,7 +158,7 @@ public interface ProviderSuggestionService {
      * @return  all Supervision Suggestions for the specified provider role
      */
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ProviderRole providerRole);
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ExtendedProviderRole providerRole);
 
     /**
      * Gets all the supervision suggestions

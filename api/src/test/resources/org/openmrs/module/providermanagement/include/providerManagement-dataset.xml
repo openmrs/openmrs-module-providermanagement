@@ -6,18 +6,18 @@
     <relationship_type relationship_type_id="1004" a_is_to_b="Supervisor" b_is_to_a="Supervisee" preferred="0" weight="0" description="Relationship from supervisor to supervisee" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc"/>
 
     <!-- set up the provider roles and relationships and supervisees they support -->
-    <providermanagement_provider_role provider_role_id="1001" name="Binome" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1002" name="Binome supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1003" name="Cell supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="db7f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1004" name="Health center supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1e05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1005" name="Community health nurse" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-4bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1006" name="ASM" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-7d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1007" name="Accompagnateur leader" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1008" name="ID Nurse" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bc2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1009" name="Palliative care worker" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-5bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1010" name="Retired accompagnateur type" creator="1" date_created="2005-09-22 00:00:00.0" retired="true" uuid="da7f623f-27ce-5bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1011" name="Accompagnateur" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-5bb2-86d6-6d1d05312bd5"/>
-    <providermanagement_provider_role provider_role_id="1012" name="Some other role" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623e-37ce-5bb2-86d6-6d1d05312bd5"/>
+    <provider_role provider_role_id="1001" name="Binome" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1002" name="Binome supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="ea7f523f-27ce-4bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1003" name="Cell supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="db7f523f-27ce-4bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1004" name="Health center supervisor" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1e05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1005" name="Community health nurse" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-4bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1006" name="ASM" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bb2-86d6-7d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1007" name="Accompagnateur leader" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da8f523f-27ce-4bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1008" name="ID Nurse" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-4bc2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1009" name="Palliative care worker" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f523f-27ce-5bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1010" name="Retired accompagnateur type" creator="1" date_created="2005-09-22 00:00:00.0" retired="true" uuid="da7f623f-27ce-5bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1011" name="Accompagnateur" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623f-37ce-5bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
+    <provider_role provider_role_id="1012" name="Some other role" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="da7f623e-37ce-5bb2-86d6-6d1d05312bd5" dtype="ExtendedProviderRole"/>
 
     <relationship_type relationship_type_id="1001" a_is_to_b="Binome" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from binome to patient" creator="1" date_created="2007-05-04 09:59:22.0" retired="false" uuid="6d0002ea-a96b-4889-af78-82d48c57a110"/>
     <relationship_type relationship_type_id="1002" a_is_to_b="Accompagnateur" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from accompagnateur to patient" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956eadc"/>

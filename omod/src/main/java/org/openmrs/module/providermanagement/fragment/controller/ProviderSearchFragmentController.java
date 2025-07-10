@@ -19,7 +19,7 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.ProviderManagementGlobalProperties;
 import org.openmrs.module.providermanagement.ProviderManagementWebUtil;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.ui.framework.SimpleObject;
@@ -40,7 +40,7 @@ public class ProviderSearchFragmentController {
                                            @RequestParam(value="includeRetired", required=false) Boolean includeRetired,
                                           @RequestParam(value="excludeSuperviseesOf", required=false) Person excludeSuperviseesOf,
                                           @RequestParam(value="excludeProvider", required=false) Person excludeProvider,
-                                          @RequestParam(value="providerRoles[]", required=false) ProviderRole[] providerRoles,
+                                          @RequestParam(value="providerRoles[]", required=false) ExtendedProviderRole[] providerRoles,
                                           @RequestParam(value="resultFields[]", required=false) String[] resultFields,
                                           UiUtils ui)
                 throws PersonIsNotProviderException {
@@ -52,7 +52,7 @@ public class ProviderSearchFragmentController {
         // default is to not include retired providers
         includeRetired = includeRetired != null ? includeRetired : false;
 
-        List<ProviderRole> providerRoleList = null;
+        List<ExtendedProviderRole> providerRoleList = null;
         if (providerRoles != null && providerRoles.length > 0) {
             providerRoleList = Arrays.asList(providerRoles);
         }
@@ -87,14 +87,14 @@ public class ProviderSearchFragmentController {
      * @return
      * @throws PersonIsNotProviderException
      */
-    public List<SimpleObject> getSupervisors(@RequestParam(value="roleId", required=true) ProviderRole providerRole,
+    public List<SimpleObject> getSupervisors(@RequestParam(value="roleId", required=true) ExtendedProviderRole providerRole,
                                              @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
                                            UiUtils ui)
             throws PersonIsNotProviderException {
 
 
         List<SimpleObject> items = new ArrayList<SimpleObject>();
-        List<ProviderRole> roles = providerManagementService.getProviderRolesBySuperviseeProviderRole(providerRole);
+        List<ExtendedProviderRole> roles = providerManagementService.getProviderRolesBySuperviseeProviderRole(providerRole);
         if ( roles!=null && roles.size()>0) {
             List<Person> supervisors = providerManagementService.getProvidersAsPersonsByRoles(roles);
             if (supervisors != null && supervisors.size() > 0 ) {
@@ -118,24 +118,24 @@ public class ProviderSearchFragmentController {
      * @return
      * @throws PersonIsNotProviderException
      */
-    public List<SimpleObject> getSupervisees(@RequestParam(value="roleId", required=false) ProviderRole providerRole,
+    public List<SimpleObject> getSupervisees(@RequestParam(value="roleId", required=false) ExtendedProviderRole providerRole,
                                              @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
                                              UiUtils ui)
             throws PersonIsNotProviderException {
 
         List<SimpleObject> items = new ArrayList<SimpleObject>();
-        Set<ProviderRole> roles = null;
+        Set<ExtendedProviderRole> roles = null;
         if (providerRole != null) {
             roles = providerRole.getSuperviseeProviderRoles();
         } else {
-            List<ProviderRole> allProviderRoles = providerManagementService.getAllProviderRoles(false);
-            roles = new HashSet<ProviderRole>();
-            for (ProviderRole role : allProviderRoles) {
+            List<ExtendedProviderRole> allProviderRoles = providerManagementService.getAllProviderRoles(false);
+            roles = new HashSet<ExtendedProviderRole>();
+            for (ExtendedProviderRole role : allProviderRoles) {
                 roles.add(role);
             }
         }
         if ( roles!=null && roles.size() > 0 ) {
-            List<Person> supervisees = providerManagementService.getProvidersAsPersonsByRoles(new ArrayList<ProviderRole>(roles));
+            List<Person> supervisees = providerManagementService.getProvidersAsPersonsByRoles(new ArrayList<ExtendedProviderRole>(roles));
             if (supervisees != null && supervisees.size() > 0 ) {
                 for (Person supervisee : supervisees) {
                     SimpleObject item = new SimpleObject();
@@ -148,7 +148,7 @@ public class ProviderSearchFragmentController {
         }
         return items;
     }
-    public List<SimpleObject> getProviderAttributes(@RequestParam(value="roleId", required=false) ProviderRole providerRole,
+    public List<SimpleObject> getProviderAttributes(@RequestParam(value="roleId", required=false) ExtendedProviderRole providerRole,
                                                     @SpringBean("providerManagementService") ProviderManagementService providerManagementService,
                                                     UiUtils ui) {
         List<SimpleObject> items = new ArrayList<SimpleObject>();

@@ -47,7 +47,7 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>2.7.0</openMRSVersion>
+		<openMRSVersion>2.8.0-SNAPSHOT</openMRSVersion>
         <uiframeworkVersion>3.4</uiframeworkVersion>
 		<uilibraryVersion>1.5</uilibraryVersion>
 		<webservicesRestVersion>2.49.0</webservicesRestVersion>

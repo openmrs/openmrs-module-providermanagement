@@ -14,14 +14,14 @@
 
 package org.openmrs.module.providermanagement.suggestion;
 
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 
 public class SupervisionSuggestion extends Suggestion {
 
     private Integer supervisionSuggestionId;
 
     // provider role this rule applies to
-    private ProviderRole providerRole;
+    private ExtendedProviderRole providerRole;
 
     // whether is a "supervisor" suggestion or a "supervisee" suggestion
     private SupervisionSuggestionType suggestionType;
@@ -47,11 +47,11 @@ public class SupervisionSuggestion extends Suggestion {
         this.supervisionSuggestionId = supervisionSuggestionId;
     }
 
-    public ProviderRole getProviderRole() {
+    public ExtendedProviderRole getProviderRole() {
         return providerRole;
     }
 
-    public void setProviderRole(ProviderRole providerRole) {
+    public void setProviderRole(ExtendedProviderRole providerRole) {
         this.providerRole = providerRole;
     }
 

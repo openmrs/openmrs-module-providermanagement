@@ -3,7 +3,7 @@ package org.openmrs.module.providermanagement.rest.search;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.Provider;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
@@ -44,12 +44,12 @@ public class ProviderSearchHandler implements SearchHandler {
     public PageableResult search(RequestContext context) throws ResponseException {
   
         String[] providerRoleUuidArray = context.getRequest().getParameterValues(PROVIDER_ROLES_PARAM);
-        List<ProviderRole> providerRoles = new ArrayList<ProviderRole>();
+        List<ExtendedProviderRole> providerRoles = new ArrayList<ExtendedProviderRole>();
 
         // supports both providerRoles=uuid1,uuid2 and providerRoles=uuid1&providerRoles=uuid2
         for (String providerRoleUuidString : providerRoleUuidArray) {
             for (String providerRoleUuid : providerRoleUuidString.split(",")) {
-                ProviderRole providerRole = Context.getService(ProviderManagementService.class).getProviderRoleByUuid(providerRoleUuid);
+                ExtendedProviderRole providerRole = Context.getService(ProviderManagementService.class).getProviderRoleByUuid(providerRoleUuid);
                 if (providerRole != null) {
                     providerRoles.add(providerRole);
                 } else {

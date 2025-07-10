@@ -21,7 +21,7 @@ import org.openmrs.Person;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ExtendedProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
@@ -174,7 +174,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ProviderRole providerRole, SupervisionSuggestionType suggestionType) {
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRoleAndSuggestionType(ExtendedProviderRole providerRole, SupervisionSuggestionType suggestionType) {
 
         if (providerRole == null) {
             throw new APIException("providerRole cannot be null");
@@ -185,7 +185,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ProviderRole providerRole) {
+    public List<SupervisionSuggestion> getSupervisionSuggestionsByProviderRole(ExtendedProviderRole providerRole) {
         return getSupervisionSuggestionsByProviderRoleAndSuggestionType(providerRole, null);
     }
 
@@ -247,7 +247,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         }
 
         // first, get all the roles for this provider
-        List<ProviderRole> roles = Context.getService(ProviderManagementService.class).getProviderRoles(provider);
+        List<ExtendedProviderRole> roles = Context.getService(ProviderManagementService.class).getProviderRoles(provider);
 
         // if the provider has no roles, return null
         if (roles == null || roles.size() == 0) {
@@ -255,7 +255,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         }
 
         // now get all the roles that this provider can supervise or be supervisors by (depending on type)
-        List<ProviderRole> validRoles;
+        List<ExtendedProviderRole> validRoles;
 
         if (type.equals(SupervisionSuggestionType.SUPERVISEE_SUGGESTION)) {
             validRoles = Context.getService(ProviderManagementService.class).getProviderRolesThatProviderCanSupervise(provider);
@@ -266,7 +266,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
 
         // get any suggestions based on the provider roles
         Set<SupervisionSuggestion> suggestions = new HashSet<SupervisionSuggestion>();
-        for (ProviderRole role : roles) {
+        for (ExtendedProviderRole role : roles) {
             List<SupervisionSuggestion> s = getSupervisionSuggestionsByProviderRoleAndSuggestionType(role, type);
             if (s != null && s.size() > 0) {
                 suggestions.addAll(s);
