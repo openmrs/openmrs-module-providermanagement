@@ -103,7 +103,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<ProviderManagementProviderRole> cq = cb.createQuery(ProviderManagementProviderRole.class);
         Root<ProviderManagementProviderRole> root = cq.from(ProviderManagementProviderRole.class);
-        cq.where(cb.isMember(relationshipType, root.get("relationshipTypes")));
+        cq.where(cb.and(cb.isFalse(root.get("retired")), cb.isMember(relationshipType, root.get("relationshipTypes"))));
         return getSession().createQuery(cq).getResultList();
     }
 
@@ -112,7 +112,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<ProviderManagementProviderRole> cq = cb.createQuery(ProviderManagementProviderRole.class);
         Root<ProviderManagementProviderRole> root = cq.from(ProviderManagementProviderRole.class);
-        cq.where(cb.isMember(providerRole, root.get("superviseeProviderRoles")));
+        cq.where(cb.and(cb.isFalse(root.get("retired")), cb.isMember(providerRole, root.get("superviseeProviderRoles"))));
         return getSession().createQuery(cq).getResultList();
     }
 

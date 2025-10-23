@@ -81,7 +81,7 @@ public class SuggestionTest extends BaseModuleContextSensitiveTest {
 
         Suggestion suggestion = new SupervisionSuggestion();
 
-        suggestion.setCriteria("org.openmrs.module.providermanagement.ProviderRole role = providerManagementService.getProviderRoles(provider)[0];" +
+        suggestion.setCriteria("org.openmrs.module.providermanagement.ProviderManagementProviderRole role = providerManagementService.getProviderRoles(provider)[0];" +
                 "Set<org.openmrs.Person> persons = new HashSet<org.openmrs.Person>();" +
                 "persons.addAll(providerManagementService.getProvidersAsPersonsByRole(role));" +
                 "return persons;");

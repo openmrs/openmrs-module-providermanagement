@@ -20,6 +20,8 @@
                         </property>
                     </bean>
                 </property>
+                <property name="providerService" ref="providerService"/>
+                <property name="personService" ref="personService"/>
             </bean>
         </property>
         <property name="preInterceptors">
