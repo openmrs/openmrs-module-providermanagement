@@ -17,7 +17,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
@@ -59,16 +58,6 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public ProviderManagementProviderRole getProviderRole(Integer providerRoleId) {
-        return getSession().get(ProviderManagementProviderRole.class, providerRoleId);
-    }
-
-    @Override
-    public ProviderManagementProviderRole getProviderRoleByUuid(String uuid) {
-        return HibernateUtil.getUniqueEntityByUUID(sessionFactory.getHibernateSessionFactory(), ProviderManagementProviderRole.class, uuid);
-    }
-
-    @Override
     public List<ProviderManagementProviderRole> getAllProviderRoles(boolean includeRetired) {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<ProviderManagementProviderRole> cq = cb.createQuery(ProviderManagementProviderRole.class);
@@ -80,22 +69,13 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole providerManagementProviderRole) {
-        getSession().saveOrUpdate(providerManagementProviderRole);
-        return providerManagementProviderRole;
+    public ProviderManagementProviderRole getProviderRole(Integer id) {
+        return getSession().get(ProviderManagementProviderRole.class, id);
     }
 
     @Override
-    public void deleteProviderRole(ProviderManagementProviderRole providerManagementProviderRole) {
-        getSession().delete(providerManagementProviderRole);
-    }
-
-    @Override
-    public ProviderManagementProviderRole getProviderRole(Provider provider) {
-        if (provider.getProviderRole() == null) {
-            return null;
-        }
-        return getProviderRole(provider.getProviderRole().getId());
+    public ProviderManagementProviderRole getProviderRoleByUuid(String uuid) {
+        return HibernateUtil.getUniqueEntityByUUID(sessionFactory.getHibernateSessionFactory(), ProviderManagementProviderRole.class, uuid);
     }
 
     @Override
@@ -114,6 +94,25 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         Root<ProviderManagementProviderRole> root = cq.from(ProviderManagementProviderRole.class);
         cq.where(cb.and(cb.isFalse(root.get("retired")), cb.isMember(providerRole, root.get("superviseeProviderRoles"))));
         return getSession().createQuery(cq).getResultList();
+    }
+
+    @Override
+    public ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole role) {
+        getSession().saveOrUpdate(role);
+        return role;
+    }
+
+    @Override
+    public void deleteProviderRole(ProviderManagementProviderRole role) {
+        getSession().delete(role);
+    }
+
+    @Override
+    public ProviderManagementProviderRole getProviderRole(Provider provider) {
+        if (provider.getProviderRole() == null) {
+            return null;
+        }
+        return getProviderRole(provider.getProviderRole().getId());
     }
 
     @Override
@@ -180,6 +179,17 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
+    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
+        Criteria criteria = getSession().createCriteria(Provider.class);
+        criteria.add(Restrictions.eq("person", person));
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
+        }
+        criteria.addOrder(Order.asc("providerId"));
+        return list(criteria, Provider.class);
+    }
+
+    @Override
     public List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired) {
         Criteria criteria = getSession().createCriteria(Provider.class);
         criteria.add(Restrictions.in("providerRole", roles));
@@ -190,16 +200,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
         return list(criteria, Provider.class);
     }
 
-    @Override
-    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
-        Criteria criteria = getSession().createCriteria(Provider.class);
-        criteria.add(Restrictions.eq("person", person));
-        if (!includeRetired) {
-            criteria.add(Restrictions.eq("retired", false));
-        }
-        criteria.addOrder(Order.asc("providerId"));
-        return list(criteria, Provider.class);
-    }
+
 
     @Override
     public ProviderSuggestion getProviderSuggestion(Integer id) {

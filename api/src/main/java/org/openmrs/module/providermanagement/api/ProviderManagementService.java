@@ -45,9 +45,11 @@ import java.util.List;
  */
 public interface ProviderManagementService extends OpenmrsService {
 
+    // TODO: make sure we are handling excluding/including retired metadata in a logical manner
+
     /*
-     * Basic methods for operating on provider roles
-     */
+      * Basic methods for operating on provider roles
+      */
 
     /**
      * Gets all Provider Roles in the database
@@ -150,12 +152,6 @@ public interface ProviderManagementService extends OpenmrsService {
     ProviderManagementProviderRole getProviderRole(Provider provider);
 
     /**
-     * Get all the provider roles for the given person
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
-    List<ProviderManagementProviderRole> getProviderRoles(Person person);
-
-    /**
      * Get all the relationship types associated with provider roles
      *
      * @param includeRetired whether or not to include retired relationship types
@@ -209,6 +205,15 @@ public interface ProviderManagementService extends OpenmrsService {
     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
     List<Person> getProvidersAsPersons(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
+
+    /**
+     * Returns the provider roles associated with the specified person
+     *
+     * @param person
+     * @return the provider role associated with the specified person
+     */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderManagementProviderRole> getProviderRoles(Person person);
     /**
      * Assigns a provider role to a person
      *

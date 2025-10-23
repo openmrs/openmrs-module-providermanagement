@@ -1,5 +1,5 @@
 /**
- * The contents of this file are subject to the OpenMRS License
+ * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
@@ -17,7 +17,6 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.Provider;
-import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.RelationshipType;
 import org.openmrs.module.providermanagement.ProviderManagementProviderRole;
@@ -33,23 +32,73 @@ import java.util.List;
  */
 public interface ProviderManagementDAO {
 
-    ProviderManagementProviderRole getProviderRole(Integer providerRoleId);
+	/*
+	 * Base Methods for saving and loading provider roles
+	 */
 
-    ProviderManagementProviderRole getProviderRoleByUuid(String uuid);
-
+    /**
+     * Gets all Provider Roles in the database
+     *
+     * @param includeRetired whether or not to include retired providers
+     * @return list of al provider roles in the system
+     */
     List<ProviderManagementProviderRole> getAllProviderRoles(boolean includeRetired);
 
-    ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole providerManagementProviderRole);
+    /**
+     * Gets the provider role referenced by the specified id
+     *
+     * @param id
+     * @return providerRole
+     */
+    ProviderManagementProviderRole getProviderRole(Integer id);
 
-    void deleteProviderRole(ProviderManagementProviderRole providerManagementProviderRole);
+    /**
+     * Gets the provider role referenced by the specified uui
+     *
+     * @param uuid
+     * @return providerRole
+     */
+    ProviderManagementProviderRole getProviderRoleByUuid(String uuid);
 
-    ProviderManagementProviderRole getProviderRole(Provider provider);
-
+    /**
+     * Gets the list of provider roles that support the specified relationship type
+     * (Excludes retired provider roles)
+     *
+     * @param relationshipType
+     * @return list of provider roles that support that relationship type
+     */
     List<ProviderManagementProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
 
+    /**
+     * Returns all provider roles that are able to supervise the specified provider role
+     * (Excluded retired provider roles)
+     *
+     * @param providerRole
+     * @return the provider roles that can supervise the specified provider role
+     */
     List<ProviderManagementProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole);
 
-    List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired);
+    /**
+     * Saves/updates a provider role
+     *
+     * @param role the provider role to save
+     * @return provider role
+     */
+    ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole role);
+
+    /**
+     * Deletes a provider role
+     *
+     * @param role the provider role to delete
+     */
+    void deleteProviderRole(ProviderManagementProviderRole role);
+
+    /**
+     * Retrieve the ProviderManagementProviderRole for a given Provider
+     * @param provider the provider
+     * @return ProviderManagementProviderRole for that provider
+     */
+    ProviderManagementProviderRole getProviderRole(Provider provider);
 
     /**
      * Gets the list of providers that match the specified name, identifier, and provider roles
@@ -65,7 +114,23 @@ public interface ProviderManagementDAO {
      */
     List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
+    /**
+     * Gets all providers associated with the current person
+     *
+     * @param person
+     * @param includeRetired whether or not to include retired providers
+     * @return all providers associated with the current person
+     */
     List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
+
+    /**
+     * Gets all providers with the selected provider roles
+     *
+     * @param roles
+     * @param includeRetired whether or not to include retired providers
+     * @return all providers with the selected provider roles
+     */
+    List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired);
 
     /**
      * Gets the provider suggestion referenced by the specified id

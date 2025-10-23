@@ -146,21 +146,25 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     }
 
     @Override
+    @Transactional
     public ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole role) {
         return dao.saveProviderRole(role);
     }
 
     @Override
+    @Transactional
     public void retireProviderRole(ProviderManagementProviderRole role, String reason) {
         providerService.retireProviderRole(role, reason);
     }
 
     @Override
+    @Transactional
     public void unretireProviderRole(ProviderManagementProviderRole role) {
         providerService.unretireProviderRole(role);
     }
 
     @Override
+    @Transactional
     public void purgeProviderRole(ProviderManagementProviderRole role) throws ProviderRoleInUseException {
         List<Provider> providersWithRole = providerService.getProvidersByRoles(Collections.singletonList(role));
         if (!providersWithRole.isEmpty()) {
@@ -274,11 +278,13 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         Set<ProviderManagementProviderRole> providerRoles = new HashSet<>();
 
         Collection<Provider> providers = getProvidersByPerson(provider, false);
+
         for (Provider p : providers) {
             if (p.getProviderRole() != null) {
                 providerRoles.add(getProviderRole(p));
             }
         }
+
         return new ArrayList<>(providerRoles);
     }
 
