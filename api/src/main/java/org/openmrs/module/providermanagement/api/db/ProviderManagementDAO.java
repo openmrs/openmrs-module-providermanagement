@@ -14,13 +14,13 @@
 package org.openmrs.module.providermanagement.api.db;
 
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.RelationshipType;
-import org.openmrs.module.providermanagement.ProviderRoleProviderAttributeType;
-import org.openmrs.module.providermanagement.ProviderRoleRelationshipType;
-import org.openmrs.module.providermanagement.ProviderRoleSuperviseeProviderRole;
+import org.openmrs.module.providermanagement.ProviderManagementProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
@@ -33,49 +33,39 @@ import java.util.List;
  */
 public interface ProviderManagementDAO {
 
-    // ProviderRoleProviderAttributeType
+    ProviderManagementProviderRole getProviderRole(Integer providerRoleId);
 
-    List<ProviderRoleProviderAttributeType> getAllProviderRoleProviderAttributeTypes();
-    
-    List<ProviderAttributeType> getProviderAttributeTypesForProviderRole(ProviderRole providerRole);
-    
-    List<ProviderRole> getProviderRolesByProviderAttributeType(ProviderAttributeType providerAttributeType);
-    
-    ProviderRoleProviderAttributeType saveProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType);
-    
-    void deleteProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType);
+    ProviderManagementProviderRole getProviderRoleByUuid(String uuid);
 
-    // ProviderRoleRelationshipType
+    List<ProviderManagementProviderRole> getAllProviderRoles(boolean includeRetired);
 
-    List<ProviderRoleRelationshipType> getAllProviderRoleRelationshipTypes();
+    ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole providerManagementProviderRole);
 
-    List<RelationshipType> getRelationshipTypesForProviderRole(ProviderRole providerRole);
+    void deleteProviderRole(ProviderManagementProviderRole providerManagementProviderRole);
 
-    List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
+    ProviderManagementProviderRole getProviderRole(Provider provider);
 
-    ProviderRoleRelationshipType saveProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType);
+    List<ProviderManagementProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
 
-    void deleteProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType);
-
-    // ProviderRoleSuperviseeProviderRole
-
-    List<ProviderRoleSuperviseeProviderRole> getAllProviderRoleSuperviseeProviderRoles();
-
-    List<ProviderRole> getSuperviseeProviderRolesForProviderRole(ProviderRole supervisorProviderRole);
-
-    List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole superviseeProviderRole);
-
-    ProviderRoleSuperviseeProviderRole saveProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole);
-
-    void deleteProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole);
-
-    // Additional provider service methods
+    List<ProviderManagementProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole);
 
     List<Provider> getProvidersByProviderRoles(List<ProviderRole> roles, boolean includeRetired);
 
-    List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
+    /**
+     * Gets the list of providers that match the specified name, identifier, and provider roles
+     * (If any field is null it is ignored)
+     *
+     * @param name name to search on
+     * @param identifier provider identifier
+     * @param personAddress address to search on
+     * @param personAttribute person attribute to search
+     * @param providerRoles restrict results to providers with at least one of these roles
+     * @param includeRetired whether or not to include retired providers
+     * @return result list of providers
+     */
+    List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
 
-    // ProviderSuggestion
+    List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 
     /**
      * Gets the provider suggestion referenced by the specified id

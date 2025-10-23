@@ -14,25 +14,31 @@
 package org.openmrs.module.providermanagement.api.db.hibernate;
 
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.Provider;
-import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
 import org.openmrs.RelationshipType;
-import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.providermanagement.ProviderRoleProviderAttributeType;
-import org.openmrs.module.providermanagement.ProviderRoleRelationshipType;
-import org.openmrs.module.providermanagement.ProviderRoleSuperviseeProviderRole;
+import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.module.providermanagement.ProviderManagementProviderRole;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
 import org.openmrs.module.providermanagement.suggestion.ProviderSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestion;
 import org.openmrs.module.providermanagement.suggestion.SupervisionSuggestionType;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -43,8 +49,8 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     @Setter
 	private DbSessionFactory sessionFactory;
 
-    DbSession getSession() {
-        return sessionFactory.getCurrentSession();
+    Session getSession() {
+        return sessionFactory.getHibernateSessionFactory().getCurrentSession();
     }
 
     @SuppressWarnings("unchecked")
@@ -53,102 +59,124 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public List<ProviderRoleProviderAttributeType> getAllProviderRoleProviderAttributeTypes() {
-        Criteria criteria = getSession().createCriteria(ProviderRoleProviderAttributeType.class);
-        return list(criteria, ProviderRoleProviderAttributeType.class);
+    public ProviderManagementProviderRole getProviderRole(Integer providerRoleId) {
+        return getSession().get(ProviderManagementProviderRole.class, providerRoleId);
     }
 
     @Override
-    public List<ProviderAttributeType> getProviderAttributeTypesForProviderRole(ProviderRole providerRole) {
-        Criteria criteria = getSession().createCriteria(ProviderRoleProviderAttributeType.class);
-        criteria.setProjection(Property.forName("providerAttributeType"));
-        criteria.add(Restrictions.eq("providerRole", providerRole));
-        return list(criteria, ProviderAttributeType.class);
+    public ProviderManagementProviderRole getProviderRoleByUuid(String uuid) {
+        return HibernateUtil.getUniqueEntityByUUID(sessionFactory.getHibernateSessionFactory(), ProviderManagementProviderRole.class, uuid);
     }
 
     @Override
-    public List<ProviderRole> getProviderRolesByProviderAttributeType(ProviderAttributeType providerAttributeType) {
-        Criteria criteria = getSession().createCriteria(ProviderRoleProviderAttributeType.class);
-        criteria.setProjection(Property.forName("providerRole"));
-        criteria.add(Restrictions.eq("providerAttributeType", providerAttributeType));
-        return list(criteria, ProviderRole.class);
+    public List<ProviderManagementProviderRole> getAllProviderRoles(boolean includeRetired) {
+        CriteriaBuilder cb = getSession().getCriteriaBuilder();
+        CriteriaQuery<ProviderManagementProviderRole> cq = cb.createQuery(ProviderManagementProviderRole.class);
+        Root<ProviderManagementProviderRole> root = cq.from(ProviderManagementProviderRole.class);
+        if (!includeRetired) {
+            cq.where(cb.equal(root.get("retired"), includeRetired));
+        }
+        return getSession().createQuery(cq).getResultList();
     }
 
     @Override
-    public ProviderRoleProviderAttributeType saveProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType) {
-        getSession().saveOrUpdate(providerRoleProviderAttributeType);
-        return providerRoleProviderAttributeType;
+    public ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole providerManagementProviderRole) {
+        getSession().saveOrUpdate(providerManagementProviderRole);
+        return providerManagementProviderRole;
     }
 
     @Override
-    public void deleteProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType) {
-        getSession().delete(providerRoleProviderAttributeType);
+    public void deleteProviderRole(ProviderManagementProviderRole providerManagementProviderRole) {
+        getSession().delete(providerManagementProviderRole);
     }
 
     @Override
-    public List<ProviderRoleRelationshipType> getAllProviderRoleRelationshipTypes() {
-        Criteria criteria = getSession().createCriteria(ProviderRoleRelationshipType.class);
-        return list(criteria, ProviderRoleRelationshipType.class);
+    public ProviderManagementProviderRole getProviderRole(Provider provider) {
+        if (provider.getProviderRole() == null) {
+            return null;
+        }
+        return getProviderRole(provider.getProviderRole().getId());
     }
 
     @Override
-    public List<RelationshipType> getRelationshipTypesForProviderRole(ProviderRole providerRole) {
-        Criteria criteria = getSession().createCriteria(ProviderRoleRelationshipType.class);
-        criteria.setProjection(Property.forName("relationshipType"));
-        criteria.add(Restrictions.eq("providerRole", providerRole));
-        return list(criteria, RelationshipType.class);
+    public List<ProviderManagementProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType) {
+        CriteriaBuilder cb = getSession().getCriteriaBuilder();
+        CriteriaQuery<ProviderManagementProviderRole> cq = cb.createQuery(ProviderManagementProviderRole.class);
+        Root<ProviderManagementProviderRole> root = cq.from(ProviderManagementProviderRole.class);
+        cq.where(cb.isMember(relationshipType, root.get("relationshipTypes")));
+        return getSession().createQuery(cq).getResultList();
     }
 
     @Override
-    public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType) {
-        Criteria criteria = getSession().createCriteria(ProviderRoleRelationshipType.class);
-        criteria.setProjection(Property.forName("providerRole"));
-        criteria.add(Restrictions.eq("relationshipType", relationshipType));
-        return list(criteria, ProviderRole.class);
+    public List<ProviderManagementProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole) {
+        CriteriaBuilder cb = getSession().getCriteriaBuilder();
+        CriteriaQuery<ProviderManagementProviderRole> cq = cb.createQuery(ProviderManagementProviderRole.class);
+        Root<ProviderManagementProviderRole> root = cq.from(ProviderManagementProviderRole.class);
+        cq.where(cb.isMember(providerRole, root.get("superviseeProviderRoles")));
+        return getSession().createQuery(cq).getResultList();
     }
 
     @Override
-    public ProviderRoleRelationshipType saveProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType) {
-        getSession().saveOrUpdate(providerRoleRelationshipType);
-        return providerRoleRelationshipType;
-    }
+    public List<Person> getProviders(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
 
-    @Override
-    public void deleteProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType) {
-        getSession().delete(providerRoleRelationshipType);
-    }
+        // first, create the provider criteria
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class);
 
-    @Override
-    public List<ProviderRoleSuperviseeProviderRole> getAllProviderRoleSuperviseeProviderRoles() {
-        Criteria criteria = getSession().createCriteria(ProviderRoleSuperviseeProviderRole.class);
-        return list(criteria, ProviderRoleSuperviseeProviderRole.class);
-    }
+        // we want the result to be a list of person
+        criteria.setProjection(Property.forName("person"));
 
-    @Override
-    public List<ProviderRole> getSuperviseeProviderRolesForProviderRole(ProviderRole supervisorProviderRole) {
-        Criteria criteria = getSession().createCriteria(ProviderRoleSuperviseeProviderRole.class);
-        criteria.setProjection(Property.forName("superviseeProviderRole"));
-        //criteria.add(Restrictions.eq("providerRole", supervisorProviderRole));
-        return list(criteria, ProviderRole.class);
-    }
+        // restrict to ignore retired if flag is set
+        if (!includeRetired) {
+            criteria.add(Restrictions.eq("retired", false));
+        }
 
-    @Override
-    public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole) {
-        Criteria criteria = getSession().createCriteria(ProviderRoleSuperviseeProviderRole.class);
-        criteria.setProjection(Property.forName("providerRole"));
-        criteria.add(Restrictions.eq("superviseeProviderRole", providerRole));
-        return list(criteria, ProviderRole.class);
-    }
+        // restrict to providers with a specific identifier, if specified
+        if (identifier != null && identifier.length() > 0) {
+            criteria.add(Restrictions.ilike("identifier", identifier, MatchMode.START));
+        }
 
-    @Override
-    public ProviderRoleSuperviseeProviderRole saveProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole) {
-        getSession().saveOrUpdate(providerRoleSuperviseeProviderRole);
-        return providerRoleSuperviseeProviderRole;
-    }
+        // restrict to provider with one of set of provider roles, if specified
+        if (providerRoles != null && providerRoles.size() > 0) {
+            criteria.add(Restrictions.in("providerRole", providerRoles));
+        }
 
-    @Override
-    public void deleteProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole) {
-        getSession().delete(providerRoleSuperviseeProviderRole);
+        // create person criteria on top of the provider criteria
+        criteria = criteria.createCriteria("person");
+
+        // we only want distinct people
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        // ignore voided people
+        criteria.add(Restrictions.eq("personVoided", false));
+
+        // create the join to the person table
+        criteria.createAlias("names", "name");
+
+        // order by name
+        criteria.addOrder(Order.asc("name.givenName"));
+        criteria.addOrder(Order.asc("name.middleName"));
+        criteria.addOrder(Order.asc("name.familyName"));
+
+        // handle restricting by name if any names have been specified
+        if (name != null && name.length() > 0) {
+            addNameCriteria(criteria, name);
+        }
+
+        // handle querying by address if an address has been specified
+        if (personAddress != null) {
+            addAddressCriteria(criteria, personAddress);
+        }
+
+        // handle querying by person attribute if an attribute has been specified
+        // TODO: create functionality to allow searching against multiple attributes(see PROV-11) (see Hibernate ticket https://hibernate.onjira.com/browse/HHH-879 for why this will take a little work)
+        if (personAttribute != null && StringUtils.isNotBlank(personAttribute.getValue())) {
+            criteria.createAlias("attributes", "attribute");
+            criteria.add(Restrictions.and(Restrictions.eq("attribute.attributeType", personAttribute.getAttributeType()),
+                    Restrictions.ilike("attribute.value", personAttribute.getValue(), MatchMode.EXACT)));
+        }
+
+        return (List<Person>) criteria.list();
+
     }
 
     @Override
@@ -215,7 +243,7 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
 
     @Override
     public SupervisionSuggestion getSupervisionSuggestion(Integer id) {
-        return (SupervisionSuggestion) getSession().get(SupervisionSuggestion.class, id);
+        return getSession().get(SupervisionSuggestion.class, id);
     }
 
     @Override
@@ -254,5 +282,63 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     @Override
     public void deleteSupervisionSuggestion(SupervisionSuggestion suggestion) {
         getSession().delete(suggestion);
+    }
+
+    private void addNameCriteria(Criteria criteria, String name) {
+        name = name.replace(", ", " ");
+        String[] names = name.split("\\s+");
+
+        for (String n : names) {
+            if (n != null && n.length() > 0) {
+                criteria.add(Restrictions.or(Restrictions.ilike("name.givenName", n, MatchMode.START), Restrictions.or(Restrictions
+                        .ilike("name.familyName", n, MatchMode.START), Restrictions.or(Restrictions.ilike("name.middleName", n,
+                        MatchMode.START), Restrictions.ilike("name.familyName2", n, MatchMode.START)))));
+            }
+        }
+    }
+
+    private void addAddressCriteria(Criteria criteria, PersonAddress personAddress) {
+
+        // some persons may not have an associated address at all; therefore if the personAddress variable is empty
+        // we need to make sure we don't even create the join
+        if (!personAddress.isBlank()) {
+
+            criteria.createAlias("addresses", "address");
+
+            // check all the address fields, and add restrictions if necessary
+            if (StringUtils.isNotBlank(personAddress.getAddress1())) {
+                criteria.add(Restrictions.ilike("address.address1", personAddress.getAddress1(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress2())) {
+                criteria.add(Restrictions.ilike("address.address2", personAddress.getAddress2(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress3())) {
+                criteria.add(Restrictions.ilike("address.address3", personAddress.getAddress3(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress4())) {
+                criteria.add(Restrictions.ilike("address.address4", personAddress.getAddress4(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress5())) {
+                criteria.add(Restrictions.ilike("address.address5", personAddress.getAddress5(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getAddress6())) {
+                criteria.add(Restrictions.ilike("address.address6", personAddress.getAddress6(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getCityVillage())) {
+                criteria.add(Restrictions.ilike("address.cityVillage", personAddress.getCityVillage(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getCountry())) {
+                criteria.add(Restrictions.ilike("address.country", personAddress.getCountry(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getCountyDistrict())) {
+                criteria.add(Restrictions.ilike("address.countyDistrict", personAddress.getCountyDistrict(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getStateProvince())) {
+                criteria.add(Restrictions.ilike("address.stateProvince", personAddress.getStateProvince(), MatchMode.ANYWHERE));
+            }
+            if (StringUtils.isNotBlank(personAddress.getPostalCode())) {
+                criteria.add(Restrictions.ilike("address.postalCode", personAddress.getPostalCode(), MatchMode.ANYWHERE));
+            }
+        }
     }
 }

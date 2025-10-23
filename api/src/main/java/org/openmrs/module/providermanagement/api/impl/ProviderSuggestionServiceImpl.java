@@ -21,6 +21,7 @@ import org.openmrs.ProviderRole;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.providermanagement.ProviderManagementProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
@@ -114,7 +115,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             throw new APIException("Relationship type cannot be null");
         }
 
-        if (!Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
+        if (!Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a valid provider relationship type");
         }
 
@@ -237,7 +238,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         }
 
         // first, get all the roles for this provider
-        List<ProviderRole> roles = Context.getService(ProviderManagementService.class).getProviderRoles(provider);
+        List<ProviderManagementProviderRole> roles = Context.getService(ProviderManagementService.class).getProviderRoles(provider);
 
         // if the provider has no roles, return null
         if (roles == null || roles.size() == 0) {
@@ -245,7 +246,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
         }
 
         // now get all the roles that this provider can supervise or be supervisors by (depending on type)
-        List<ProviderRole> validRoles;
+        List<ProviderManagementProviderRole> validRoles;
 
         if (type.equals(SupervisionSuggestionType.SUPERVISEE_SUGGESTION)) {
             validRoles = Context.getService(ProviderManagementService.class).getProviderRolesThatProviderCanSupervise(provider);

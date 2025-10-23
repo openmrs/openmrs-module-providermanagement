@@ -35,9 +35,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ProviderManagementUtils {
     /**
@@ -84,11 +82,14 @@ public class ProviderManagementUtils {
      * @param relationships
      */
     public static void filterNonProviderRelationships(Collection<Relationship> relationships) {
-        Set<RelationshipType> providerRelationshipTypes = new HashSet<>();
-        for (ProviderRoleRelationshipType type : Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes()) {
-            providerRelationshipTypes.add(type.getRelationshipType());
-        }
-        CollectionUtils.filter(relationships, o -> providerRelationshipTypes.contains(((Relationship) o).getRelationshipType()));
+        final List<RelationshipType> providerRelationshipTypes = Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(true);
+        CollectionUtils.filter(relationships, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return providerRelationshipTypes.contains(((Relationship) o).getRelationshipType());
+            }
+        });
+
     }
     
     /**
@@ -123,13 +124,13 @@ public class ProviderManagementUtils {
         List<Person> supervisorPersons = providerManagementService.getSupervisorsForProvider(person);
         for (Person supervisor : supervisorPersons) {
             List<Provider> providersByPerson = providerManagementService.getProvidersByPerson(supervisor, true);
-            if (providersByPerson !=null && !providersByPerson.isEmpty()) {
+            if (providersByPerson !=null && providersByPerson.size() > 0) {
                 RelationshipType supervisorRelationshipType = providerManagementService.getSupervisorRelationshipType();
                 Relationship supervisorRelationship = null;
                 Provider supervisorProvider = providersByPerson.get(0);
                 List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor,
                         person, supervisorRelationshipType, null);
-                if (relationships != null && !relationships.isEmpty()){
+                if (relationships != null && relationships.size() > 0 ){
                     for (Relationship relationship : relationships) {
                         if ( ( supervisorRelationship == null && relationship.getEndDate() == null ) ||
                                 (supervisorRelationship != null && relationship.getEndDate() == null
@@ -205,19 +206,21 @@ public class ProviderManagementUtils {
         ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
         PatientService patientService = Context.getService(PatientService.class);
         List<ProviderPersonRelationship> patientsList = new ArrayList<>();
-        List<RelationshipType> relationshipTypes = providerManagementService.getRelationshipTypesForProviderRole(provider.getProviderRole());
-        for (RelationshipType relationshipType : relationshipTypes ) {
-            if (!relationshipType.isRetired()) {
-                for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
-                    if (relationship.getPersonB().isPatient()) {
-                        Patient temp = patientService.getPatient(relationship.getPersonB().getId());
-                        if (!temp.isVoided()) {
-                            patientsList.add(new ProviderPersonRelationship(
-                                    temp,
-                                    (temp.getPatientIdentifier() != null) ? temp.getPatientIdentifier().getIdentifier() : null,
-                                    temp.getPatientId(),
-                                    relationship,
-                                    relationshipType));
+        ProviderManagementProviderRole providerRole = providerManagementService.getProviderRole(provider);
+        if (providerRole != null) {
+            for (RelationshipType relationshipType : providerRole.getRelationshipTypes()) {
+                if (!relationshipType.isRetired()) {
+                    for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
+                        if (relationship.getPersonB().isPatient()) {
+                            Patient temp = patientService.getPatient(relationship.getPersonB().getId());
+                            if (!temp.isVoided()) {
+                                patientsList.add(new ProviderPersonRelationship(
+                                        temp,
+                                        (temp.getPatientIdentifier() != null) ? temp.getPatientIdentifier().getIdentifier() : null,
+                                        temp.getPatientId(),
+                                        relationship,
+                                        relationshipType));
+                            }
                         }
                     }
                 }

@@ -19,9 +19,6 @@
 
 <hibernate-configuration>
     <session-factory>
-        <mapping resource="ProviderRoleProviderAttributeType.xml" />
-        <mapping resource="ProviderRoleRelationshipType.xml" />
-        <mapping resource="ProviderRoleSuperviseeProviderRole.xml" />
         <mapping resource="ProviderSuggestion.hbm.xml" />
         <mapping resource="SupervisionSuggestion.hbm.xml" />
     </session-factory>
