@@ -1,10 +1,7 @@
 package org.openmrs.module.providermanagement.rest;
 
-import org.openmrs.api.APIException;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.api.ProviderManagementService;
-import org.openmrs.module.providermanagement.exception.ProviderRoleInUseException;
 import org.openmrs.module.providermanagement.rest.controller.ProviderManagementRestController;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
@@ -18,7 +15,7 @@ import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
 @Resource(name = RestConstants.VERSION_1 + ProviderManagementRestController.PROVIDER_MANAGEMENT_REST_NAMESPACE + "/providerrole", supportedClass = ProviderRole.class,
-        supportedOpenmrsVersions = {"1.9.* - 9.*"})
+        supportedOpenmrsVersions = {"2.8.* - 9.*"})
 public class ProviderRoleResource extends MetadataDelegatingCrudResource<ProviderRole> {
 
     @Override
@@ -61,7 +58,7 @@ public class ProviderRoleResource extends MetadataDelegatingCrudResource<Provide
 
     @Override
     public ProviderRole getByUniqueId(String uuid) {
-        return Context.getService(ProviderManagementService.class).getProviderRoleByUuid(uuid);
+        return Context.getProviderService().getProviderRoleByUuid(uuid);
     }
 
     @Override
@@ -72,7 +69,7 @@ public class ProviderRoleResource extends MetadataDelegatingCrudResource<Provide
     @Override
     public ProviderRole save(ProviderRole providerRole) {
         if (providerRole != null) {
-            return Context.getService(ProviderManagementService.class).saveProviderRole(providerRole);
+            return Context.getProviderService().saveProviderRole(providerRole);
         }
         return null;
     }
@@ -80,19 +77,14 @@ public class ProviderRoleResource extends MetadataDelegatingCrudResource<Provide
     @Override
     public void purge(ProviderRole providerRole, RequestContext requestContext) throws ResponseException {
         if (providerRole != null) {
-            try {
-                Context.getService(ProviderManagementService.class).purgeProviderRole(providerRole);
-            } catch (ProviderRoleInUseException e) {
-                throw new APIException(e);
-            }
+            Context.getProviderService().purgeProviderRole(providerRole);
         }
     }
 
     @Override
     protected NeedsPaging<ProviderRole> doGetAll(RequestContext context) throws ResponseException {
-        return new NeedsPaging<ProviderRole>(Context.getService(ProviderManagementService.class).getAllProviderRoles(context.getIncludeAll()), context);
+        return new NeedsPaging<>(Context.getProviderService().getAllProviderRoles(context.getIncludeAll()), context);
     }
-
 
     @Override
     public String getResourceVersion() {

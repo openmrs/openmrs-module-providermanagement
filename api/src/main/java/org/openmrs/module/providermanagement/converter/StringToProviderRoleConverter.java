@@ -15,8 +15,8 @@
 package org.openmrs.module.providermanagement.converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.ProviderRole;
+import org.openmrs.api.ProviderService;
 import org.openmrs.ui.framework.converter.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,8 +27,8 @@ import org.springframework.stereotype.Component;
 public class StringToProviderRoleConverter implements Converter<String, ProviderRole> {
 	
 	@Autowired
-	@Qualifier("providerManagementService")
-	public ProviderManagementService service;
+	@Qualifier("providerService")
+	public ProviderService service;
 	
 	/**
 	 * Treats the string as the integer primary key of the Provider Role

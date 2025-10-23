@@ -1,10 +1,9 @@
 package org.openmrs.module.providermanagement.rest.search;
 
+import org.openmrs.Provider;
+import org.openmrs.ProviderRole;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.Provider;
-import org.openmrs.module.providermanagement.ProviderRole;
-import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
@@ -25,7 +24,7 @@ public class ProviderSearchHandler implements SearchHandler {
     protected final String PROVIDER_ROLES_PARAM = "providerRoles";
 
     private final SearchConfig searchConfig = new SearchConfig("providerByRole", RestConstants.VERSION_1 + "/provider",
-            Collections.singletonList("1.9.* - 9.*"),
+            Collections.singletonList("2.8.* - 9.*"),
             new SearchQuery.Builder(
                     "Allows you to find providers by provider role uuid").withRequiredParameters(PROVIDER_ROLES_PARAM).build());
 
@@ -44,12 +43,12 @@ public class ProviderSearchHandler implements SearchHandler {
     public PageableResult search(RequestContext context) throws ResponseException {
   
         String[] providerRoleUuidArray = context.getRequest().getParameterValues(PROVIDER_ROLES_PARAM);
-        List<ProviderRole> providerRoles = new ArrayList<ProviderRole>();
+        List<ProviderRole> providerRoles = new ArrayList<>();
 
         // supports both providerRoles=uuid1,uuid2 and providerRoles=uuid1&providerRoles=uuid2
         for (String providerRoleUuidString : providerRoleUuidArray) {
             for (String providerRoleUuid : providerRoleUuidString.split(",")) {
-                ProviderRole providerRole = Context.getService(ProviderManagementService.class).getProviderRoleByUuid(providerRoleUuid);
+                ProviderRole providerRole = Context.getProviderService().getProviderRoleByUuid(providerRoleUuid);
                 if (providerRole != null) {
                     providerRoles.add(providerRole);
                 } else {
@@ -58,7 +57,7 @@ public class ProviderSearchHandler implements SearchHandler {
             }
         }
 
-        List<Provider> providers = Context.getService(ProviderManagementService.class).getProvidersByRoles(providerRoles);
-        return new NeedsPaging<Provider>(providers, context);
+        List<Provider> providers = Context.getProviderService().getProvidersByRoles(providerRoles);
+        return new NeedsPaging<>(providers, context);
     }
 }

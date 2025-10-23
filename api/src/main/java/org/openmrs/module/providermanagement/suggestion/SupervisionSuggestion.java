@@ -14,7 +14,7 @@
 
 package org.openmrs.module.providermanagement.suggestion;
 
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.ProviderRole;
 
 public class SupervisionSuggestion extends Suggestion {
 

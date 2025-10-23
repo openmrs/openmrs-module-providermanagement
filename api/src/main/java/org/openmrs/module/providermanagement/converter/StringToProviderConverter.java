@@ -14,8 +14,8 @@
 package org.openmrs.module.providermanagement.converter;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.Provider;
 import org.openmrs.api.ProviderService;
-import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.ui.framework.converter.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,9 +41,9 @@ public class StringToProviderConverter implements Converter<String, Provider> {
 		if (StringUtils.isBlank(source)) {
 			return null;
 		} else if (ConversionUtil.onlyDigits(source)) {
-			return (Provider) service.getProvider(Integer.valueOf(source));
+			return service.getProvider(Integer.valueOf(source));
 		}
-		return (Provider) service.getProviderByUuid(source);
+		return service.getProviderByUuid(source);
 	}
 	
 }

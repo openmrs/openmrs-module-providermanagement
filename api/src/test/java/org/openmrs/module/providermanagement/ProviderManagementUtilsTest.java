@@ -15,10 +15,10 @@
 package org.openmrs.module.providermanagement;
 
 import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -28,9 +28,9 @@ import org.openmrs.module.providermanagement.exception.PersonIsNotProviderExcept
 import org.openmrs.module.providermanagement.exception.ProviderAlreadyAssignedToSupervisorException;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Date;
+
+import static org.junit.Assert.assertNotNull;
 
 public class ProviderManagementUtilsTest extends BaseModuleContextSensitiveTest{
 	protected static final String XML_DATASET_PATH = "org/openmrs/module/providermanagement/include/";

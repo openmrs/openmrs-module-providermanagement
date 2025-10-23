@@ -19,6 +19,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
@@ -34,7 +35,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProviderManagementUtils {
     /**
@@ -81,14 +84,11 @@ public class ProviderManagementUtils {
      * @param relationships
      */
     public static void filterNonProviderRelationships(Collection<Relationship> relationships) {
-        final List<RelationshipType> providerRelationshipTypes = Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(true);
-        CollectionUtils.filter(relationships, new Predicate() {
-            @Override
-            public boolean evaluate(Object o) {
-                return providerRelationshipTypes.contains(((Relationship) o).getRelationshipType());
-            }
-        });
-
+        Set<RelationshipType> providerRelationshipTypes = new HashSet<>();
+        for (ProviderRoleRelationshipType type : Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes()) {
+            providerRelationshipTypes.add(type.getRelationshipType());
+        }
+        CollectionUtils.filter(relationships, o -> providerRelationshipTypes.contains(((Relationship) o).getRelationshipType()));
     }
     
     /**
@@ -123,13 +123,13 @@ public class ProviderManagementUtils {
         List<Person> supervisorPersons = providerManagementService.getSupervisorsForProvider(person);
         for (Person supervisor : supervisorPersons) {
             List<Provider> providersByPerson = providerManagementService.getProvidersByPerson(supervisor, true);
-            if (providersByPerson !=null && providersByPerson.size() > 0) {
+            if (providersByPerson !=null && !providersByPerson.isEmpty()) {
                 RelationshipType supervisorRelationshipType = providerManagementService.getSupervisorRelationshipType();
                 Relationship supervisorRelationship = null;
                 Provider supervisorProvider = providersByPerson.get(0);
                 List<Relationship> relationships = Context.getPersonService().getRelationships(supervisor,
                         person, supervisorRelationshipType, null);
-                if (relationships != null && relationships.size() > 0 ){
+                if (relationships != null && !relationships.isEmpty()){
                     for (Relationship relationship : relationships) {
                         if ( ( supervisorRelationship == null && relationship.getEndDate() == null ) ||
                                 (supervisorRelationship != null && relationship.getEndDate() == null
@@ -204,8 +204,9 @@ public class ProviderManagementUtils {
 
         ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
         PatientService patientService = Context.getService(PatientService.class);
-        List<ProviderPersonRelationship> patientsList = new ArrayList<ProviderPersonRelationship>();
-        for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
+        List<ProviderPersonRelationship> patientsList = new ArrayList<>();
+        List<RelationshipType> relationshipTypes = providerManagementService.getRelationshipTypesForProviderRole(provider.getProviderRole());
+        for (RelationshipType relationshipType : relationshipTypes ) {
             if (!relationshipType.isRetired()) {
                 for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
                     if (relationship.getPersonB().isPatient()) {

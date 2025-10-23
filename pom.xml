@@ -47,12 +47,13 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>2.7.0</openMRSVersion>
+		<openMRSVersion>2.8.2-SNAPSHOT</openMRSVersion>
         <uiframeworkVersion>3.4</uiframeworkVersion>
 		<uilibraryVersion>1.5</uilibraryVersion>
 		<webservicesRestVersion>2.49.0</webservicesRestVersion>
 		<legacyUiVersion>2.0.0-SNAPSHOT</legacyUiVersion>
 		<javaXServletVersion>4.0.1</javaXServletVersion>
+		<lombokVersion>1.18.42</lombokVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -69,24 +70,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<version>${openMRSVersion}</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
-			<version>${openMRSVersion}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
 			<version>${openMRSVersion}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
@@ -128,6 +113,11 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombokVersion}</version>
+		</dependency>
 
 	</dependencies>
 

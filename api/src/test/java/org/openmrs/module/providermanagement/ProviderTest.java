@@ -14,13 +14,15 @@ package org.openmrs.module.providermanagement;
  */
 
 import junit.framework.Assert;
-import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
+import org.openmrs.Provider;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -33,15 +35,16 @@ public class ProviderTest extends BaseModuleContextSensitiveTest {
 
     protected static final String XML_DATASET = "providerManagement-dataset.xml";
 
-    private ProviderManagementService providerManagementService;
+    @Autowired
+    ProviderManagementService providerManagementService;
+
+    @Autowired
+    ProviderService providerService;
 
     @Before
     public void init() throws Exception {
         // execute the provider management test dataset
         executeDataSet(XML_DATASET_PATH + XML_DATASET);
-
-        // initialize the service
-        providerManagementService = Context.getService(ProviderManagementService.class);
     }
 
     @Test
@@ -61,7 +64,7 @@ public class ProviderTest extends BaseModuleContextSensitiveTest {
         Provider provider = new Provider();
         provider.setPerson(person);
         provider.setIdentifier("new provider");
-        provider.setProviderRole(providerManagementService.getProviderRole(1001));
+        provider.setProviderRole(providerService.getProviderRole(1001));
 
         // now save the provider using the existing Provider Service
         Context.getProviderService().saveProvider(provider);

@@ -14,14 +14,13 @@
 
 package org.openmrs.module.providermanagement.api.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.Setter;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.ProviderRole;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.ProviderSuggestionService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
@@ -43,17 +42,8 @@ import java.util.Set;
 
 public class ProviderSuggestionServiceImpl implements ProviderSuggestionService {
 
-    protected final Log log = LogFactory.getLog(this.getClass());
-
+    @Setter
     private ProviderManagementDAO dao;
-
-    public ProviderManagementDAO getDao() {
-        return dao;
-    }
-
-    public void setDao(ProviderManagementDAO dao) {
-        this.dao = dao;
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -124,7 +114,7 @@ public class ProviderSuggestionServiceImpl implements ProviderSuggestionService 
             throw new APIException("Relationship type cannot be null");
         }
 
-        if (!Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+        if (!Context.getService(ProviderManagementService.class).getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a valid provider relationship type");
         }
 

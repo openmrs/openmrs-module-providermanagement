@@ -1,4 +1,4 @@
-/*
+/**
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -11,18 +11,23 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-
 package org.openmrs.module.providermanagement;
 
-public class Provider extends org.openmrs.Provider {
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.openmrs.ProviderRole;
+
+import java.io.Serializable;
+
+/**
+ * Many-to-many mapping class between a provider role and a supervisee provider role
+ */
+@Data
+@NoArgsConstructor
+public class ProviderRoleSuperviseeProviderRole implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private ProviderRole providerRole;
-
-    public ProviderRole getProviderRole() {
-        return providerRole;
-    }
-
-    public void setProviderRole(ProviderRole providerRole) {
-        this.providerRole = providerRole;
-    }
+    private ProviderRole superviseeProviderRole;
 }

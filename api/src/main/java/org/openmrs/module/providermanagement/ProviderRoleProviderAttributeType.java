@@ -1,4 +1,4 @@
-/*
+/**
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -11,20 +11,24 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-
 package org.openmrs.module.providermanagement;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
+
+import java.io.Serializable;
+
 /**
- * Constants used by the module
+ * Many-to-many mapping class between a provider role and a provider attribute type
  */
-public class ProviderManagementConstants {
+@Data
+@NoArgsConstructor
+public class ProviderRoleProviderAttributeType implements Serializable {
 
-    public static final String SUPERVISOR_RELATIONSHIP_TYPE_UUID = "2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc";
+    private static final long serialVersionUID = 1L;
 
-    public static final String PROVIDER_MANAGEMENT_API_PRIVILEGE = "Provider Management API";
-
-    public static final String PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE = "Provider Management API - Read-only";
-
-    public static final String GP_RESTRICTED_ROLES = "providermanagement.restrictedRoles";
-
+    private ProviderRole providerRole;
+    private ProviderAttributeType providerAttributeType;
 }

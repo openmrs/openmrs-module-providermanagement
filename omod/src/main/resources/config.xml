@@ -14,14 +14,9 @@
 	<updateURL>https://dev.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
 	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
-
-	<aware_of_modules>
-	    <aware_of_module>org.openmrs.module.legacyui</aware_of_module>
-	</aware_of_modules>
 	
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ProviderManagementActivator</activator>
-	
 
     <!-- Required Modules -->
     <require_modules>
@@ -29,25 +24,12 @@
         <require_module version="${uilibraryVersion}">org.openmrs.module.uilibrary</require_module>
         <require_module version="${webservicesRestVersion}">org.openmrs.module.webservices.rest</require_module>
     </require_modules>
-
-    <!-- Aware Modules -->
-    <!-- In Openmrs 1.9.x and earlier we rely on the logic module to get the groovy jar, which is used for processing suggestion rules;
-         in Openmrs 1.10.x the groovy jar is provided with core, and so the logic module is no longer required-->
-    <aware_of_modules>
-        <aware_of_module>org.openmrs.logic</aware_of_module>
-    </aware_of_modules>
-
-
-	<!-- Adds link to admin page -->
-	<extension>
-		<point>org.openmrs.admin.list</point>
-		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
-	</extension>
 	
-	<!-- Maps hibernate files, if present -->
+	<!-- Hibernate Mapping Files -->
 	<mappingFiles>
-		Provider.hbm.xml
-        ProviderRole.hbm.xml
+        ProviderRoleProviderAttributeType.xml
+        ProviderRoleRelationshipType.xml
+        ProviderRoleSuperviseeProviderRole.xml
         ProviderSuggestion.hbm.xml
 		SupervisionSuggestion.hbm.xml
 	</mappingFiles>
@@ -157,17 +139,8 @@
         </description>
     </globalProperty>
 
-    <!--  Extension Points -->
-    <!-- we are not overridding the patient dashboard at this point -->
-    <!--
-     <extension>
-         <point>org.openmrs.patientDashboard.overviewBox</point>
-         <class>org.openmrs.module.providermanagement.extension.html.PatientDashboardOverviewExt</class>
-     </extension>
-    -->
+    <!--  Message Properties -->
 
-    <!-- Internationalization -->
-	<!-- All message codes should start with ${project.parent.artifactId}. -->
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>
@@ -180,8 +153,6 @@
 		<lang>es</lang>
 		<file>messages_es.properties</file>
 	</messages>
-	<!-- /Internationalization -->
-
 
     <!-- Required Privileges -->
     <privilege>

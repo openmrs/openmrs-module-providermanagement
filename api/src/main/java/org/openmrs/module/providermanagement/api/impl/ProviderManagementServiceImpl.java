@@ -13,29 +13,30 @@
  */
 package org.openmrs.module.providermanagement.api.impl;
 
-import org.apache.commons.collections.CollectionUtils;
+import lombok.Setter;
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.exception.ConstraintViolationException;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonAttribute;
+import org.openmrs.Provider;
+import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
 import org.openmrs.module.providermanagement.ProviderManagementUtils;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ProviderRoleProviderAttributeType;
+import org.openmrs.module.providermanagement.ProviderRoleRelationshipType;
+import org.openmrs.module.providermanagement.ProviderRoleSuperviseeProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.api.db.ProviderManagementDAO;
-import org.openmrs.module.providermanagement.comparator.PersonByFirstNameComparator;
 import org.openmrs.module.providermanagement.exception.DateCannotBeInFutureException;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
@@ -45,14 +46,11 @@ import org.openmrs.module.providermanagement.exception.PersonIsNotProviderExcept
 import org.openmrs.module.providermanagement.exception.ProviderAlreadyAssignedToSupervisorException;
 import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.ProviderNotAssignedToSupervisorException;
-import org.openmrs.module.providermanagement.exception.ProviderRoleInUseException;
 import org.openmrs.module.providermanagement.exception.SourceProviderSameAsDestinationProviderException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -63,49 +61,95 @@ import java.util.Set;
  */
 public class ProviderManagementServiceImpl extends BaseOpenmrsService implements ProviderManagementService {
 
-    // TODO: (??? --not sure what this comment means anymore?) add checks to make sure person is not voided automatically when appropriate (in the assignment classes?)
-
 	protected final Log log = LogFactory.getLog(this.getClass());
-	
-	private ProviderManagementDAO dao;
 
-    private static RelationshipType supervisorRelationshipType = null;
-	
-	/**
-     * @param dao the dao to set
-     */
-    public void setDao(ProviderManagementDAO dao) {
-	    this.dao = dao;
-    }
+    @Setter
+    private ProviderManagementDAO dao;
 
-    /**
-     * @return the dao
-     */
-    public ProviderManagementDAO getDao() {
-	    return dao;
+    @Setter
+    private ProviderService providerService;
+
+    @Setter
+    private PersonService personService;
+
+    @Override
+    public List<ProviderRoleProviderAttributeType> getAllProviderRoleProviderAttributeTypes() {
+        return dao.getAllProviderRoleProviderAttributeTypes();
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<ProviderRole> getAllProviderRoles(boolean includeRetired) {
-        return dao.getAllProviderRoles(includeRetired);
+    public List<ProviderAttributeType> getProviderAttributeTypesForProviderRole(ProviderRole providerRole) {
+        return dao.getProviderAttributeTypesForProviderRole(providerRole);
+    }
+
+    @Override
+    public List<ProviderRole> getProviderRolesByProviderAttributeType(ProviderAttributeType providerAttributeType) {
+        return dao.getProviderRolesByProviderAttributeType(providerAttributeType);
+    }
+
+    @Override
+    public ProviderRoleProviderAttributeType saveProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType) {
+        return dao.saveProviderRoleProviderAttributeType(providerRoleProviderAttributeType);
+    }
+
+    @Override
+    public void deleteProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType) {
+        dao.deleteProviderRoleProviderAttributeType(providerRoleProviderAttributeType);
+    }
+
+    @Override
+    public List<ProviderRoleRelationshipType> getAllProviderRoleRelationshipTypes() {
+        return dao.getAllProviderRoleRelationshipTypes();
+    }
+
+    @Override
+    public List<RelationshipType> getRelationshipTypesForProviderRole(ProviderRole providerRole) {
+        return dao.getRelationshipTypesForProviderRole(providerRole);
+    }
+
+    @Override
+    public ProviderRoleRelationshipType saveProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType) {
+        return dao.saveProviderRoleRelationshipType(providerRoleRelationshipType);
+    }
+
+    @Override
+    public void deleteProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType) {
+        dao.deleteProviderRoleRelationshipType(providerRoleRelationshipType);
+    }
+
+    @Override
+    public List<ProviderRoleSuperviseeProviderRole> getAllProviderRoleSuperviseeProviderRoles() {
+        return dao.getAllProviderRoleSuperviseeProviderRoles();
+    }
+
+    @Override
+    public List<ProviderRole> getSuperviseeProviderRolesForProviderRole(ProviderRole supervisorProviderRole) {
+        return dao.getSuperviseeProviderRolesForProviderRole(supervisorProviderRole);
+    }
+
+    @Override
+    public ProviderRoleSuperviseeProviderRole saveProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole) {
+        return dao.saveProviderRoleSuperviseeProviderRole(providerRoleSuperviseeProviderRole);
+    }
+
+    @Override
+    public void deleteProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole) {
+        dao.deleteProviderRoleSuperviseeProviderRole(providerRoleSuperviseeProviderRole);
     }
 
     /**
      * Gets restricted Provider Roles in the database
-     *
-     * @param includeRetired whether or not to include retired provider roles
+     * @param includeRetired whether to include retired provider roles
      * @return list of restricted provider roles in the system
      */
     @Override
     @Transactional(readOnly = true)
     public List<ProviderRole> getRestrictedProviderRoles(boolean includeRetired) {
-
-        List<ProviderRole> uiProviderRoles = new ArrayList<ProviderRole>();
-        List<ProviderRole> allProviderRoles = getAllProviderRoles(includeRetired);
-        if (allProviderRoles != null && allProviderRoles.size() > 0 ) {
+        List<ProviderRole> uiProviderRoles = new ArrayList<>();
+        List<ProviderRole> allProviderRoles = providerService.getAllProviderRoles(includeRetired);
+        if (allProviderRoles != null && !allProviderRoles.isEmpty()) {
             List<String> restrictedRolesGP = ProviderManagementUtils.getRestrictedRolesGP();
-            if (restrictedRolesGP != null && restrictedRolesGP.size() > 0) {
+            if (restrictedRolesGP != null && !restrictedRolesGP.isEmpty()) {
                 for (ProviderRole role : allProviderRoles) {
                     for (String gp : restrictedRolesGP) {
                         if (StringUtils.equals(role.getUuid(), gp)) {
@@ -118,19 +162,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             }
         }
         return allProviderRoles;
-    }
-
-
-    @Override
-    @Transactional(readOnly = true)
-    public ProviderRole getProviderRole(Integer id) {
-        return dao.getProviderRole(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ProviderRole getProviderRoleByUuid(String uuid) {
-        return dao.getProviderRoleByUuid(uuid);
     }
 
     @Override
@@ -153,119 +184,6 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         else {
             return dao.getProviderRolesBySuperviseeProviderRole(providerRole);
         }
-    }
-
-    @Override
-    @Transactional
-    public ProviderRole saveProviderRole(ProviderRole role) {
-        return dao.saveProviderRole(role);
-    }
-
-    @Override
-    @Transactional
-    public void retireProviderRole(ProviderRole role, String reason) {
-        // BaseRetireHandler handles retiring the object
-        dao.saveProviderRole(role);
-    }
-
-    @Override
-    @Transactional
-    public void unretireProviderRole(ProviderRole role) {
-        // BaseUnretireHandler handles unretiring the object
-        dao.saveProviderRole(role);
-    }
-
-    @Override
-    @Transactional
-    public void purgeProviderRole(ProviderRole role)
-            throws ProviderRoleInUseException {
-
-        // first, remove this role as supervisee from any roles that can supervise it
-        for (ProviderRole r : getProviderRolesBySuperviseeProviderRole(role)) {
-            r.getSuperviseeProviderRoles().remove(role);
-            Context.getService(ProviderManagementService.class).saveProviderRole(r);   // call through service so AOP save handler picks this up
-        }
-
-        try {
-            dao.deleteProviderRole(role);
-            Context.flushSession();  // shouldn't really have to do this, but we do to force a commit so that the exception will be thrown if necessary
-        }
-        catch (PersistenceException e) {
-            throw new ProviderRoleInUseException("Cannot purge provider role. Most likely it is currently linked to an existing provider ", e);
-        }
-
-
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<RelationshipType> getAllProviderRoleRelationshipTypes(boolean includeRetired) {
-
-        Set<RelationshipType> relationshipTypes = new HashSet<RelationshipType>();
-
-        for (ProviderRole providerRole : getAllProviderRoles(includeRetired)) {
-            
-            if (includeRetired) {
-                relationshipTypes.addAll(providerRole.getRelationshipTypes());
-            }
-            // filter out any retired relationships
-            else {
-                relationshipTypes.addAll(CollectionUtils.select(providerRole.getRelationshipTypes(), new Predicate() {
-                    @Override
-                    public boolean evaluate(Object relationshipType) {
-                        return !((RelationshipType) relationshipType).getRetired();
-                    }
-                }));
-            }
-        }
-
-        return new ArrayList<RelationshipType>(relationshipTypes);
-    }
-
-    @Override
-    public List<Person> getProvidersAsPersons(String query, List<ProviderRole> providerRoles, Boolean includeRetired) {
-
-        // return empty list if no query
-        if (query == null || query.length() == 0) {
-            return new ArrayList<Person>();
-        }
-
-        List<Person> nameMatches = getProvidersAsPersons(query, null, providerRoles, includeRetired);
-        List<Person> identifierMatches = getProvidersAsPersons(null, query, providerRoles, includeRetired);
-
-        if (identifierMatches == null || identifierMatches.size() == 0) {
-            return nameMatches;
-        }
-        else if (nameMatches == null || nameMatches.size() == 0) {
-            return identifierMatches;
-        }
-        else {
-            // do a union
-            // TODO: how is the performance of this?
-            nameMatches.removeAll(identifierMatches);
-            identifierMatches.addAll(nameMatches);
-            Collections.sort(identifierMatches, new PersonByFirstNameComparator());
-            return identifierMatches;
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Person> getProvidersAsPersons(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired) {
-        if (providerRoles == null) {
-            providerRoles = Collections.emptyList();
-        }
-
-        if (includeRetired == null) {
-            throw new RuntimeException("include retired must be specified when searching for providers");
-        }
-
-        return getProvidersAsPersons(name, identifier, null, null, providerRoles, includeRetired);
-    }
-
-    @Override
-    public List<Person> getProvidersAsPersons(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired) {
-        return dao.getProviders(name, identifier, personAddress, personAttribute, providerRoles, includeRetired);
     }
 
     @Override
@@ -380,17 +298,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional(readOnly = true)
     public List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles) {
-        return providersToPersons(getProvidersByRoles(roles));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Provider> getProvidersByRoles(List<ProviderRole> roles) {
-        // not allowed to pass null or empty set here
-        if (roles == null || roles.isEmpty()) {
-            throw new APIException("Roles cannot be null or empty");
-        }
-        return dao.getProvidersByProviderRoles(roles, false);
+        return providersToPersons(providerService.getProvidersByRoles(roles));
     }
 
     @Override
@@ -462,9 +370,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         // iterate through all the provider roles this provider supports
         for (ProviderRole role : getProviderRoles(provider)) {
             // add all roles that this role can supervise
-            if (role.getSuperviseeProviderRoles() != null && role.getSuperviseeProviderRoles().size() > 0) {
-                rolesThatProviderCanSupervise.addAll(role.getSuperviseeProviderRoles());
-            }
+            rolesThatProviderCanSupervise.addAll(getSuperviseeProviderRolesForProviderRole(role));
         }
 
         return new ArrayList<ProviderRole> (rolesThatProviderCanSupervise);
@@ -646,7 +552,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         // we don't need to assure that the person supports the relationship type, but we need to make sure this a provider/patient relationship type
-        if (!getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -706,7 +612,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         }
 
         // we don't need to assure that the person supports the relationship type, but we need to make sure this a provider/patient relationship type
-        if (!getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+        if (!getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -730,7 +636,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new APIException("Provider cannot be null");
         }
 
-        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes(false)) {
+        Set<RelationshipType> allTypes = new HashSet<>();
+        for (ProviderRoleRelationshipType prrt : getAllProviderRoleRelationshipTypes()) {
+            allTypes.add(prrt.getRelationshipType());
+        }
+        for (RelationshipType relationshipType : allTypes) {
             try {
                 unassignAllPatientsFromProvider(provider, relationshipType);
             }
@@ -756,7 +666,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
-        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -817,7 +727,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
-        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException("Invalid relationship type: " + relationshipType + " is not a provider/patient relationship type");
         }
 
@@ -854,7 +764,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
         
-        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException(relationshipType + " is not a patient/provider relationship");
         }
 
@@ -883,7 +793,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
             throw new PersonIsNotProviderException(provider.getPersonName() + " is not a provider");
         }
 
-        if (relationshipType != null && !getAllProviderRoleRelationshipTypes(false).contains(relationshipType)) {
+        if (relationshipType != null && !getAllProviderRoleRelationshipTypes().contains(relationshipType)) {
             throw new InvalidRelationshipTypeException(relationshipType + " is not a patient/provider relationship");
         }
 
@@ -1034,7 +944,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     public void transferAllPatients(Person sourceProvider, Person destinationProvider, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, PersonIsNotProviderException,
             SourceProviderSameAsDestinationProviderException, DateCannotBeInFutureException {
-        for (RelationshipType relationshipType : getAllProviderRoleRelationshipTypes(false)) {
+        Set<RelationshipType> allTypes = new HashSet<>();
+        for (ProviderRoleRelationshipType prrt : getAllProviderRoleRelationshipTypes()) {
+            allTypes.add(prrt.getRelationshipType());
+        }
+        for (RelationshipType relationshipType : allTypes) {
             try {
                 transferAllPatients(sourceProvider, destinationProvider, relationshipType, date);
             }
@@ -1059,17 +973,11 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
     @Override
     @Transactional(readOnly = true)
     public RelationshipType getSupervisorRelationshipType() {
-        
-        if (supervisorRelationshipType == null) {
-            supervisorRelationshipType = Context.getPersonService().getRelationshipTypeByUuid(ProviderManagementConstants.SUPERVISOR_RELATIONSHIP_TYPE_UUID);
-
-            // if the relationship type is still null, throw an exception here
-            if (supervisorRelationshipType == null) {
-                throw new APIException("Superviser relationship type does not exist in relationship type table");
-            }
+        RelationshipType rt = personService.getRelationshipTypeByUuid(ProviderManagementConstants.SUPERVISOR_RELATIONSHIP_TYPE_UUID);
+        if (rt == null) {
+            throw new APIException("Superviser relationship type does not exist in relationship type table");
         }
-
-        return supervisorRelationshipType;
+        return rt;
     }
 
     @Override
@@ -1470,9 +1378,10 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
         if (provider.getProviderRole() == null) {
             return false;
         }
+
         // otherwise, test if the provider's role supports the specified relationship type
         else {
-            return provider.getProviderRole().supportsRelationshipType(relationshipType);
+            return getRelationshipTypesForProviderRole(provider.getProviderRole()).contains(relationshipType);
         }
     }
 }

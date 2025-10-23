@@ -1,5 +1,5 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
+ * The contents of this file are subject to the OpenMRS License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
@@ -15,15 +15,17 @@ package org.openmrs.module.providermanagement.api;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonAttribute;
+import org.openmrs.Provider;
+import org.openmrs.ProviderAttributeType;
+import org.openmrs.ProviderRole;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
-import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
-import org.openmrs.module.providermanagement.ProviderRole;
+import org.openmrs.module.providermanagement.ProviderRoleProviderAttributeType;
+import org.openmrs.module.providermanagement.ProviderRoleRelationshipType;
+import org.openmrs.module.providermanagement.ProviderRoleSuperviseeProviderRole;
 import org.openmrs.module.providermanagement.exception.DateCannotBeInFutureException;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.InvalidSupervisorException;
@@ -33,7 +35,6 @@ import org.openmrs.module.providermanagement.exception.PersonIsNotProviderExcept
 import org.openmrs.module.providermanagement.exception.ProviderAlreadyAssignedToSupervisorException;
 import org.openmrs.module.providermanagement.exception.ProviderDoesNotSupportRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.ProviderNotAssignedToSupervisorException;
-import org.openmrs.module.providermanagement.exception.ProviderRoleInUseException;
 import org.openmrs.module.providermanagement.exception.SourceProviderSameAsDestinationProviderException;
 
 import java.util.Date;
@@ -42,168 +43,73 @@ import java.util.List;
 /**
  * Provider Management Service
  */
-
 public interface ProviderManagementService extends OpenmrsService {
 
-    // TODO: make sure we are handling excluding/including retired metadata in a logical manner
+    // ProviderRoleProviderAttributeType
 
-    /*
-      * Basic methods for operating on provider roles
-      */
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRoleProviderAttributeType> getAllProviderRoleProviderAttributeTypes();
 
-    /**
-     * Gets all Provider Roles in the database
-     *
-     * @param includeRetired whether or not to include retired provider roles
-     * @return list of all provider roles in the system
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderAttributeType> getProviderAttributeTypesForProviderRole(ProviderRole providerRole);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getProviderRolesByProviderAttributeType(ProviderAttributeType providerAttributeType);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE })
+    ProviderRoleProviderAttributeType saveProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE })
+    void deleteProviderRoleProviderAttributeType(ProviderRoleProviderAttributeType providerRoleProviderAttributeType);
+
+    // ProviderRoleRelationshipType
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRoleRelationshipType> getAllProviderRoleRelationshipTypes();
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<RelationshipType> getRelationshipTypesForProviderRole(ProviderRole providerRole);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE })
+    ProviderRoleRelationshipType saveProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE })
+    void deleteProviderRoleRelationshipType(ProviderRoleRelationshipType providerRoleRelationshipType);
+
+    // ProviderRoleSuperviseeProviderRole
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRoleSuperviseeProviderRole> getAllProviderRoleSuperviseeProviderRoles();
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getSuperviseeProviderRolesForProviderRole(ProviderRole supervisorProviderRole);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole superviseeProviderRole);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE })
+    ProviderRoleSuperviseeProviderRole saveProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole);
+
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE })
+    void deleteProviderRoleSuperviseeProviderRole(ProviderRoleSuperviseeProviderRole providerRoleSuperviseeProviderRole);
 
     /**
      * Gets restricted Provider Roles in the database
      *
-     * @param includeRetired whether or not to include retired provider roles
+     * @param includeRetired whether to include retired provider roles
      * @return list of restricted provider roles in the system
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<ProviderRole> getRestrictedProviderRoles(boolean includeRetired);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getRestrictedProviderRoles(boolean includeRetired);
 
     /**
-     * Gets the provider role referenced by the specified id
-     *
-     * @param id
-     * @return providerRole
+     * Get all the provider roles for the given person
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public ProviderRole getProviderRole(Integer id);
-
-    /**
-     * Gets the provider role referenced by the specified uui
-     *
-     * @param uuid
-     * @return providerRole
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public ProviderRole getProviderRoleByUuid(String uuid);
-
-    /**
-     * Returns all the provider roles that support the specified relationship type
-     * (Excludes retired provider roles)
-     *
-     * @param relationshipType
-     * @return the provider roles that support that relationship type
-     * @should throw exception if relationshipType is null
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<ProviderRole> getProviderRolesByRelationshipType(RelationshipType relationshipType);
-
-    /**
-     * Returns all provider roles that are able to supervise the specified provider role
-     * (Excludes retired provider roles)
-     *
-     * @param providerRole
-     * @return the provider roles that can supervise the specified provider role
-     * @should throw exception if providerRole is null
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<ProviderRole> getProviderRolesBySuperviseeProviderRole(ProviderRole providerRole);
-
-    /**
-     * Saves/updates a provider role
-     *
-     * @param role the provider role to save
-     * @return the saved provider role
-     */
-    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public ProviderRole saveProviderRole(ProviderRole role);
-
-    /**
-     * Retires a provider role
-     * @param role the role to retire
-     * @param reason the reason the role is being retired
-     */
-    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void retireProviderRole(ProviderRole role, String reason);
-
-    /**
-     * Unretires a provider role
-     * @param role the role to unretire
-     */
-    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unretireProviderRole(ProviderRole role);
-    
-    /**
-     * Deletes a provider role
-     *
-     * @param role the provider role to delete
-     */
-    @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void purgeProviderRole(ProviderRole role)
-            throws ProviderRoleInUseException;
-
-    /**
-     * Get all the relationship types associated with provider roles
-     *
-     * @param includeRetired whether or not to include retired relationship types
-     * @return all the relationship types associated with provider roles
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<RelationshipType> getAllProviderRoleRelationshipTypes(boolean includeRetired);
-
-    /**
-     * Basic methods for operating on providers using the new provider roles
-     */
-
-    /**
-     * Gets the list of providers that match a specified name OR identifier, restricting based on specified provider roles
-     * (If query is null, empty list is returned)
-     *
-     * @param query name or identifier to search on (does a like 'query%' search)
-     * @param providerRoles restrict results to providers with at least one of these roles
-     * @param includeRetired whether or not to include retired providers
-     * @should return empty list if query null
-     * @return result list of providers
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersAsPersons(String query, List<ProviderRole> providerRoles, Boolean includeRetired);
-
-    /**
-     * Gets the list of providers that match the specified name, identifier, and provider roles
-     * (If any field is null it is ignored)
-     *
-     * @param name name to search on (does an ilike 'name%' search against name fields)
-     * @param identifier provider identifier (does a ilike 'identifier%' search)
-     * @param providerRoles restrict results to providers with at least one of these roles
-     * @param includeRetired whether or not to include retired providers
-     * @return result list of providers
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersAsPersons(String name, String identifier, List<ProviderRole> providerRoles, Boolean includeRetired);
-
-    /**
-     * Gets the list of providers that match the specified name, identifier, and provider roles
-     * (If any field is null it is ignored)
-     *
-     * @param name name to search on (does an ilike 'name%' search against name fields)
-     * @param identifier provider identifier (does an ilike 'identifier%' search)
-     * @param personAddress address to match on (does an ilike 'addressField%' search against each field that is not null)
-     * @param personAttribute person attribute to match on
-     * @param providerRoles restrict results to providers with at least one of these roles
-     * @param includeRetired whether or not to include retired providers
-     * @return result list of providers
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-     public List<Person> getProvidersAsPersons(String name, String identifier, PersonAddress personAddress, PersonAttribute personAttribute, List<ProviderRole> providerRoles, Boolean includeRetired);
-
-    /**
-     * Returns the provider roles associated with the specified provider
-     *
-     * @param provider
-     * @return the provider role associated with the specified provider
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<ProviderRole> getProviderRoles(Person provider);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getProviderRoles(Person person);
 
     /**
      * Assigns a provider role to a person
@@ -213,7 +119,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param identifier the identifier to associate with this provider/role combination (mandatory)
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier);
+    void assignProviderRoleToPerson(Person provider, ProviderRole role, String identifier);
 
     /**
      * Unassigns a provider role from a person by retiring the provider associated with that role
@@ -222,7 +128,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param role
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignProviderRoleFromPerson(Person provider, ProviderRole role);
+    void unassignProviderRoleFromPerson(Person provider, ProviderRole role);
 
     /**
      * Purges a provider role from a person by purging the provider associated with that role
@@ -230,7 +136,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param provider
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void purgeProviderRoleFromPerson(Person provider, ProviderRole role);
+    void purgeProviderRoleFromPerson(Person provider, ProviderRole role);
 
     /**
      * Gets all providers whose role is in the list of specified roles
@@ -239,18 +145,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return all providers with one of the specified roles
      * @should throw APIException if roles are empty or null
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles);
-
-    /**
-     * Gets all providers whose role is in the list of specified roles
-     *
-     * @param roles
-     * @return all providers with one of the specified roles
-     * @should throw APIException if roles are empty or null
-     */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Provider> getProvidersByRoles(List<ProviderRole> roles);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getProvidersAsPersonsByRoles(List<ProviderRole> roles);
 
     /**
      * Gets all providers with the specified role
@@ -260,8 +156,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return list of providers with the specified role
      * @should throw APIException if role is null
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersAsPersonsByRole(ProviderRole role);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getProvidersAsPersonsByRole(ProviderRole role);
 
     /**
      * Gets all providers that support the specified relationship type
@@ -271,8 +167,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return the list of providers that support the specified relationship type
      * @should throw API Exception if relationship type is null
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersAsPersonsByRelationshipType(RelationshipType relationshipType);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getProvidersAsPersonsByRelationshipType(RelationshipType relationshipType);
 
     /**
      * Gets all the provider roles that can server as supervisors of the specified provider
@@ -282,8 +178,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return the list of provider roles that can supervise the specific provider
      * @should throw API Exception if the provider is null
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<ProviderRole> getProviderRolesThatCanSuperviseThisProvider(Person provider);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getProviderRolesThatCanSuperviseThisProvider(Person provider);
 
     /**
      * Returns all the valid roles that the specified provider can supervise
@@ -291,28 +187,28 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param provider
      * @return all the valid roles that the specified provider can supervise
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<ProviderRole> getProviderRolesThatProviderCanSupervise(Person provider);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<ProviderRole> getProviderRolesThatProviderCanSupervise(Person provider);
 
      /**
-     * Returns whether or not the passed person has one or more associated providers (unretired or retired)
+     * Returns whether the passed person has one or more associated providers (unretired or retired)
      * (So note that a person that only is associated with retired Provider objects is still consider a "provider")
      *
      * @param person
-     * @return whether or not the passed person has one or more associated providers
+     * @return whether the passed person has one or more associated providers
      */
-     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public boolean isProvider(Person person);
+     @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    boolean isProvider(Person person);
 
     /**
-     * Returns whether or not the passed provider has the specified provider role
+     * Returns whether the passed provider has the specified provider role
      *
      * @param provider
      * @param role
-     * @return whether or not the passed provider has the specified provider role
+     * @return whether the passed provider has the specified provider role
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public boolean hasRole(Person provider, ProviderRole role);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    boolean hasRole(Person provider, ProviderRole role);
 
     /**
      * Returns true if the specified provider can support the specified relationship type, false otherwise
@@ -321,8 +217,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param relationshipType
      * @return true if the specified provider can support the specified relationship type, false otherwise
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public boolean supportsRelationshipType(Person provider, RelationshipType relationshipType);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    boolean supportsRelationshipType(Person provider, RelationshipType relationshipType);
 
     /**
      * Returns true if the specified supervisor can supervise the specified supervisee, false otherwise
@@ -331,8 +227,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param supervisee
      * @return true if the specified supervisor can supervise the specified supervisee, false otherwise
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public boolean canSupervise(Person supervisor, Person supervisee);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    boolean canSupervise(Person supervisor, Person supervisee);
 
 
     /**
@@ -354,7 +250,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to patient
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+    void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
             PersonIsNotProviderException, DateCannotBeInFutureException;
 
@@ -372,7 +268,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to patient
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType)
+    void assignPatientToProvider(Patient patient, Person provider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, PatientAlreadyAssignedToProviderException,
             PersonIsNotProviderException;
 
@@ -391,7 +287,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to patient
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+    void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException,
                 DateCannotBeInFutureException;
 
@@ -409,7 +305,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not assigned to patient
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType)
+    void unassignPatientFromProvider(Patient patient, Person provider, RelationshipType relationshipType)
             throws PatientNotAssignedToProviderException, PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -424,7 +320,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not associated with a person
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignAllPatientsFromProvider(Person provider, RelationshipType relationshipType)
+    void unassignAllPatientsFromProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -436,7 +332,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not associated with a person
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignAllPatientsFromProvider(Person provider)
+    void unassignAllPatientsFromProvider(Person provider)
             throws PersonIsNotProviderException;
 
     // TODO: we will probably need a "purge" option for purging relationships created by accident, (will need to be implemented when we take on PROV-1)
@@ -456,8 +352,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationshipType is not a valid provider/patient relationship type
      * @should return all patient relationships of the specified relationshipType if date is null
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -471,8 +367,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider null
      * @should fail if relationshipType is not a valid provider/patient relationship type
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getPatientRelationshipsForProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -488,8 +384,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider not associated with person
      * @should fail if relationship type is not a provider/patient relationship type
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -505,8 +401,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationship type is not a provider/patient relationship type
      * @should fail if invalid relationship found
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Patient> getPatientsOfProvider(Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -519,8 +415,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public int getPatientsOfProviderCount(Person provider, RelationshipType relationshipType, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    int getPatientsOfProviderCount(Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
 
@@ -535,8 +431,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -549,8 +445,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -563,8 +459,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws PersonIsNotProviderException
      * @throws InvalidRelationshipTypeException
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getActiveProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getActiveProviderRelationshipsForPatient(Patient patient, Person provider, RelationshipType relationshipType, Date date)
             throws PersonIsNotProviderException, InvalidRelationshipTypeException;
 
     /**
@@ -576,8 +472,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return all providers associated with the given patient on the specified date
      * @throws InvalidRelationshipTypeException
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType, Date date)
             throws InvalidRelationshipTypeException;
 
     /**
@@ -588,8 +484,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return all providers associated with the given patient
      * @throws InvalidRelationshipTypeException
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getProvidersAsPersonsForPatient(Patient patient, RelationshipType relationshipType)
             throws InvalidRelationshipTypeException;
 
 
@@ -609,7 +505,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
+    void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException,
             DateCannotBeInFutureException;
@@ -628,7 +524,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @throws InvalidRelationshipTypeException
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+    void transferPatients(List<Patient> patients, Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException, InvalidRelationshipTypeException, PatientNotAssignedToProviderException,
             DateCannotBeInFutureException;
@@ -649,7 +545,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationshipType is null
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
+    void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException, InvalidRelationshipTypeException, DateCannotBeInFutureException;
 
@@ -667,7 +563,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if relationshipType is null
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
+    void transferAllPatients(Person sourceProvider, Person destinationProvider, RelationshipType relationshipType)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException, InvalidRelationshipTypeException, DateCannotBeInFutureException;
 
@@ -689,7 +585,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should not fail if destination provider is already associated with patient
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferAllPatients(Person sourceProvider, Person destinationProvider, Date date)
+    void transferAllPatients(Person sourceProvider, Person destinationProvider, Date date)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException, DateCannotBeInFutureException;
 
@@ -710,7 +606,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should not fail if destination provider is already associated with patient
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferAllPatients(Person sourceProvider, Person destinationProvider)
+    void transferAllPatients(Person sourceProvider, Person destinationProvider)
             throws ProviderDoesNotSupportRelationshipTypeException, SourceProviderSameAsDestinationProviderException,
             PersonIsNotProviderException, DateCannotBeInFutureException;
 
@@ -718,8 +614,8 @@ public interface ProviderManagementService extends OpenmrsService {
     /**
      * Methods that handle supervisee to supervisor relationships
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public RelationshipType getSupervisorRelationshipType();
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    RelationshipType getSupervisorRelationshipType();
 
     /**
      * Assigns the provider to the supervisor on the specified date
@@ -735,7 +631,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to supervisor
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void assignProviderToSupervisor(Person provider, Person supervisor, Date date)
+    void assignProviderToSupervisor(Person provider, Person supervisor, Date date)
             throws PersonIsNotProviderException, InvalidSupervisorException,
             ProviderAlreadyAssignedToSupervisorException, DateCannotBeInFutureException;
 
@@ -752,7 +648,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is already assigned to supervisor
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void assignProviderToSupervisor(Person provider, Person supervisor)
+    void assignProviderToSupervisor(Person provider, Person supervisor)
             throws PersonIsNotProviderException, InvalidSupervisorException,
             ProviderAlreadyAssignedToSupervisorException;
 
@@ -769,7 +665,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not assigned to supervisor
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignProviderFromSupervisor(Person provider, Person supervisor, Date date)
+    void unassignProviderFromSupervisor(Person provider, Person supervisor, Date date)
             throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException,
                 DateCannotBeInFutureException;
 
@@ -785,7 +681,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not assigned to supervisor
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignProviderFromSupervisor(Person provider, Person supervisor)
+    void unassignProviderFromSupervisor(Person provider, Person supervisor)
             throws PersonIsNotProviderException, ProviderNotAssignedToSupervisorException;
 
     /**
@@ -796,7 +692,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is not a provider
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignAllSupervisorsFromProvider(Person provider)
+    void unassignAllSupervisorsFromProvider(Person provider)
             throws PersonIsNotProviderException;
 
     /**
@@ -807,7 +703,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if supervisor is not a provider
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void unassignAllProvidersFromSupervisor(Person supervisor)
+    void unassignAllProvidersFromSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
 
@@ -821,8 +717,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getSupervisorRelationshipsForProvider(Person provider, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getSupervisorRelationshipsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -834,8 +730,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getSupervisorRelationshipsForProvider(Person provider)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getSupervisorRelationshipsForProvider(Person provider)
             throws PersonIsNotProviderException;
     
     /**
@@ -847,8 +743,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getSupervisorsForProvider(Person provider, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getSupervisorsForProvider(Person provider, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -859,8 +755,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getSupervisorsForProvider(Person provider)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getSupervisorsForProvider(Person provider)
             throws PersonIsNotProviderException;
 
     /**
@@ -873,8 +769,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -886,8 +782,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Relationship> getSuperviseeRelationshipsForSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
     /**
@@ -900,8 +796,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getSuperviseesForSupervisor(Person supervisor, Date date)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getSuperviseesForSupervisor(Person supervisor, Date date)
             throws PersonIsNotProviderException;
 
     /**
@@ -913,8 +809,8 @@ public interface ProviderManagementService extends OpenmrsService {
      * @should fail if provider is null
      * @should fail if provider is not a provider
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Person> getSuperviseesForSupervisor(Person supervisor)
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Person> getSuperviseesForSupervisor(Person supervisor)
             throws PersonIsNotProviderException;
 
 
@@ -928,7 +824,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param date
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor, Date date)
+    void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor, Date date)
             throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
             ProviderNotAssignedToSupervisorException, DateCannotBeInFutureException;
 
@@ -941,7 +837,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param destinationSupervisor
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor)
+    void transferSupervisees(List<Person> supervisees, Person sourceSupervisor, Person destinationSupervisor)
             throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
             ProviderNotAssignedToSupervisorException, DateCannotBeInFutureException;
 
@@ -954,7 +850,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param date
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor, Date date)
+    void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor, Date date)
             throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
             DateCannotBeInFutureException;
 
@@ -965,7 +861,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @param destinationSupervisor
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    public void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor)
+    void transferAllSupervisees(Person sourceSupervisor, Person destinationSupervisor)
             throws PersonIsNotProviderException, SourceProviderSameAsDestinationProviderException, InvalidSupervisorException,
             DateCannotBeInFutureException;
 
@@ -973,6 +869,6 @@ public interface ProviderManagementService extends OpenmrsService {
      * Replacement for ProviderService.getProvidersByPerson to fetch new expanded provider model
      * Should generally only be used internally, since the idea is this API "hides" knowledge of the Provider object
      */
-    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE }, requireAll = false)
-    public List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
+    @Authorized(value = { ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE, ProviderManagementConstants.PROVIDER_MANAGEMENT_API_READ_ONLY_PRIVILEGE })
+    List<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 }

@@ -4,9 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<!-- Add here beans related to the API context -->
-
-	
 	<!-- Services accessible via Context.getService() -->
 
     <bean id="providerManagementService"
@@ -32,8 +29,6 @@
             <ref bean="transactionAttributeSource" />
         </property>
     </bean>
-
-
 
     <bean id="providerSuggestionService"
             class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">

@@ -16,10 +16,10 @@ package org.openmrs.module.providermanagement.api;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.ProviderRole;
 import org.openmrs.RelationshipType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.module.providermanagement.ProviderManagementConstants;
-import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
 import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;

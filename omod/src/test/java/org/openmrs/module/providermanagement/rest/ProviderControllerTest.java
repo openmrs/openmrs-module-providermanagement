@@ -3,8 +3,8 @@ package org.openmrs.module.providermanagement.rest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.response.ConversionException;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceControllerTest;
@@ -47,7 +47,7 @@ public class ProviderControllerTest  extends MainResourceControllerTest {
         Assert.assertEquals(before + 1, Context.getProviderService().getAllProviders().size());
 
         SimpleObject obj = SimpleObject.parseJson(res.getContentAsString());
-        Provider provider = (Provider) Context.getProviderService().getProviderByUuid(obj.get("uuid").toString());
+        Provider provider = Context.getProviderService().getProviderByUuid(obj.get("uuid").toString());
         Assert.assertEquals(1, provider.getAttributes().size());
     }
 
@@ -62,7 +62,7 @@ public class ProviderControllerTest  extends MainResourceControllerTest {
         Assert.assertEquals(before + 1, Context.getProviderService().getAllProviders().size());
 
         SimpleObject obj = SimpleObject.parseJson(res.getContentAsString());
-        Provider provider = (Provider) Context.getProviderService().getProviderByUuid(obj.get("uuid").toString());
+        Provider provider = Context.getProviderService().getProviderByUuid(obj.get("uuid").toString());
         Assert.assertEquals("da7f523f-27ce-4bb2-86d6-6d1d05312bd5", provider.getProviderRole().getUuid());
     }
 
@@ -77,14 +77,14 @@ public class ProviderControllerTest  extends MainResourceControllerTest {
 
     @Test
     public void voidProvider_shouldRetireAProvider() throws Exception {
-        Provider pat = (Provider) Context.getProviderService().getProviderByUuid(getUuid());
+        Provider pat = Context.getProviderService().getProviderByUuid(getUuid());
         Assert.assertFalse(pat.isRetired());
 
         MockHttpServletRequest request = request(RequestMethod.DELETE, getURI() + "/" + getUuid() );
         request.addParameter("reason", "unit test");
         handle(request);
 
-        pat = (Provider) Context.getProviderService().getProviderByUuid(getUuid());
+        pat = Context.getProviderService().getProviderByUuid(getUuid());
         Assert.assertTrue(pat.isRetired());
         Assert.assertEquals("unit test", pat.getRetireReason());
     }
@@ -92,13 +92,13 @@ public class ProviderControllerTest  extends MainResourceControllerTest {
     @Test
     public void shouldEditAProvider() throws Exception {
         final String EDITED_PERSON_UUID = "da7f524f-27ce-4bb2-86d6-6d1d05312bd5";  // from standard test dataset
-        Provider provider = (Provider)  Context.getProviderService().getProviderByUuid(getUuid());
+        Provider provider =  Context.getProviderService().getProviderByUuid(getUuid());
         Assert.assertFalse(EDITED_PERSON_UUID.equals(provider.getPerson().getUuid()));
 
         String json = "{\"person\":\"" + EDITED_PERSON_UUID + "\"" + "}";
         handle(newPostRequest(getURI() + "/" + getUuid(), json));
 
-        Provider updatedProvider = (Provider) Context.getProviderService().getProviderByUuid(getUuid());
+        Provider updatedProvider = Context.getProviderService().getProviderByUuid(getUuid());
         Assert.assertEquals(EDITED_PERSON_UUID, updatedProvider.getPerson().getUuid());
     }
 
