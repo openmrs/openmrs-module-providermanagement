@@ -48,10 +48,9 @@
 	
 	<properties>
 		<openMRSVersion>2.8.2-SNAPSHOT</openMRSVersion>
-        <uiframeworkVersion>3.4</uiframeworkVersion>
+		<uiframeworkVersion>3.4</uiframeworkVersion>
 		<uilibraryVersion>1.5</uilibraryVersion>
 		<webservicesRestVersion>2.49.0</webservicesRestVersion>
-		<javaXServletVersion>4.0.1</javaXServletVersion>
 		<lombokVersion>1.18.42</lombokVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -102,13 +101,6 @@
 			<artifactId>groovy</artifactId>
 			<version>1.7.6</version>
 			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${javaXServletVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 

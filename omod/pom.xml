@@ -13,17 +13,12 @@
 	<description>OMOD project for ProviderManagement</description>
 
 	<dependencies>
-
-		<!-- Begin OpenMRS modules -->
 		
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>${project.parent.artifactId}-api</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-
-		<!-- End OpenMRS modules -->
-		
 
 		<!-- Begin OpenMRS core -->
 
@@ -112,6 +107,13 @@
 					<artifactId>servlet-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>
