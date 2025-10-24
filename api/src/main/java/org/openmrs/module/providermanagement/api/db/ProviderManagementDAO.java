@@ -84,7 +84,7 @@ public interface ProviderManagementDAO {
      * @param role the provider role to save
      * @return provider role
      */
-    ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole role);
+    ProviderManagementProviderRole saveProviderRole(ProviderRole role);
 
     /**
      * Deletes a provider role

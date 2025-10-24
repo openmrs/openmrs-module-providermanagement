@@ -116,7 +116,7 @@ public interface ProviderManagementService extends OpenmrsService {
      * @return the saved provider role
      */
     @Authorized(ProviderManagementConstants.PROVIDER_MANAGEMENT_API_PRIVILEGE)
-    ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole role);
+    ProviderManagementProviderRole saveProviderRole(ProviderRole role);
 
     /**
      * Retires a provider role

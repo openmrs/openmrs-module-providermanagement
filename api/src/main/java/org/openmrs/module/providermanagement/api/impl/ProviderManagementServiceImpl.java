@@ -147,7 +147,7 @@ public class ProviderManagementServiceImpl extends BaseOpenmrsService implements
 
     @Override
     @Transactional
-    public ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole role) {
+    public ProviderManagementProviderRole saveProviderRole(ProviderRole role) {
         return dao.saveProviderRole(role);
     }
 
