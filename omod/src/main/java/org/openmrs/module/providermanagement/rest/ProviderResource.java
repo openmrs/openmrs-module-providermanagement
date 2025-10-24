@@ -1,8 +1,9 @@
 package org.openmrs.module.providermanagement.rest;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.rest.controller.ProviderManagementRestController;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.RequestContext;
@@ -18,12 +19,11 @@ import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingC
 import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Resource(name = RestConstants.VERSION_1 + ProviderManagementRestController.PROVIDER_MANAGEMENT_REST_NAMESPACE + "/provider", supportedClass = Provider.class, supportedOpenmrsVersions = {
-        "1.9.* - 9.*" })
+        "2.8.* - 9.*" })
 public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
 
     public ProviderResource() {
@@ -112,7 +112,7 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
      */
     @Override
     public Provider save(Provider provider) {
-        return (Provider) Context.getProviderService().saveProvider(provider);
+        return Context.getProviderService().saveProvider(provider);
     }
 
     /**
@@ -120,7 +120,7 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
      */
     @Override
     public Provider getByUniqueId(String uuid) {
-        return (Provider) Context.getProviderService().getProviderByUuid(uuid);
+        return Context.getProviderService().getProviderByUuid(uuid);
     }
 
     /**
@@ -129,7 +129,7 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
      */
     @Override
     public void delete(Provider provider, String reason, RequestContext context) throws ResponseException {
-        if (provider.isRetired()) {
+        if (BooleanUtils.isTrue(provider.getRetired())) {
             // DELETE is idempotent, so we return success here
             return;
         }
@@ -151,19 +151,12 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
 
     @Override
     protected NeedsPaging<Provider> doGetAll(RequestContext context) throws ResponseException {
-
-        List<org.openmrs.Provider> providers = Context.getProviderService().getAllProviders(context.getIncludeAll());
-        List<Provider> upliftedProviders = new ArrayList<Provider>();
-
-        for (org.openmrs.Provider p : providers) {
-            upliftedProviders.add((Provider) p);
-        }
-
-        return new NeedsPaging<Provider>(upliftedProviders, context);
+        List<Provider> providers = Context.getProviderService().getAllProviders(context.getIncludeAll());
+        return new NeedsPaging<>(providers, context);
     }
 
     /**
-     * @param provider
+     * @param provider the provider
      * @return identifier + name (for concise display purposes)
      */
     @Override
@@ -176,7 +169,7 @@ public class ProviderResource extends MetadataDelegatingCrudResource<Provider> {
     }
 
     @PropertyGetter("auditInfo")
-    public SimpleObject getAuditInfo(Provider provider) throws Exception {
+    public SimpleObject getAuditInfo(Provider provider) {
         return super.getAuditInfo(provider);
     }
 
