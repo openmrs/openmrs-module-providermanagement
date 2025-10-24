@@ -4,56 +4,38 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<!-- Services accessible via Context.getService() -->
-
     <bean id="providerManagementService"
         class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-        <property name="transactionManager">
-            <ref bean="transactionManager" />
-        </property>
+        <property name="transactionManager" ref="transactionManager"/>
         <property name="target">
             <bean class="org.openmrs.module.providermanagement.api.impl.ProviderManagementServiceImpl">
                 <property name="dao">
                     <bean class="org.openmrs.module.providermanagement.api.db.hibernate.HibernateProviderManagementDAO">
-                        <property name="sessionFactory">
-                            <ref bean="dbSessionFactory" />
-                        </property>
+                        <property name="sessionFactory" ref="dbSessionFactory"/>
                     </bean>
                 </property>
                 <property name="providerService" ref="providerService"/>
                 <property name="personService" ref="personService"/>
             </bean>
         </property>
-        <property name="preInterceptors">
-            <ref bean="serviceInterceptors" />
-        </property>
-        <property name="transactionAttributeSource">
-            <ref bean="transactionAttributeSource" />
-        </property>
+        <property name="preInterceptors" ref="serviceInterceptors"/>
+        <property name="transactionAttributeSource" ref="transactionAttributeSource"/>
     </bean>
 
     <bean id="providerSuggestionService"
             class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-        <property name="transactionManager">
-            <ref bean="transactionManager" />
-        </property>
+        <property name="transactionManager" ref="transactionManager"/>
         <property name="target">
             <bean class="org.openmrs.module.providermanagement.api.impl.ProviderSuggestionServiceImpl">
                 <property name="dao">
                     <bean class="org.openmrs.module.providermanagement.api.db.hibernate.HibernateProviderManagementDAO">
-                        <property name="sessionFactory">
-                            <ref bean="dbSessionFactory" />
-                        </property>
+                        <property name="sessionFactory" ref="dbSessionFactory"/>
                     </bean>
                 </property>
             </bean>
         </property>
-        <property name="preInterceptors">
-            <ref bean="serviceInterceptors" />
-        </property>
-        <property name="transactionAttributeSource">
-            <ref bean="transactionAttributeSource" />
-        </property>
+        <property name="preInterceptors" ref="serviceInterceptors"/>
+        <property name="transactionAttributeSource" ref="transactionAttributeSource"/>
     </bean>
 
     <!-- Service -->
