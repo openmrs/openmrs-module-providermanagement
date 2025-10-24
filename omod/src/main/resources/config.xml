@@ -27,9 +27,6 @@
 	
 	<!-- Hibernate Mapping Files -->
 	<mappingFiles>
-        ProviderRoleProviderAttributeType.xml
-        ProviderRoleRelationshipType.xml
-        ProviderRoleSuperviseeProviderRole.xml
         ProviderSuggestion.hbm.xml
 		SupervisionSuggestion.hbm.xml
 	</mappingFiles>
