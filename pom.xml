@@ -51,7 +51,6 @@
         <uiframeworkVersion>3.4</uiframeworkVersion>
 		<uilibraryVersion>1.5</uilibraryVersion>
 		<webservicesRestVersion>2.49.0</webservicesRestVersion>
-		<legacyUiVersion>2.0.0-SNAPSHOT</legacyUiVersion>
 		<javaXServletVersion>4.0.1</javaXServletVersion>
 		<lombokVersion>1.18.42</lombokVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
