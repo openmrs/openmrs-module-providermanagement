@@ -21,13 +21,13 @@ import org.openmrs.RelationshipType;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.handler.RequiredDataHandler;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import java.util.Set;
 
 /**
@@ -40,8 +40,8 @@ import java.util.Set;
  * and "Head Surgeon" role might be able to oversee a person with Provider Role of "Surgeon".
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorValue("null")
+@Table(name = "providermanagement_provider_role")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ProviderManagementProviderRole extends ProviderRole {
 
     // the provider/patient relationships this role can support
