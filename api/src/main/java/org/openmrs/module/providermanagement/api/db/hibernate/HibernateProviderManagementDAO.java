@@ -97,9 +97,9 @@ public class HibernateProviderManagementDAO implements ProviderManagementDAO {
     }
 
     @Override
-    public ProviderManagementProviderRole saveProviderRole(ProviderRole role) {
+    public ProviderManagementProviderRole saveProviderRole(ProviderManagementProviderRole role) {
         getSession().saveOrUpdate(role);
-        return (ProviderManagementProviderRole) role;
+        return role;
     }
 
     @Override
